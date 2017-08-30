@@ -30,10 +30,16 @@ public class GreetingController {
 
         try {
             cpuInfo = GeneralStats.getPcInfo();
-            networkSpeed = NetworkSpeed.getSpeed();
             disks = GeneralStats.getDiskStats();
         } catch (SigarException | InterruptedException e) {
             e.printStackTrace();
+        }
+
+        try {
+            networkSpeed = NetworkSpeed.getSpeed();
+        } catch (SigarException | InterruptedException e) {
+            System.out.println("rete disconnessa o non supportata");
+            //e.printStackTrace();
         }
 
         return new Greeting(counter.incrementAndGet(), template, batteryParts, cpuInfo, networkSpeed, disks);
