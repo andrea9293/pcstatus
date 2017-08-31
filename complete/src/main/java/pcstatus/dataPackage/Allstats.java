@@ -36,8 +36,6 @@ public class Allstats {
 
             HardwareAbstractionLayer hal = si.getHardware();
             OperatingSystem os = si.getOperatingSystem();
-            os.getFileSystem();
-            System.out.println(os);
 
            /* System.out.println("Checking computer system...");
             printComputerSystem(hal.getComputerSystem());*/
@@ -66,11 +64,12 @@ public class Allstats {
           /*  System.out.println("Checking File System...");
             printFileSystem(os.getFileSystem());*/
 
-           /* System.out.println("Checking Network interfaces...");
+            System.out.println("Checking Network interfaces...");
             printNetworkInterfaces(hal.getNetworkIFs());
 
-            System.out.println("Checking Network parameterss...");
+           /* System.out.println("Checking Network parameterss...");
             printNetworkParameters(os.getNetworkParams());*/
+
 
             // hardware: displays
         /*System.out.println("Checking Displays...");
@@ -277,9 +276,9 @@ public class Allstats {
         System.out.println("Network interfaces:");
         for (NetworkIF net : networkIFs) {
             System.out.format(" Name: %s (%s)%n", net.getName(), net.getDisplayName());
-            System.out.format("   MAC Address: %s %n", net.getMacaddr());
+          //  System.out.format("   MAC Address: %s %n", net.getMacaddr());
             System.out.format("   MTU: %s, Speed: %s %n", net.getMTU(), FormatUtil.formatValue(net.getSpeed(), "bps"));
-            System.out.format("   IPv4: %s %n", Arrays.toString(net.getIPv4addr()));
+         /*   System.out.format("   IPv4: %s %n", Arrays.toString(net.getIPv4addr()));
             System.out.format("   IPv6: %s %n", Arrays.toString(net.getIPv6addr()));
             boolean hasData = net.getBytesRecv() > 0 || net.getBytesSent() > 0 || net.getPacketsRecv() > 0
                     || net.getPacketsSent() > 0;
@@ -289,7 +288,7 @@ public class Allstats {
                     hasData ? " (" + net.getInErrors() + " err)" : "",
                     hasData ? net.getPacketsSent() + " packets" : "?",
                     hasData ? FormatUtil.formatBytes(net.getBytesSent()) : "?",
-                    hasData ? " (" + net.getOutErrors() + " err)" : "");
+                    hasData ? " (" + net.getOutErrors() + " err)" : "");*/
         }
     }
 

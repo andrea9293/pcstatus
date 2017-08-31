@@ -64,6 +64,7 @@ public class NetworkSpeed {
         return speed;
     }
 
+
     public static Long[] getMetric() throws SigarException {
         for (String ni : sigar.getNetInterfaceList()) {
             // System.out.println(ni);
@@ -86,7 +87,7 @@ public class NetworkSpeed {
             l.clear();
         for (List<Long> l : txChangeMap.values())
             l.clear();
-        return new Long[]{totalrx, totaltx};
+        return new Long[] { totalrx, totaltx };
     }
 
     private static long getMetricData(Map<String, List<Long>> rxChangeMap) {
