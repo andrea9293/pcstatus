@@ -25,34 +25,37 @@ public class Allstats {
      *
      * @param args the arguments
      */
+
+    private static String spacing = "     ";
+
     public static void main(String[] args) throws InterruptedException {
 
-        while (true){
+        while (true) {
             System.out.println("Initializing System...");
             SystemInfo si = new SystemInfo();
 
             HardwareAbstractionLayer hal = si.getHardware();
             OperatingSystem os = si.getOperatingSystem();
-
+            os.getFileSystem();
             System.out.println(os);
 
-            System.out.println("Checking computer system...");
-            printComputerSystem(hal.getComputerSystem());
+           /* System.out.println("Checking computer system...");
+            printComputerSystem(hal.getComputerSystem());*/
 
-            System.out.println("Checking Processor...");
-            printProcessor(hal.getProcessor());
+          /*  System.out.println("Checking Processor...");
+            printProcessor(hal.getProcessor());*/
 
-            System.out.println("Checking Memory...");
-            printMemory(hal.getMemory());
+           /* System.out.println("Checking Memory...");
+            printMemory(hal.getMemory());*/
 
-            System.out.println("Checking CPU...");
-            printCpu(hal.getProcessor());
+           /* System.out.println("Checking CPU...");
+            printCpu(hal.getProcessor());*/
 
             //System.out.println("Checking Processes...");
             //printProcesses(os, hal.getMemory());
 
-            System.out.println("Checking Sensors...");
-            printSensors(hal.getSensors());
+           /* System.out.println("Checking Sensors...");
+            printSensors(hal.getSensors());*/
 
         /*System.out.println("Checking Power sources...");
         printPowerSources(hal.getPowerSources());*/
@@ -60,30 +63,50 @@ public class Allstats {
        /* System.out.println("Checking Disks...");
         printDisks(hal.getDiskStores());*/
 
-            System.out.println("Checking File System...");
-            printFileSystem(os.getFileSystem());
+          /*  System.out.println("Checking File System...");
+            printFileSystem(os.getFileSystem());*/
 
-            System.out.println("Checking Network interfaces...");
+           /* System.out.println("Checking Network interfaces...");
             printNetworkInterfaces(hal.getNetworkIFs());
 
             System.out.println("Checking Network parameterss...");
-            printNetworkParameters(os.getNetworkParams());
+            printNetworkParameters(os.getNetworkParams());*/
 
             // hardware: displays
         /*System.out.println("Checking Displays...");
         printDisplays(hal.getDisplays());*/
 
             // hardware: USB devices
-        /*System.out.println("Checking USB Devices...");
+       /* System.out.println("Checking USB Devices...");
         printUsbDevices(hal.getUsbDevices(true));*/
-        Thread.sleep(1000);
+            Thread.sleep(1000);
         }
 
     }
 
-    private static void printComputerSystem(final ComputerSystem computerSystem) {
+    public static String getComputerSystemInfo() {
 
-        System.out.println("manufacturer: " + computerSystem.getManufacturer());
+        SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = si.getHardware();
+        OperatingSystem os = si.getOperatingSystem();
+        ComputerSystem computerSystem = hal.getComputerSystem();
+        StringBuilder computerSystemString = new StringBuilder();
+
+        computerSystemString.append(spacing + os + "\n");
+        computerSystemString.append(spacing + computerSystem.getManufacturer() + " " + computerSystem.getModel() + "\n");
+        /*computerSystemString.append(spacing + "Model: " + computerSystem.getModel() + "\n");
+        computerSystemString.append(spacing + "Serialnumber: " + computerSystem.getSerialNumber() + "\n\n");*/
+
+        final Baseboard baseboard = computerSystem.getBaseboard();
+        computerSystemString.append(spacing + "Baseboard:" + "\n");
+        computerSystemString.append(spacing + spacing + "manufacturer: " + baseboard.getManufacturer() + "\n");
+        computerSystemString.append(spacing + spacing + "model: " + baseboard.getModel() + "\n");
+        computerSystemString.append(spacing + spacing + "version: " + baseboard.getVersion() + "\n");
+        //computerSystemString.append(spacing + "  serialnumber: " + baseboard.getSerialNumber() + "\n");
+
+        return computerSystemString.toString();
+
+        /*System.out.println("manufacturer: " + computerSystem.getManufacturer());
         System.out.println("model: " + computerSystem.getModel());
         System.out.println("serialnumber: " + computerSystem.getSerialNumber());
         final Firmware firmware = computerSystem.getFirmware();
@@ -98,7 +121,7 @@ public class Allstats {
         System.out.println("  manufacturer: " + baseboard.getManufacturer());
         System.out.println("  model: " + baseboard.getModel());
         System.out.println("  version: " + baseboard.getVersion());
-        System.out.println("  serialnumber: " + baseboard.getSerialNumber());
+        System.out.println("  serialnumber: " + baseboard.getSerialNumber());*/
     }
 
     private static void printProcessor(CentralProcessor processor) {
@@ -110,11 +133,13 @@ public class Allstats {
         System.out.println("ProcessorID: " + processor.getProcessorID());
     }
 
-    private static void printMemory(GlobalMemory memory) {
-        System.out.println("Memory: " + FormatUtil.formatBytes(memory.getAvailable()) + "/"
-                + FormatUtil.formatBytes(memory.getTotal()));
-        System.out.println("Swap used: " + FormatUtil.formatBytes(memory.getSwapUsed()) + "/"
-                + FormatUtil.formatBytes(memory.getSwapTotal()));
+    public static String getRamMemory() {
+        SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = si.getHardware();
+        GlobalMemory memory = hal.getMemory();
+
+        return spacing + "Memory: " + FormatUtil.formatBytes(memory.getAvailable()) + " free of "
+                + FormatUtil.formatBytes(memory.getTotal());
     }
 
     private static void printCpu(CentralProcessor processor) {
@@ -123,7 +148,7 @@ public class Allstats {
         long[] prevTicks = processor.getSystemCpuLoadTicks();
         System.out.println("CPU, IOWait, and IRQ ticks @ 0 sec:" + Arrays.toString(prevTicks));
         // Wait a second...
-       // Util.sleep(1000);
+        // Util.sleep(1000);
         long[] ticks = processor.getSystemCpuLoadTicks();
         System.out.println("CPU, IOWait, and IRQ ticks @ 1 sec:" + Arrays.toString(ticks));
         long user = ticks[TickType.USER.getIndex()] - prevTicks[TickType.USER.getIndex()];
@@ -222,23 +247,30 @@ public class Allstats {
         }
     }
 
-    private static void printFileSystem(FileSystem fileSystem) {
-        System.out.println("File System:");
+    public static String getFileSystem() {
+        SystemInfo si = new SystemInfo();
 
-        System.out.format(" File Descriptors: %d/%d%n", fileSystem.getOpenFileDescriptors(),
-                fileSystem.getMaxFileDescriptors());
+        OperatingSystem os = si.getOperatingSystem();
+        FileSystem fileSystem = os.getFileSystem();
 
         OSFileStore[] fsArray = fileSystem.getFileStores();
+        StringBuilder stringBuilder = new StringBuilder();
         for (OSFileStore fs : fsArray) {
             long usable = fs.getUsableSpace();
             long total = fs.getTotalSpace();
-            System.out.format(" %s (%s) [%s] %s of %s free (%.1f%%) is %s " +
+            stringBuilder.append(spacing + String.format(" %s (%s) [%s] %s of %s free (%.1f%%) is " +
+                            (fs.getLogicalVolume() != null && fs.getLogicalVolume().length() > 0 ? "[%s]" : "%s") +
+                            "%n", fs.getName(),
+                    fs.getDescription().isEmpty() ? "file system" : fs.getDescription(), fs.getType(),
+                    FormatUtil.formatBytes(usable), FormatUtil.formatBytes(fs.getTotalSpace()), 100d * usable / total, fs.getLogicalVolume()));
+            /*System.out.format(" %s (%s) [%s] %s of %s free (%.1f%%) is %s " +
                             (fs.getLogicalVolume() != null && fs.getLogicalVolume().length() > 0 ? "[%s]" : "%s") +
                             " and is mounted at %s%n", fs.getName(),
                     fs.getDescription().isEmpty() ? "file system" : fs.getDescription(), fs.getType(),
                     FormatUtil.formatBytes(usable), FormatUtil.formatBytes(fs.getTotalSpace()), 100d * usable / total,
-                    fs.getVolume(), fs.getLogicalVolume(), fs.getMount());
+                    fs.getVolume(), fs.getLogicalVolume(), fs.getMount());*/
         }
+        return stringBuilder.toString();
     }
 
     private static void printNetworkInterfaces(NetworkIF[] networkIFs) {

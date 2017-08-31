@@ -16,6 +16,8 @@ public class SingletonBatteryStatus extends Observable{
     private String[] cpu;
     private String[] disks;
     private String jsonStr;
+    private String[] computerInfo;
+    private String[] miscellaneous;
 
 
     private SingletonBatteryStatus() {}
@@ -54,6 +56,14 @@ public class SingletonBatteryStatus extends Observable{
         return battery;
     }
 
+    public void setComputerInfo(String[] strings) {
+        this.computerInfo = strings;
+    }
+
+    public String[] getComputerInfo() {
+        return computerInfo;
+    }
+
     void addingObserver(ServerBatteryMain serverBatteryMain){
         addObserver(serverBatteryMain);
     }
@@ -64,5 +74,13 @@ public class SingletonBatteryStatus extends Observable{
             setChanged();
             notifyObservers();
         });
+    }
+
+    public void setMiscellaneous(String[] strings) {
+        miscellaneous = strings;
+    }
+
+    public String[] getMiscellaneous() {
+        return miscellaneous;
     }
 }

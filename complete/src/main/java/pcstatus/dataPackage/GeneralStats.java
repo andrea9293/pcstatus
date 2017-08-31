@@ -46,6 +46,7 @@ public class GeneralStats {
         //pc[5] = String.format("CPU load: %.1f%% ",processor.getSystemCpuLoad()*100);
 
 
+        System.out.println(getDiskStats());
         return pc;
         //writeTofile(html);
 

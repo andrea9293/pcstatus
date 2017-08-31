@@ -9,14 +9,26 @@ public class Greeting {
     private final String[] cpuInfo;
     private final String[] networkSpeed;
     private final String disks;
+    private final String computerInfo;
+    private final String miscellaneous;
 
-    public Greeting(long id, String content, String[] batteryInfo, String[] cpuInfo, String[] networkSpeed, String disks) {
+    public Greeting(long id, String content, String[] batteryInfo, String[] cpuInfo, String[] networkSpeed, String disks, String computerInfo, String miscellaneuos) {
         this.id = id;
         this.content = content;
         this.batteryInfo = batteryInfo;
         this.cpuInfo = cpuInfo;
         this.networkSpeed=networkSpeed;
         this.disks = disks;
+        this.computerInfo = computerInfo;
+        this.miscellaneous = miscellaneuos;
+    }
+
+    public String getComputerInfo() {
+        return computerInfo;
+    }
+
+    public String getMiscellaneous() {
+        return miscellaneous;
     }
 
     public String getDisks() {

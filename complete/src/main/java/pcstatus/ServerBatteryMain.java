@@ -103,6 +103,8 @@ public class ServerBatteryMain extends Application implements Observer {
         controller.setBatteryText(String.join("\n", singletonBatteryStatus.getBattery()));
         controller.setCpuText(String.join("\n", singletonBatteryStatus.getCpu()));
         controller.setDisksText(String.join("\n", singletonBatteryStatus.getDisks()));
+        controller.setSystemText(String.join("\n", singletonBatteryStatus.getComputerInfo()));
+        controller.setMiscellaneous(String.join("\n", singletonBatteryStatus.getMiscellaneous()));
        // controller.setCpuImage("Image/" + singletonBatteryStatus.getCpu()[0]);
         primaryStage.sizeToScene();
         if (firstShow){

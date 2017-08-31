@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 
 public class Controller {
 
+    @FXML private Label systemText;
     @FXML private Label miscellaneous;
     @FXML private ImageView cpuImage;
     @FXML private Label ipText;
@@ -24,6 +25,10 @@ public class Controller {
     private void initialize() {
         //textField.setText("I'm a Label.");
 
+    }
+
+    public void setSystemText(String systemText) {
+        this.systemText.setText(systemText);
     }
 
     public void setMiscellaneous (String miscellaneous){

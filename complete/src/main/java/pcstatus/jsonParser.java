@@ -9,6 +9,7 @@ public class jsonParser {
     private String[] cpuInfo;
     private String[] networkSpeed;
     private String disks;
+    private String miscellaneous;
 
     public jsonParser(String jsonStr) throws JSONException {
         JSONObject jsonObj;
@@ -30,6 +31,12 @@ public class jsonParser {
 
         strings = jsonObj.getString("disks").split("\n");
         SingletonBatteryStatus.getInstance().setDisks(strings);
+
+        strings = jsonObj.getString("computerInfo").split("\n");
+        SingletonBatteryStatus.getInstance().setComputerInfo(strings);
+
+        strings = jsonObj.getString("miscellaneous").split("\n");
+        SingletonBatteryStatus.getInstance().setMiscellaneous(strings);
 
         SingletonBatteryStatus.getInstance().notifyMyObservers();
     }
