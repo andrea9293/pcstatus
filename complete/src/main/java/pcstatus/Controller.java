@@ -13,10 +13,10 @@ import java.net.UnknownHostException;
 
 public class Controller {
 
+    @FXML private Label miscellaneous;
     @FXML private ImageView cpuImage;
     @FXML private Label ipText;
     @FXML private Label cpuText;
-    @FXML private Button buttonRefresh;
     @FXML private Label batteryText;
     @FXML private Label disksText;
 
@@ -26,7 +26,9 @@ public class Controller {
 
     }
 
-
+    public void setMiscellaneous (String miscellaneous){
+        this.miscellaneous.setText(miscellaneous);
+    }
 
     public void setCpuImage(String cpu) {
         cpuImage.setImage(new Image(cpu));
@@ -34,10 +36,6 @@ public class Controller {
 
     public void setIpText(String ipText) {
         this.ipText.setText(ipText);
-    }
-
-    Button getButtonRefresh() {
-        return buttonRefresh;
     }
 
     @FXML
@@ -53,10 +51,5 @@ public class Controller {
     @FXML
     public void setDisksText(String disksText) {
         this.disksText.setText(disksText);
-
-    }
-
-    public void centerHbox(){
-
     }
 }

@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 public class GeneralStats {
 
+    private static String spacing = "     ";
     public static String[] getPcInfo() throws SigarException, InterruptedException {
 
      /*   // New instance of SIGAR to do our work and get stuff
@@ -35,13 +36,13 @@ public class GeneralStats {
         CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
 
         String[] pc = new String[6];
-        pc[0] = "Vendor: " + processor.getVendor();
-        pc[1] = processor.getName();
-        pc[2] = "Clock: " + FormatUtil.formatHertz(processor.getVendorFreq());
-        pc[3] = "Physical CPU(s): " + processor.getPhysicalProcessorCount();
-        pc[4] = "Logical CPU(s): " + processor.getLogicalProcessorCount();
+        pc[0] = spacing + "Vendor: " + processor.getVendor();
+        pc[1] = spacing + processor.getName();
+        pc[2] = spacing + "Clock: " + FormatUtil.formatHertz(processor.getVendorFreq());
+        pc[3] = spacing + "Physical CPU(s): " + processor.getPhysicalProcessorCount();
+        pc[4] = spacing + "Logical CPU(s): " + processor.getLogicalProcessorCount();
         //pc[5] = round((float) cleanMem(new Sigar()), 2) + " GB";
-        pc[5] = "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";
+        pc[5] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";
         //pc[5] = String.format("CPU load: %.1f%% ",processor.getSystemCpuLoad()*100);
 
 
@@ -69,7 +70,7 @@ public class GeneralStats {
         String ris = "";
 
         for (int i = 0; i < fslist.length; i++) {
-            disks = "Label: " + fslist[i].getDevName();
+            disks = spacing + "Label: " + fslist[i].getDevName();
             type = "Type: " + fslist[i].getTypeName();
             filesystemusage = sigar.getFileSystemUsage(fslist[i].getDevName());
             size = "Size: " + formatSize(filesystemusage.getTotal());

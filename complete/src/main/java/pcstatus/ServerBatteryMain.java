@@ -63,11 +63,11 @@ public class ServerBatteryMain extends Application implements Observer {
         });
         controller = loader.getController();
 
-        Button button = controller.getButtonRefresh();
+        /*Button button = controller.getButtonRefresh();
 
         button.setOnAction(event -> {
             refresh();
-        });
+        });*/
 
         bluetoothThread();
         scheduleTask();
@@ -99,7 +99,7 @@ public class ServerBatteryMain extends Application implements Observer {
             e.printStackTrace();
         }
 
-        controller.setIpText(ip);
+       // controller.setIpText(ip);
         controller.setBatteryText(String.join("\n", singletonBatteryStatus.getBattery()));
         controller.setCpuText(String.join("\n", singletonBatteryStatus.getCpu()));
         controller.setDisksText(String.join("\n", singletonBatteryStatus.getDisks()));
