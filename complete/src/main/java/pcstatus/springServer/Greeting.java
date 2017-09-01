@@ -7,17 +7,15 @@ public class Greeting {
     private final String content;
     private final String[] batteryInfo;
     private final String[] cpuInfo;
-    private final String[] networkSpeed;
     private final String disks;
     private final String computerInfo;
     private final String miscellaneous;
 
-    public Greeting(long id, String content, String[] batteryInfo, String[] cpuInfo, String[] networkSpeed, String disks, String computerInfo, String miscellaneuos) {
+    public Greeting(long id, String content, String[] batteryInfo, String[] cpuInfo, String disks, String computerInfo, String miscellaneuos) {
         this.id = id;
         this.content = content;
         this.batteryInfo = batteryInfo;
         this.cpuInfo = cpuInfo;
-        this.networkSpeed=networkSpeed;
         this.disks = disks;
         this.computerInfo = computerInfo;
         this.miscellaneous = miscellaneuos;
@@ -39,9 +37,6 @@ public class Greeting {
         return id;
     }
 
-    public String[] getNetworkSpeed() {
-        return networkSpeed;
-    }
 
     public String[] getCpuInfo() {
         return cpuInfo;

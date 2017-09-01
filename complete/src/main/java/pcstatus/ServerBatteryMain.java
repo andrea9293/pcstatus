@@ -44,7 +44,6 @@ public class ServerBatteryMain extends Application implements Observer {
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
         SingletonBatteryStatus.getInstance().addingObserver(ServerBatteryMain.this);
-        System.out.println("stampo " +getClass().getResource("../../resources/sample.fxml"));
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../../resources/sample.fxml"));
         Parent root = loader.load();
@@ -174,7 +173,7 @@ public class ServerBatteryMain extends Application implements Observer {
             task = new TimerTask() {
                 @Override
                 public void run() {
-                    System.out.println("Inside Timer Task" + System.currentTimeMillis());
+                    //System.out.println("Inside Timer Task" + System.currentTimeMillis());
                     refresh();
                 }
             };

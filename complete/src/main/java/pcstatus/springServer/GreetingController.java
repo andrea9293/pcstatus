@@ -1,17 +1,15 @@
 package pcstatus.springServer;
 
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicLong;
-
-import pcstatus.SingletonBatteryStatus;
 
 import org.hyperic.sigar.SigarException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import pcstatus.dataPackage.Allstats;
 import pcstatus.dataPackage.GeneralStats;
 import pcstatus.dataPackage.Kernel32;
-import pcstatus.dataPackage.NetworkSpeed;
 
 
 @RestController
@@ -34,24 +32,23 @@ public class GreetingController {
         try {
             cpuInfo = GeneralStats.getPcInfo();
             //disks = GeneralStats.getDiskStats();
-            disks = Allstats.getFileSystem();
-            computerInfo = Allstats.getComputerSystemInfo();
+            disks = GeneralStats.getFileSystem();
+            computerInfo = GeneralStats.getComputerSystemInfo();
             StringBuilder sb = new StringBuilder();
             sb.append(cpuInfo[5] + "\n");
-            sb.append(Allstats.getRamMemory() + "\n");
+            sb.append(GeneralStats.getRamMemory() + "\n");
             sb.append(batteryParts[1] + "\n");
+            try {
+                sb.append("\n" + GeneralStats.getNetworkSpeed());
+            } catch (SocketException | UnknownHostException e) {
+                System.out.println("there are some problem with detecting network speed");
+                e.printStackTrace();
+            }
             miscellaneous = sb.toString();
         } catch (SigarException | InterruptedException e) {
             e.printStackTrace();
         }
 
-        try {
-            networkSpeed = NetworkSpeed.getSpeed();
-        } catch (SigarException | InterruptedException e) {
-            System.out.println("rete disconnessa o non supportata");
-            //e.printStackTrace();
-        }
-
-        return new Greeting(counter.incrementAndGet(), template, batteryParts, cpuInfo, networkSpeed, disks, computerInfo, miscellaneous);
+        return new Greeting(counter.incrementAndGet(), template, batteryParts, cpuInfo, disks, computerInfo, miscellaneous);
     }
 }

@@ -2,36 +2,25 @@ package pcstatus.dataPackage;
 
 import org.hyperic.sigar.*;
 import oshi.SystemInfo;
-import oshi.hardware.CentralProcessor;
+import oshi.hardware.*;
+import oshi.software.os.OSFileStore;
 import oshi.util.FormatUtil;
 
 import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Enumeration;
 
 public class GeneralStats {
 
     private static String spacing = "     ";
+
     public static String[] getPcInfo() throws SigarException, InterruptedException {
-
-     /*   // New instance of SIGAR to do our work and get stuff
-
-        Sigar sigar = new Sigar();
-
-        CpuPerc cpuperc = sigar.getCpuPerc();
-
-
-        CpuInfo[] cpuInfo = sigar.getCpuInfoList();
-        //CpuPerc cpuperc = sigar.getCpuPerc();
-
-        String[] pc = new String[6];
-        pc[0] = cpuInfo[0].getVendor();
-        pc[1] = cpuInfo[0].getModel();
-        pc[2] = cpuInfo[0].getMhz() + " MHz";
-        pc[3] = cpuInfo[0].getTotalCores() + " cores";
-        pc[4] = round((float) cleanMem(sigar), 2) + " GB";
-        pc[5] = round((float) (cpuperc.getCombined() * 100), 2) + "%";*/
-
+        //this functions use Sigar library because is more faster then Oshi
         CpuPerc cpuperc = new Sigar().getCpuPerc();
         CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
 
@@ -41,55 +30,25 @@ public class GeneralStats {
         pc[2] = spacing + "Clock: " + FormatUtil.formatHertz(processor.getVendorFreq());
         pc[3] = spacing + "Physical CPU(s): " + processor.getPhysicalProcessorCount();
         pc[4] = spacing + "Logical CPU(s): " + processor.getLogicalProcessorCount();
-        //pc[5] = round((float) cleanMem(new Sigar()), 2) + " GB";
         pc[5] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";
-        //pc[5] = String.format("CPU load: %.1f%% ",processor.getSystemCpuLoad()*100);
 
         return pc;
-        //writeTofile(html);
-
     }
 
-    public static String round(float d, int decimalPlace) {
+    private static String round(float d, int decimalPlace) {
         BigDecimal bd = new BigDecimal(Float.toString(d));
         bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
         return bd.toString();
     }
 
-    public static String getDiskStats() throws InterruptedException, SigarException {
-        Sigar sigar = new Sigar();
-        FileSystem[] fslist = sigar.getFileSystemList();
-        FileSystemUsage filesystemusage;
-
-
-        String disks = "";
-        String type = "";
-        String size = "";
-        String usage = "";
-        String ris = "";
-
-        for (int i = 0; i < fslist.length; i++) {
-            disks = spacing + "Label: " + fslist[i].getDevName();
-            type = "Type: " + fslist[i].getTypeName();
-            filesystemusage = sigar.getFileSystemUsage(fslist[i].getDevName());
-            size = "Size: " + formatSize(filesystemusage.getTotal());
-            usage = "Used " + (filesystemusage.getUsePercent() * 100) + "%\n";
-            String disksType = String.format("%-20s %s", disks, type);
-            String sizeUsage = String.format("%-20s %s", size, usage);
-            ris += disksType + "\t" + sizeUsage;
-        }
-        // System.out.println(ris);
-        return ris;
-    }
-
-    public static String formatSize(long size) {
+    private static String formatSize(long size) {
         String hrSize = "";
         long k = size;
         double m = size / 1024.0;
         double g = size / 1048576.0;
         double t = size / 1073741824.0;
 
-        DecimalFormat dec = new DecimalFormat("0.00");
+        DecimalFormat dec = new DecimalFormat("0.000");
         if (t > 1) {
             hrSize = dec.format(t).concat(" TB");
         } else if (g > 1) {
@@ -97,11 +56,10 @@ public class GeneralStats {
         } else if (m > 1) {
             hrSize = dec.format(m).concat(" MB");
         } else {
-            hrSize = dec.format(size).concat(" KB");
+            hrSize = size + " KB";
         }
         return hrSize;
     }
-
 
     /*public static void writeTofile(String str) {
 
@@ -118,83 +76,119 @@ public class GeneralStats {
         }
     }*/
 
-    public static String machineName(Sigar sigar) throws SigarException {
-        return sigar.getFQDN();
-    }
+    public static String getComputerSystemInfo() {
 
-    public static String cleanCpuPerc(Sigar sigar) throws SigarException {
+        SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = si.getHardware();
+        oshi.software.os.OperatingSystem os = si.getOperatingSystem();
+        ComputerSystem computerSystem = hal.getComputerSystem();
+        StringBuilder computerSystemString = new StringBuilder();
 
-        CpuPerc cpu = sigar.getCpuPerc();
-        String cpu1 = cpu.toString();
+        computerSystemString.append(spacing + os + "\n");
+        computerSystemString.append(spacing + computerSystem.getManufacturer() + " " + computerSystem.getModel() + "\n");
+        /*computerSystemString.append(spacing + "Model: " + computerSystem.getModel() + "\n");
+        computerSystemString.append(spacing + "Serialnumber: " + computerSystem.getSerialNumber() + "\n\n");*/
 
-        // Remove unwanted information from the output of SIGAR, stripping it down to just the numbers
-        //cpu1 = cpu1.replaceAll("[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:,]","");
+        final Baseboard baseboard = computerSystem.getBaseboard();
+        computerSystemString.append(spacing + "Baseboard:" + "\n");
+        computerSystemString.append(spacing + spacing + "manufacturer: " + baseboard.getManufacturer() + "\n");
+        computerSystemString.append(spacing + spacing + "model: " + baseboard.getModel() + "\n");
+        computerSystemString.append(spacing + spacing + "version: " + baseboard.getVersion() + "\n");
+        //computerSystemString.append(spacing + "  serialnumber: " + baseboard.getSerialNumber() + "\n");
 
-        // Remove the first 11 characters and then
-        // everything after the letter "t" in "system"from the                                // we want to style these headings ourselves via HTML/CSS. Theres probably a better way.
-        int length = cpu1.length();
-
-        cpu1 = cpu1.substring(11, length);
-
-        int spaceIndex = cpu1.indexOf("t");
-
-        cpu1 = cpu1.substring(0, spaceIndex);
-
-        return cpu1;
+        return computerSystemString.toString();
 
     }
 
-    public static double cleanMem(Sigar sigar) throws SigarException {
+    public static String getRamMemory() {
+        SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = si.getHardware();
+        GlobalMemory memory = hal.getMemory();
 
-        Mem mem = sigar.getMem();
-        String mem1 = mem.toString();
-
-        int length = mem1.indexOf("K");
-
-        mem1 = mem1.substring(5, length);
-
-        // Convert mem1 result from K to GB
-        double kilobytes = Double.parseDouble(mem1);
-        double megabytes = (kilobytes / 1024);
-        double gigabytes = (megabytes / 1024);
-
-
-        // For quick math testing to Eclipse console
-        // System.out.println("gigabytes : " + gigabytes);
-
-        return gigabytes;
-
+        return spacing + "Memory: " + FormatUtil.formatBytes(memory.getAvailable()) + " free of "
+                + FormatUtil.formatBytes(memory.getTotal());
     }
 
-    public static String loadAvg(Sigar sigar) throws SigarException {
+    public static String getFileSystem() {
+        SystemInfo si = new SystemInfo();
 
-        double[] loadAvg = sigar.getLoadAverage();
+        oshi.software.os.OperatingSystem os = si.getOperatingSystem();
+        oshi.software.os.FileSystem fileSystem = os.getFileSystem();
 
-        // Convert loadAvg from an array to a string so that we can print it
-        return Arrays.toString(loadAvg);
-
+        OSFileStore[] fsArray = fileSystem.getFileStores();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (OSFileStore fs : fsArray) {
+            long usable = fs.getUsableSpace();
+            long total = fs.getTotalSpace();
+            stringBuilder.append(spacing + String.format(" %s (%s) [%s] %s of %s free (%.1f%%) " +
+                            (fs.getLogicalVolume() != null && fs.getLogicalVolume().length() > 0 ? "[%s]" : "%s") +
+                            "%n", fs.getName(),
+                    fs.getDescription().isEmpty() ? "file system" : fs.getDescription(), fs.getType(),
+                    FormatUtil.formatBytes(usable), FormatUtil.formatBytes(fs.getTotalSpace()), 100d * usable / total, fs.getLogicalVolume()));
+            /*System.out.format(" %s (%s) [%s] %s of %s free (%.1f%%) is %s " +
+                            (fs.getLogicalVolume() != null && fs.getLogicalVolume().length() > 0 ? "[%s]" : "%s") +
+                            " and is mounted at %s%n", fs.getName(),
+                    fs.getDescription().isEmpty() ? "file system" : fs.getDescription(), fs.getType(),
+                    FormatUtil.formatBytes(usable), FormatUtil.formatBytes(fs.getTotalSpace()), 100d * usable / total,
+                    fs.getVolume(), fs.getLogicalVolume(), fs.getMount());*/
+        }
+        return stringBuilder.toString();
     }
 
-    public static StringBuilder who(Sigar sigar) throws SigarException {
 
-        Who[] who = sigar.getWhoList();
-        String str = new String();
-        StringBuilder nameList = new StringBuilder();
+    private static String getDefaultNetworkInteface() throws SocketException, UnknownHostException {
+        final Enumeration<NetworkInterface> netifs = NetworkInterface.getNetworkInterfaces();
 
-        for (int i = 0; i < who.length; i++) {
-            /*int a = who[i].toString().indexOf("=");
-            int b = who[i].toString().indexOf(",");
+        // hostname is passed to your method
+        InetAddress myAddr = InetAddress.getLocalHost();
 
-            str = who[i].toString().substring(a + 1, b);
-            System.out.println(str + "\n");*/
+        while (netifs.hasMoreElements()) {
+            NetworkInterface networkInterface = netifs.nextElement();
+            Enumeration<InetAddress> inAddrs = networkInterface.getInetAddresses();
+            while (inAddrs.hasMoreElements()) {
+                InetAddress inAddr = inAddrs.nextElement();
+                if (inAddr.equals(myAddr)) {
+                    return networkInterface.getName();
+                }
+            }
+        }
+        return "";
+    }
 
-            System.out.println(who[i].getDevice());
-            System.out.println(who[i].getHost());
-            System.out.println(who[i].getUser() + "\n\n");
+    public static String getNetworkSpeed() throws SocketException, UnknownHostException {
+
+        String networkName = getDefaultNetworkInteface();
+        SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = si.getHardware();
+        NetworkIF[] networkIFs = hal.getNetworkIFs();
+        int i = 0;
+        NetworkIF net = networkIFs[0];
+        while (!networkIFs[i].getName().equals(networkName)) {
+            net = networkIFs[i];
+            i++;
         }
 
-        return (nameList);
+        //  System.out.format("   MAC Address: %s %n", net.getMacaddr());
+        //System.out.format("   MTU: %s, Speed: %s %n", net.getMTU(), FormatUtil.formatValue(net.getSpeed(), "bps"));
+        long download1 = net.getBytesRecv();
+        long upload1 = net.getBytesSent();
+        long timestamp1 = net.getTimeStamp();
+        try {
+            Thread.sleep(1000); //Sleep for a bit longer, 2s should cover almost every possible problem
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        net.updateNetworkStats(); //Updating network stats
+        long download2 = net.getBytesRecv();
+        long upload2 = net.getBytesSent();
+        long timestamp2 = net.getTimeStamp();
 
+        StringBuilder sb = new StringBuilder();
+        sb.append(spacing + "download speed: " + formatSize((download2 - download1) / (timestamp2 - timestamp1)) + "/s\n");
+        sb.append(spacing + "upload speed: " + formatSize((upload2 - upload1) / (timestamp2 - timestamp1)) + "/s\n");
+
+        return sb.toString();
     }
+
 
 }
