@@ -1,6 +1,6 @@
 = PC status
 
-PC status is a simple program that monitors information on your computer by sending data via local LAN or Bluetooth
+PC status is a simple program that monitors information on your computer and sending data via local LAN or Bluetooth
 
 == How to import in IntelliJ IDEA
 
@@ -37,6 +37,6 @@ NOTE: xx must be replaced by version indicated under jar block, in build.gradle 
 
 
 
-For any problem, please send en email to andreabravaccino@gmail.com or open isse on GitHub.
+For any problem, please send en email to andreabravaccino@gmail.com or open an issue on GitHub.
 
 Thanks
