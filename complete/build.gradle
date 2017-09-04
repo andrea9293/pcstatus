@@ -15,15 +15,12 @@ apply plugin: 'org.springframework.boot'
 
 
 jar {
-    baseName = 'gs-rest-service'
-    version =  '0.1.0'
+    baseName = 'PC-status'
+    version =  '1.0alpha'
 }
 
 repositories {
     mavenCentral()
-    flatDir {
-        dirs 'lib'
-    }
 }
 
 sourceCompatibility = 1.8
@@ -31,11 +28,17 @@ targetCompatibility = 1.8
 
 dependencies {
     compile fileTree(dir: 'lib', include: ['*.jar'])
-    compile files('lib/sigar-lib/sigar.jar')
+    // https://mvnrepository.com/artifact/sigar/sigar-native-deps
+// https://mvnrepository.com/artifact/org.gridkit.lab/sigar-lib
+    compile group: 'org.gridkit.lab', name: 'sigar-lib', version: '1.6.4'
+
+    //compile files('lib/sigar-lib/sigar.jar')
+    //runtime fileTree(dir: "${rootDir}/lib/sigar-lib/", exclude: "*.jar")
     compile("org.springframework.boot:spring-boot-starter-web")
     compile ("com.vaadin.external.google:android-json:0.0.20131108.vaadin1")
     compile("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('com.jayway.jsonpath:json-path')
 }
+
 

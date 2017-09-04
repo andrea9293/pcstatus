@@ -1,6 +1,7 @@
 package pcstatus.dataPackage;
 
 import org.hyperic.sigar.*;
+import org.gridkit.lab.sigar.SigarFactory;
 import oshi.SystemInfo;
 import oshi.hardware.*;
 import oshi.software.os.OSFileStore;
@@ -21,7 +22,8 @@ public class GeneralStats {
 
     public static String[] getPcInfo() throws SigarException, InterruptedException {
         //this functions use Sigar library because is more faster then Oshi
-        CpuPerc cpuperc = new Sigar().getCpuPerc();
+
+        CpuPerc cpuperc = SigarFactory.newSigar().getCpuPerc();
         CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
 
         String[] pc = new String[6];
