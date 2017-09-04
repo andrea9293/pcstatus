@@ -15,10 +15,5 @@ dependency-reduced-pom.xml
 README.html
 *.iml
 .idea
-complete/out/artifacts/complete_main/complete_main.jar
-complete/out/artifacts/complete_main/complete_main.jnlp
-complete/out/production/classes/pcstatus/Controller.class
-complete/out/production/classes/pcstatus/Controller.class
-complete/out/production/classes/pcstatus/ServerBatteryMain$ProgressForm.class
-complete/out/production/resources/sample.fxml
+complete/out/
 complete/src/main/java/META-INF/MANIFEST.MF
