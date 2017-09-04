@@ -24,14 +24,12 @@ public class GreetingController {
         String template = batteryStatus.toString();
         String batteryParts[] = template.split("\n");
         String[] cpuInfo = null;
-        String[] networkSpeed = null;
         String disks = null;
         String computerInfo = null;
         String miscellaneous = null;
 
         try {
             cpuInfo = GeneralStats.getPcInfo();
-            //disks = GeneralStats.getDiskStats();
             disks = GeneralStats.getFileSystem();
             computerInfo = GeneralStats.getComputerSystemInfo();
             StringBuilder sb = new StringBuilder();

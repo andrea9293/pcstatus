@@ -1,5 +1,12 @@
 package pcstatus;
 
+import javafx.concurrent.Task;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
+import javafx.stage.StageStyle;
 import org.json.JSONException;
 import pcstatus.connectionPackage.BluetoothSPPServer;
 import javafx.application.Application;
@@ -47,7 +54,9 @@ public class ServerBatteryMain extends Application implements Observer {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../../resources/sample.fxml"));
         Parent root = loader.load();
-        this.primaryStage.setTitle("Battery Status");
+
+        ProgressIndicator progressIndicator = new ProgressIndicator();
+        this.primaryStage.setTitle("PCstatus");
         this.primaryStage.setScene(new Scene(root/*, 500, 250*/));
         this.primaryStage.setResizable(false);
         this.primaryStage.show();
@@ -111,6 +120,7 @@ public class ServerBatteryMain extends Application implements Observer {
             firstShow=false;
         }
         sendBluetoothMessage();
+
     }
 
     private void refresh() {
@@ -191,5 +201,40 @@ public class ServerBatteryMain extends Application implements Observer {
     private String getMyIp() throws UnknownHostException, SocketException {
         InetAddress addr = InetAddress.getLocalHost();
         return addr.getHostAddress();
+    }
+
+    public static class ProgressForm {
+        private final Stage dialogStage;
+        private final ProgressIndicator pin = new ProgressIndicator();
+
+        public ProgressForm() {
+            dialogStage = new Stage();
+            dialogStage.initStyle(StageStyle.UTILITY);
+            dialogStage.setResizable(false);
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+
+            // PROGRESS BAR
+            final Label label = new Label();
+            label.setText("alerto");
+
+            pin.setProgress(-1F);
+
+            final HBox hb = new HBox();
+            hb.setSpacing(5);
+            hb.setAlignment(Pos.CENTER);
+            hb.getChildren().addAll(pin);
+
+            Scene scene = new Scene(hb);
+            dialogStage.setScene(scene);
+        }
+
+        public void activateProgressBar(final Task<?> task)  {
+            pin.progressProperty().bind(task.progressProperty());
+            dialogStage.show();
+        }
+
+        public Stage getDialogStage() {
+            return dialogStage;
+        }
     }
 }
