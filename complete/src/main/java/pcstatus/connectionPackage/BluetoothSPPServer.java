@@ -1,5 +1,6 @@
 package pcstatus.connectionPackage;
 
+import pcstatus.ErrorManager;
 import pcstatus.ServerBatteryMain;
 import pcstatus.SingletonBatteryStatus;
 
@@ -46,12 +47,14 @@ public class BluetoothSPPServer {
             connection = streamConnNotifier.acceptAndOpen();
         } catch (IOException e) {
             System.out.println("streamConnNotifier.acceptAndOpen()");
+            ErrorManager.exeptionDialog(e);
             e.printStackTrace();
         }
 
         try {
             device = RemoteDevice.getRemoteDevice(connection);
         } catch (IOException e) {
+            ErrorManager.exeptionDialog(e);
             System.out.println("RemoteDevice.getRemoteDevice(connection)");
 
         }
@@ -75,6 +78,7 @@ public class BluetoothSPPServer {
                 inStream.close();
             streamConnNotifier.close();
         } catch (IOException e) {
+            ErrorManager.exeptionDialog(e);
             e.printStackTrace();
         }
     }

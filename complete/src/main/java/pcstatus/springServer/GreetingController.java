@@ -8,6 +8,7 @@ import org.hyperic.sigar.SigarException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import pcstatus.ErrorManager;
 import pcstatus.dataPackage.GeneralStats;
 import pcstatus.dataPackage.Kernel32;
 
@@ -40,10 +41,12 @@ public class GreetingController {
                 sb.append("\n" + GeneralStats.getNetworkSpeed());
             } catch (SocketException | UnknownHostException e) {
                 System.out.println("there are some problem with detecting network speed");
+                ErrorManager.exeptionDialog(e);
                 e.printStackTrace();
             }
             miscellaneous = sb.toString();
         } catch (SigarException | InterruptedException e) {
+            ErrorManager.exeptionDialog(e);
             e.printStackTrace();
         }
 

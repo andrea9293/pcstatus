@@ -6,6 +6,7 @@ import oshi.SystemInfo;
 import oshi.hardware.*;
 import oshi.software.os.OSFileStore;
 import oshi.util.FormatUtil;
+import pcstatus.ErrorManager;
 
 import java.math.BigDecimal;
 import java.net.InetAddress;
@@ -178,6 +179,7 @@ public class GeneralStats {
         try {
             Thread.sleep(1000); //Sleep for a bit longer, 2s should cover almost every possible problem
         } catch (InterruptedException e) {
+            ErrorManager.exeptionDialog(e);
             e.printStackTrace();
         }
         net.updateNetworkStats(); //Updating network stats
