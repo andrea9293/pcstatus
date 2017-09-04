@@ -1,15 +1,10 @@
 package pcstatus;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
-
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class Controller {
 
@@ -22,6 +17,7 @@ public class Controller {
     @FXML private Label disksText;
 
     @FXML
+    @Autowired
     private void initialize() {
         //textField.setText("I'm a Label.");
 

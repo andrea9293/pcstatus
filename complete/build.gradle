@@ -21,6 +21,9 @@ jar {
 
 repositories {
     mavenCentral()
+    flatDir {
+        dirs 'lib'
+    }
 }
 
 sourceCompatibility = 1.8

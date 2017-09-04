@@ -1,24 +1,23 @@
 package pcstatus;
 
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.json.JSONException;
-import pcstatus.connectionPackage.BluetoothSPPServer;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.stage.Stage;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import pcstatus.connectionPackage.BluetoothSPPServer;
 
 import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.LocalDevice;
@@ -39,20 +38,23 @@ public class ServerBatteryMain extends Application implements Observer {
 
 
     private Controller controller;
-    private static ApplicationContext applicationContext;
+    private static ConfigurableApplicationContext applicationContext;
     private BluetoothSPPServer bluetooth;
     private Thread startBluetoothServer;
     private TimerTask task;
     private Timer timer;
     private Stage primaryStage;
     private boolean firstShow = true;
+    private static String[] args;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
+
         this.primaryStage = primaryStage;
         SingletonBatteryStatus.getInstance().addingObserver(ServerBatteryMain.this);
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../../resources/sample.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample.fxml"));
         Parent root = loader.load();
 
         ProgressIndicator progressIndicator = new ProgressIndicator();
@@ -82,7 +84,7 @@ public class ServerBatteryMain extends Application implements Observer {
     }
 
     public static void main(String[] args) throws IOException {
-        applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
+        ServerBatteryMain.args = args;
         launch(args);
     }
 
