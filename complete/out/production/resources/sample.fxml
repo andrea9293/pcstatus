@@ -13,7 +13,7 @@
 <VBox alignment="CENTER" spacing="8.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="pcstatus.Controller">
     <!-- <Label fx:id="ipText" text="IP" VBox.vgrow="ALWAYS"/> -->
-    <VBox fx:id="mainVbox" alignment="TOP_LEFT" VBox.vgrow="ALWAYS">
+    <VBox alignment="TOP_LEFT" VBox.vgrow="ALWAYS">
         <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="8.0">
             <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
                 <Image url="@Images/System Task_96px.png"/>
