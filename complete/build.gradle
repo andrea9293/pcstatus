@@ -28,12 +28,7 @@ targetCompatibility = 1.8
 
 dependencies {
     compile fileTree(dir: 'lib', include: ['*.jar'])
-    // https://mvnrepository.com/artifact/sigar/sigar-native-deps
-// https://mvnrepository.com/artifact/org.gridkit.lab/sigar-lib
     compile group: 'org.gridkit.lab', name: 'sigar-lib', version: '1.6.4'
-
-    //compile files('lib/sigar-lib/sigar.jar')
-    //runtime fileTree(dir: "${rootDir}/lib/sigar-lib/", exclude: "*.jar")
     compile("org.springframework.boot:spring-boot-starter-web")
     compile ("com.vaadin.external.google:android-json:0.0.20131108.vaadin1")
     compile("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
