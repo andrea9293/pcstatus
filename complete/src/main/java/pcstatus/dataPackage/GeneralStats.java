@@ -35,10 +35,12 @@ public class GeneralStats {
         pc[4] = spacing + "Logical CPU(s): " + processor.getLogicalProcessorCount();
         pc[5] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";
 
+        SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (cpuperc.getCombined() * 100), 2));
+
         return pc;
     }
 
-    private static String round(float d, int decimalPlace) {
+    public static String round(float d, int decimalPlace) {
         BigDecimal bd = new BigDecimal(Float.toString(d));
         bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
         return bd.toString();
@@ -108,6 +110,7 @@ public class GeneralStats {
         HardwareAbstractionLayer hal = si.getHardware();
         GlobalMemory memory = hal.getMemory();
 
+        SingletonNumericGeneralStats.getInstance().setFreeRam(memory.getAvailable(), memory.getTotal());
         return spacing + "Memory: " + FormatUtil.formatBytes(memory.getAvailable()) + " free of "
                 + FormatUtil.formatBytes(memory.getTotal());
     }
@@ -119,8 +122,10 @@ public class GeneralStats {
         oshi.software.os.FileSystem fileSystem = os.getFileSystem();
 
         OSFileStore[] fsArray = fileSystem.getFileStores();
+        String[] numericSpace = new String[fsArray.length];
         StringBuilder stringBuilder = new StringBuilder();
-        for (OSFileStore fs : fsArray) {
+        for (int i = 0; i < fsArray.length; i++) {
+            OSFileStore fs = fsArray[i];
             long usable = fs.getUsableSpace();
             long total = fs.getTotalSpace();
             stringBuilder.append(spacing + String.format(" %s (%s) [%s] %s of %s free (%.1f%%) " +
@@ -128,6 +133,7 @@ public class GeneralStats {
                             "%n", fs.getName(),
                     fs.getDescription().isEmpty() ? "file system" : fs.getDescription(), fs.getType(),
                     FormatUtil.formatBytes(usable), FormatUtil.formatBytes(fs.getTotalSpace()), 100d * usable / total, fs.getLogicalVolume()));
+            numericSpace[i] = round((float) (100d * usable / total),1);
             /*System.out.format(" %s (%s) [%s] %s of %s free (%.1f%%) is %s " +
                             (fs.getLogicalVolume() != null && fs.getLogicalVolume().length() > 0 ? "[%s]" : "%s") +
                             " and is mounted at %s%n", fs.getName(),
@@ -135,6 +141,7 @@ public class GeneralStats {
                     FormatUtil.formatBytes(usable), FormatUtil.formatBytes(fs.getTotalSpace()), 100d * usable / total,
                     fs.getVolume(), fs.getLogicalVolume(), fs.getMount());*/
         }
+        SingletonNumericGeneralStats.getInstance().setAvaibleFileSystem(numericSpace);
         return stringBuilder.toString();
     }
 
@@ -161,6 +168,8 @@ public class GeneralStats {
     public static String getNetworkSpeed() throws SocketException, UnknownHostException {
 
         String networkName = getDefaultNetworkInteface();
+        System.out.println(networkName);
+
         SystemInfo si = new SystemInfo();
         HardwareAbstractionLayer hal = si.getHardware();
         NetworkIF[] networkIFs = hal.getNetworkIFs();
@@ -169,6 +178,7 @@ public class GeneralStats {
         while (!networkIFs[i].getName().equals(networkName)) {
             net = networkIFs[i];
             i++;
+            System.out.println(networkIFs[i].getName() + " " + networkName);
         }
 
         //  System.out.format("   MAC Address: %s %n", net.getMacaddr());
@@ -193,6 +203,4 @@ public class GeneralStats {
 
         return sb.toString();
     }
-
-
 }

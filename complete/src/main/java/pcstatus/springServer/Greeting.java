@@ -10,8 +10,11 @@ public class Greeting {
     private final String disks;
     private final String computerInfo;
     private final String miscellaneous;
+    private final String[] numericAvaibleFileSystem;
+    private final String numericCpuLoad;
+    private final String numericFreeRam;
 
-    public Greeting(long id, String content, String[] batteryInfo, String[] cpuInfo, String disks, String computerInfo, String miscellaneuos) {
+    public Greeting(long id, String content, String[] batteryInfo, String[] cpuInfo, String disks, String computerInfo, String miscellaneuos, String[] numericAvaibleFileSystem, String numericCpuLoad, String numericFreeRam) {
         this.id = id;
         this.content = content;
         this.batteryInfo = batteryInfo;
@@ -19,7 +22,23 @@ public class Greeting {
         this.disks = disks;
         this.computerInfo = computerInfo;
         this.miscellaneous = miscellaneuos;
+        this.numericAvaibleFileSystem = numericAvaibleFileSystem;
+        this.numericCpuLoad = numericCpuLoad;
+        this.numericFreeRam = numericFreeRam;
     }
+
+    public String getNumericCpuLoad() {
+        return numericCpuLoad;
+    }
+
+    public String getNumericFreeRam() {
+        return numericFreeRam;
+    }
+
+    public String[] getNumericAvaibleFileSystem() {
+        return numericAvaibleFileSystem;
+    }
+
 
     public String getComputerInfo() {
         return computerInfo;
