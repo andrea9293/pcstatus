@@ -122,7 +122,6 @@ public class ServerBatteryMain extends Application implements Observer {
             firstShow=false;
         }
         sendBluetoothMessage();
-
     }
 
     private void refresh() {
@@ -165,7 +164,7 @@ public class ServerBatteryMain extends Application implements Observer {
         }
     }
 
-    private void startServerBluetooth() {
+    public void startServerBluetooth() {
         if (startBluetoothServer == null || !startBluetoothServer.isAlive()) {
             startBluetoothServer = new Thread(() -> {
                 try {

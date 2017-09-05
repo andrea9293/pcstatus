@@ -24,6 +24,7 @@ public class BluetoothSPPServer {
     private InputStream inStream;
     private Thread messageThread;
     private ServerBatteryMain serverBatteryMain;
+    private boolean connectionIsAvaible = false;
 
     public BluetoothSPPServer(ServerBatteryMain serverBatteryMain) {
         this.serverBatteryMain = serverBatteryMain;
@@ -32,6 +33,10 @@ public class BluetoothSPPServer {
     //start server
     public void startBluetoothServer() throws IOException {
 
+        if (messageThread != null){
+            System.out.println("in startBluetoothServer messageThread non è null");
+            messageThread.interrupt();
+        }
         //Create a UUID for SPP
         UUID uuid = new UUID("1101", true);
         //Create the servicve url
@@ -63,6 +68,7 @@ public class BluetoothSPPServer {
 
         outStream = connection.openOutputStream();
         inStream = connection.openInputStream();
+        connectionIsAvaible=true;
         sendMessage();
     }
 
@@ -77,6 +83,7 @@ public class BluetoothSPPServer {
             if (inStream != null)
                 inStream.close();
             streamConnNotifier.close();
+            connectionIsAvaible = false;
         } catch (IOException e) {
             ErrorManager.exeptionDialog(e);
             e.printStackTrace();
@@ -84,24 +91,32 @@ public class BluetoothSPPServer {
     }
 
     public void sendMessage() {
-        if (outStream != null) {
-            if (messageThread == null) {
-                messageThread = newMessageThread();
-                System.out.println("thread creato e avviato");
-                sendMessage();
-            } else {
-                messageThread.interrupt();
-                messageThread = newMessageThread();
-                messageThread.start();
-                System.out.println("thread avviato");
+        if(connectionIsAvaible){
+            if (outStream != null) {
+                if (messageThread == null) {
+                    messageThread = newMessageThread();
+                    System.out.println("thread creato e avviato");
+                    sendMessage();
+                } else {
+                    messageThread.interrupt();
+                    messageThread = newMessageThread();
+                    messageThread.start();
+                    System.out.println("thread avviato");
+                    //Thread.currentThread().interrupt();
+                }
             }
+        }else {
+            System.out.println("stampo id " + Thread.currentThread().getId() + "nome " + Thread.currentThread().getName());
+            System.out.println("connessione non stabilita");
         }
+
     }
 
     private Thread newMessageThread() {
         return messageThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                System.out.println("stampo id " + Thread.currentThread().getId() + "nome " + Thread.currentThread().getName());
                 pWriter = new PrintWriter(new OutputStreamWriter(outStream));
                 pWriter.write(SingletonBatteryStatus.getInstance().getJsonStr() + "\n");
                 System.out.println("stampo " + SingletonBatteryStatus.getInstance().getJsonStr());
@@ -122,7 +137,13 @@ public class BluetoothSPPServer {
                     if (!messageThread.isInterrupted()) {
                         System.out.println("sono stato interrotto");
                         messageThread.interrupt();
-                        //serverBatteryMain.startServerBluetooth();
+                        connectionIsAvaible = false;
+                        if (Thread.currentThread().isInterrupted())
+                            System.out.println("sono stato interrotto da message thread");
+                        else
+                            Thread.currentThread().interrupt();
+                        closeConnection();
+                        serverBatteryMain.startServerBluetooth();
                         //e.printStackTrace();
                     } else
                         System.out.println("non sono stato interrotto ma sono nel catch");//e.printStackTrace();
