@@ -115,7 +115,7 @@ public class GeneralStats {
                 + FormatUtil.formatBytes(memory.getTotal());
     }
 
-    //todo funzione in sospeso finché non migliorano ulteriormente le performance (meglio usare Sigar, è più veloce)
+    //todo funzione in sospeso finché non miglioro ulteriormente le performance (meglio usare Sigar, è più veloce)
     public static String getRamPerProcess() {
         OperatingSystem operatingSystem = new SystemInfo().getOperatingSystem();
         StringBuilder stringBuilder = new StringBuilder();
@@ -188,9 +188,19 @@ public class GeneralStats {
         return "";
     }
 
-    public static String getNetworkSpeed() throws SocketException, UnknownHostException {
+    public static String getNetworkSpeed() {
 
-        String networkName = getDefaultNetworkInteface();
+        String networkName = null;
+        StringBuilder sb = new StringBuilder();
+
+        try {
+            networkName = getDefaultNetworkInteface();
+        } catch (SocketException | UnknownHostException e) {
+            sb.append(spacing + "download speed: not supported\n");
+            sb.append(spacing + "upload speed: not supported\n");
+            e.printStackTrace();
+            return sb.toString();
+        }
         //System.out.println(networkName);
 
         SystemInfo si = new SystemInfo();
@@ -198,10 +208,16 @@ public class GeneralStats {
         NetworkIF[] networkIFs = hal.getNetworkIFs();
         int i = 0;
         NetworkIF net = networkIFs[0];
-        while (!networkIFs[i].getName().equals(networkName)) {
-            net = networkIFs[i];
-            i++;
-            //System.out.println(networkIFs[i].getName() + " " + networkName);
+        try {
+            while (!networkIFs[i].getName().equals(networkName)) {
+                net = networkIFs[i];
+                i++;
+                //System.out.println(networkIFs[i].getName() + " " + networkName);
+            }
+        }catch (ArrayIndexOutOfBoundsException e){
+            sb.append(spacing + "download speed: not supported\n");
+            sb.append(spacing + "upload speed: not supported\n");
+            return sb.toString();
         }
 
         long download1 = net.getBytesRecv();
@@ -218,7 +234,6 @@ public class GeneralStats {
         long upload2 = net.getBytesSent();
         long timestamp2 = net.getTimeStamp();
 
-        StringBuilder sb = new StringBuilder();
         sb.append(spacing + "download speed: " + formatSize((download2 - download1) / (timestamp2 - timestamp1)) + "/s\n");
         sb.append(spacing + "upload speed: " + formatSize((upload2 - upload1) / (timestamp2 - timestamp1)) + "/s\n");
 

@@ -32,11 +32,11 @@ public class GreetingController {
         String numericCpuLoad = null;
         String[] numericAvaibleFileSystem = null;
         String numericFreeRam = null;
+        final String[] networkSpeed = {null};
         //String numericRamPerProcess = null;
 
         //ramPerProcessThread
       /*  new Thread(() -> {
-            //System.out.println("Inside Timer Task" + System.currentTimeMillis());
             long startTime = System.currentTimeMillis();
             System.out.println("prelevo i ramperprocess...");
             SingletonNumericGeneralStats.getInstance().setRamPerProcess(GeneralStats.getRamPerProcess());
@@ -45,32 +45,39 @@ public class GreetingController {
             System.out.println("\n\nfinito ramperprocess e ci ho messo " + (stopTime - startTime) + "\n" );
         }).start();*/
 
+        long startAllTime = System.currentTimeMillis();
+
+        new Thread(() -> {
+            long startTime = System.currentTimeMillis();
+            System.out.println("calcolo velocità di rete...");
+            networkSpeed[0] = "\n" + GeneralStats.getNetworkSpeed();
+            System.out.println("finito di rilevare la velocità di rete...\n");
+            long stopTime = System.currentTimeMillis();
+            System.out.println("\n\nfinito ramperprocess e ci ho messo " + (stopTime - startTime) + "\n");
+        }).start();
+
         try {
-            System.out.println("prelevo i dati del processore...");
             long startTime = System.currentTimeMillis();
             cpuInfo = GeneralStats.getPcInfo();
             long stopTime = System.currentTimeMillis();
-            System.out.println("time to execute code " + (stopTime - startTime) + "");
+            System.out.println("CPU time to execute code " + (stopTime - startTime) + "\n");
 
-            System.out.println("prelevo i dati dei filesystem...");
             startTime = System.currentTimeMillis();
             disks = GeneralStats.getFileSystem();
             stopTime = System.currentTimeMillis();
-            System.out.println("time to execute code " + (stopTime - startTime) + "");
+            System.out.println("DISKS time to execute code " + (stopTime - startTime) + "\n");
 
-            System.out.println("prelevo i dati del pc...");
             startTime = System.currentTimeMillis();
             computerInfo = GeneralStats.getComputerSystemInfo();
             stopTime = System.currentTimeMillis();
-            System.out.println("time to execute code " + (stopTime - startTime) + "");
-
-            System.out.println("costruisco la stringa...");
+            System.out.println("PC INFO time to execute code " + (stopTime - startTime) + "\n");
 
             StringBuilder sb = new StringBuilder();
             sb.append(cpuInfo[5] + "\n");
             sb.append(GeneralStats.getRamMemory() + "\n");
             sb.append(batteryParts[1] + "\n");
-            try {
+
+           /* try {
                 System.out.println("calcolo velocità di rete...");
                 startTime = System.currentTimeMillis();
                 sb.append("\n" + GeneralStats.getNetworkSpeed());
@@ -80,9 +87,16 @@ public class GreetingController {
                 System.out.println("there are some problem with detecting network speed");
                 //ErrorManager.exeptionDialog(e);
                 e.printStackTrace();
+            }*/
+
+            while (networkSpeed[0] == null) {
+                System.out.println("aspetto");
+                //do nothing, waiting for network speed
             }
+
+            sb.append(networkSpeed[0]);
+
             miscellaneous = sb.toString();
-            System.out.println("finito costruisco la stringa...\n");
 
             numericAvaibleFileSystem = SingletonNumericGeneralStats.getInstance().getAvaibleFileSystem();
             numericCpuLoad = SingletonNumericGeneralStats.getInstance().getCpuLoad();
@@ -92,6 +106,8 @@ public class GreetingController {
             e.printStackTrace();
         }
 
+        long stopAllTime = System.currentTimeMillis();
+        System.out.println("\n\n                                                 fatto tutto e ci ho messo " + (stopAllTime - startAllTime) + "\n");
         return new Greeting(counter.incrementAndGet(), template, batteryParts, cpuInfo, disks, computerInfo, miscellaneous, numericAvaibleFileSystem, numericCpuLoad, numericFreeRam/* SingletonNumericGeneralStats.getInstance().getRamPerProcess()*/);
     }
 }
