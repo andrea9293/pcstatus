@@ -40,38 +40,6 @@ public class jsonParser {
 
         SingletonBatteryStatus.getInstance().notifyMyObservers();
     }
-
-    public void setDisks(String disks) {
-        this.disks = disks;
-    }
-
-    public String getDisks() {
-        return disks;
-    }
-
-    public void setBatteryInfo(String[] batteryInfo) {
-        this.batteryInfo = batteryInfo;
-    }
-
-    public String[] getNetworkSpeed() {
-        return networkSpeed;
-    }
-
-    public void setCpuInfo(String[] cpuInfo) {
-        this.cpuInfo = cpuInfo;
-    }
-
-    public void setNetworkSpeed(String[] networkSpeed) {
-        this.networkSpeed = networkSpeed;
-    }
-
-    public String[] getCpuInfo() {
-        return cpuInfo;
-    }
-
-    public String[] getBatteryInfo() {
-        return batteryInfo;
-    }
 }
 
 

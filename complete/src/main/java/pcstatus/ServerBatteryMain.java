@@ -49,10 +49,12 @@ public class ServerBatteryMain extends Application implements Observer {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
+        //applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
 
-        this.primaryStage = primaryStage;
         SingletonBatteryStatus.getInstance().addingObserver(ServerBatteryMain.this);
+        serverThread.start();
+        scheduleTask();
+        this.primaryStage = primaryStage;
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample.fxml"));
         Parent root = loader.load();
@@ -80,7 +82,6 @@ public class ServerBatteryMain extends Application implements Observer {
         });*/
 
         bluetoothThread();
-        scheduleTask();
     }
 
     public static void main(String[] args) throws IOException {
@@ -101,30 +102,34 @@ public class ServerBatteryMain extends Application implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         SingletonBatteryStatus singletonBatteryStatus = SingletonBatteryStatus.getInstance();
-        String ip = "";
+        /*String ip = "";
         try {
             ip = "This is your IP: " + getMyIp() + "\n\n";
         } catch (UnknownHostException | SocketException e) {
             ip = "Unable to find your IP";
             e.printStackTrace();
-        }
+        }*/
 
        // controller.setIpText(ip);
-        controller.setBatteryText(String.join("\n", singletonBatteryStatus.getBattery()));
-        controller.setCpuText(String.join("\n", singletonBatteryStatus.getCpu()));
-        controller.setDisksText(String.join("\n", singletonBatteryStatus.getDisks()));
-        controller.setSystemText(String.join("\n", singletonBatteryStatus.getComputerInfo()));
-        controller.setMiscellaneous(String.join("\n", singletonBatteryStatus.getMiscellaneous()));
-       // controller.setCpuImage("Image/" + singletonBatteryStatus.getCpu()[0]);
-        primaryStage.sizeToScene();
-        if (firstShow){
-            primaryStage.centerOnScreen();
-            firstShow=false;
+        if(singletonBatteryStatus.getBattery() !=null){
+            controller.setBatteryText(String.join("\n", singletonBatteryStatus.getBattery()));
+            controller.setCpuText(String.join("\n", singletonBatteryStatus.getCpu()));
+            controller.setDisksText(String.join("\n", singletonBatteryStatus.getDisks()));
+            controller.setSystemText(String.join("\n", singletonBatteryStatus.getComputerInfo()));
+            controller.setMiscellaneous(String.join("\n", singletonBatteryStatus.getMiscellaneous()));
+            // controller.setCpuImage("Image/" + singletonBatteryStatus.getCpu()[0]);
+            primaryStage.sizeToScene();
+            if (firstShow){
+                primaryStage.centerOnScreen();
+                firstShow=false;
+            }
         }
+
         sendBluetoothMessage();
     }
 
     private void refresh() {
+        //update(null,null);
         URL prova = null;
         try {
             prova = new URL("http://localhost:8080/greeting/");
@@ -135,7 +140,8 @@ public class ServerBatteryMain extends Application implements Observer {
             }
             in.close();
         } catch (IOException | JSONException e) {
-            e.printStackTrace();
+            System.out.println("server non pronto");
+            //e.printStackTrace();
         }
     }
 
@@ -239,4 +245,8 @@ public class ServerBatteryMain extends Application implements Observer {
             return dialogStage;
         }
     }
+
+    Thread serverThread = new Thread(() -> {
+        applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
+    });
 }

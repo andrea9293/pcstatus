@@ -5,7 +5,10 @@ import org.gridkit.lab.sigar.SigarFactory;
 import oshi.SystemInfo;
 import oshi.hardware.*;
 import oshi.software.os.OSFileStore;
+import oshi.software.os.OSProcess;
+import oshi.software.os.OperatingSystem;
 import oshi.util.FormatUtil;
+import oshi.util.platform.windows.WmiUtil;
 import pcstatus.ErrorManager;
 
 import java.math.BigDecimal;
@@ -22,20 +25,32 @@ public class GeneralStats {
     private static String spacing = "     ";
 
     public static String[] getPcInfo() throws SigarException, InterruptedException {
-        //this functions use Sigar library because is more faster then Oshi
+        //this functions use Sigar library because is more faster then Oshi library
 
         CpuPerc cpuperc = SigarFactory.newSigar().getCpuPerc();
-        CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
+        CpuInfo cpu = SigarFactory.newSigar().getCpuInfoList()[0];
 
+        // CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
+        /*
         String[] pc = new String[6];
         pc[0] = spacing + "Vendor: " + processor.getVendor();
         pc[1] = spacing + processor.getName();
         pc[2] = spacing + "Clock: " + FormatUtil.formatHertz(processor.getVendorFreq());
         pc[3] = spacing + "Physical CPU(s): " + processor.getPhysicalProcessorCount();
         pc[4] = spacing + "Logical CPU(s): " + processor.getLogicalProcessorCount();
+        pc[5] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";*/
+
+
+        String[] pc = new String[6];
+        pc[0] = spacing + "Vendor: " + cpu.getVendor();
+        pc[1] = spacing + cpu.getModel();
+        pc[2] = spacing + "Clock: " + cpu.getMhz();
+        pc[3] = spacing + "Physical CPU(s): " + cpu.getTotalCores();
+        pc[4] = spacing + "Logical CPU(s): " + cpu.getTotalSockets();
         pc[5] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";
 
         SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (cpuperc.getCombined() * 100), 2));
+
 
         return pc;
     }
@@ -65,21 +80,6 @@ public class GeneralStats {
         }
         return hrSize;
     }
-
-    /*public static void writeTofile(String str) {
-
-        try {
-            Sigar sigar = new Sigar();
-            // Full path to /p/stat/drupal most likely needed for the .html file
-            FileWriter fstream = new FileWriter("/p/stat/drupal/systems_reports/" + machineName(sigar) + ".html");
-            BufferedWriter out = new BufferedWriter(fstream);
-
-            out.write(str);
-            out.close();
-        } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
-        }
-    }*/
 
     public static String getComputerSystemInfo() {
 
@@ -115,6 +115,35 @@ public class GeneralStats {
                 + FormatUtil.formatBytes(memory.getTotal());
     }
 
+    //todo funzione in sospeso finché non migliorano ulteriormente le performance (meglio usare Sigar, è più veloce)
+    public static String getRamPerProcess() {
+        OperatingSystem operatingSystem = new SystemInfo().getOperatingSystem();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (OSProcess process : operatingSystem.getProcesses(5, OperatingSystem.ProcessSort.MEMORY)) {
+            long privateWorkingSet = Long.parseLong(WmiUtil.selectStringFrom(null, "Win32_perfRawData_PerfProc_Process",
+                    "WorkingSetPrivate", "WHERE IDprocess = " + process.getProcessID())); //retrieve memory in bytes
+            stringBuilder.append(process.getName() + "\t" + privateWorkingSet + "\n");
+        }
+        System.out.println("\n\n\n" + stringBuilder.toString() + "\n\n");
+        return stringBuilder.toString();
+
+        /*long startTime = System.currentTimeMillis();
+        OperatingSystem operatingSystem = new SystemInfo().getOperatingSystem();
+        StringBuilder stringBuilder = new StringBuilder();
+        ProcMem procMem;
+
+        long[] processes = SigarFactory.newSigar().getProcList();
+        System.out.println("\n\n\n\n\n ");
+        for (int i = 0; i < processes.length; i++) {
+            procMem = SigarFactory.newSigar().getProcMem(processes[i]);
+            System.out.println("pid " + processes[i] + " " + (procMem.getShare()) + " workingset: " + (procMem.getSize() / 1024) + " " + (procMem.getResident() / 1024));
+        }
+        System.out.println("\n\n\n\n\n ");
+        long stopTime = System.currentTimeMillis();
+        System.out.println("time to execute code " + (stopTime - startTime) + "");*/
+
+    }
+
     public static String getFileSystem() {
         SystemInfo si = new SystemInfo();
 
@@ -133,13 +162,7 @@ public class GeneralStats {
                             "%n", fs.getName(),
                     fs.getDescription().isEmpty() ? "file system" : fs.getDescription(), fs.getType(),
                     FormatUtil.formatBytes(usable), FormatUtil.formatBytes(fs.getTotalSpace()), 100d * usable / total, fs.getLogicalVolume()));
-            numericSpace[i] = round((float) (100d * usable / total),1);
-            /*System.out.format(" %s (%s) [%s] %s of %s free (%.1f%%) is %s " +
-                            (fs.getLogicalVolume() != null && fs.getLogicalVolume().length() > 0 ? "[%s]" : "%s") +
-                            " and is mounted at %s%n", fs.getName(),
-                    fs.getDescription().isEmpty() ? "file system" : fs.getDescription(), fs.getType(),
-                    FormatUtil.formatBytes(usable), FormatUtil.formatBytes(fs.getTotalSpace()), 100d * usable / total,
-                    fs.getVolume(), fs.getLogicalVolume(), fs.getMount());*/
+            numericSpace[i] = round((float) (100d * usable / total), 1);
         }
         SingletonNumericGeneralStats.getInstance().setAvaibleFileSystem(numericSpace);
         return stringBuilder.toString();
@@ -168,7 +191,7 @@ public class GeneralStats {
     public static String getNetworkSpeed() throws SocketException, UnknownHostException {
 
         String networkName = getDefaultNetworkInteface();
-        System.out.println(networkName);
+        //System.out.println(networkName);
 
         SystemInfo si = new SystemInfo();
         HardwareAbstractionLayer hal = si.getHardware();
@@ -178,11 +201,9 @@ public class GeneralStats {
         while (!networkIFs[i].getName().equals(networkName)) {
             net = networkIFs[i];
             i++;
-            System.out.println(networkIFs[i].getName() + " " + networkName);
+            //System.out.println(networkIFs[i].getName() + " " + networkName);
         }
 
-        //  System.out.format("   MAC Address: %s %n", net.getMacaddr());
-        //System.out.format("   MTU: %s, Speed: %s %n", net.getMTU(), FormatUtil.formatValue(net.getSpeed(), "bps"));
         long download1 = net.getBytesRecv();
         long upload1 = net.getBytesSent();
         long timestamp1 = net.getTimeStamp();

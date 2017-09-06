@@ -13,8 +13,9 @@ public class Greeting {
     private final String[] numericAvaibleFileSystem;
     private final String numericCpuLoad;
     private final String numericFreeRam;
+   // private final String numericRamPerProcess;
 
-    public Greeting(long id, String content, String[] batteryInfo, String[] cpuInfo, String disks, String computerInfo, String miscellaneuos, String[] numericAvaibleFileSystem, String numericCpuLoad, String numericFreeRam) {
+    public Greeting(long id, String content, String[] batteryInfo, String[] cpuInfo, String disks, String computerInfo, String miscellaneuos, String[] numericAvaibleFileSystem, String numericCpuLoad, String numericFreeRam/*, String numericRamPerProcess*/) {
         this.id = id;
         this.content = content;
         this.batteryInfo = batteryInfo;
@@ -25,7 +26,12 @@ public class Greeting {
         this.numericAvaibleFileSystem = numericAvaibleFileSystem;
         this.numericCpuLoad = numericCpuLoad;
         this.numericFreeRam = numericFreeRam;
+        //this.numericRamPerProcess = numericRamPerProcess;
     }
+
+   /* public String getNumericRamPerProcess() {
+        return numericRamPerProcess;
+    }*/
 
     public String getNumericCpuLoad() {
         return numericCpuLoad;

@@ -13,6 +13,7 @@ public class SingletonNumericGeneralStats {
     private String cpuLoad;
     private Float percRam;
     private String[] avaibleFileSystem;
+    //private String ramPerProcess = null;
 
     public void setCpuLoad(String cpuLoad) {
         this.cpuLoad = cpuLoad;
@@ -24,7 +25,6 @@ public class SingletonNumericGeneralStats {
 
     public void setFreeRam(long available, long tot) {
         percRam = (((float)available / (float) tot) * 100);
-        System.out.println("stampo freeram" + percRam + " " + (float) available + " " + tot);
     }
 
     public String getFreeRam() {
@@ -38,4 +38,12 @@ public class SingletonNumericGeneralStats {
     public void setAvaibleFileSystem(String[] avaibleFileSystem) {
         this.avaibleFileSystem = avaibleFileSystem;
     }
+
+    /*public void setRamPerProcess(String ramPerProcess) {
+        this.ramPerProcess = ramPerProcess;
+    }
+
+    public String getRamPerProcess() {
+        return ramPerProcess;
+    }*/
 }
