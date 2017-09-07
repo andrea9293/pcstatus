@@ -75,6 +75,7 @@ public class GreetingController {
             }*/
 
         while (networkSpeed[0] == null) {
+            System.out.println("aspetto");
             //do nothing, waiting for network speed
         }
 

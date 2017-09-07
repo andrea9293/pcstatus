@@ -1,15 +1,13 @@
 package pcstatus.dataPackage;
 
-import org.hyperic.sigar.*;
 import org.gridkit.lab.sigar.SigarFactory;
+import org.hyperic.sigar.CpuInfo;
+import org.hyperic.sigar.CpuPerc;
+import org.hyperic.sigar.SigarException;
 import oshi.SystemInfo;
 import oshi.hardware.*;
 import oshi.software.os.OSFileStore;
-import oshi.software.os.OSProcess;
-import oshi.software.os.OperatingSystem;
 import oshi.util.FormatUtil;
-import oshi.util.platform.windows.WmiUtil;
-import pcstatus.ErrorManager;
 
 import java.math.BigDecimal;
 import java.net.InetAddress;
@@ -17,7 +15,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.Enumeration;
 
 public class GeneralStats {
@@ -27,7 +24,7 @@ public class GeneralStats {
     public static String[] getPcInfo() {
         //this functions use Sigar library because is more faster then Oshi library
 
-        CpuPerc cpuperc = null;
+        CpuPerc cpuperc;
         try {
             cpuperc = SigarFactory.newSigar().getCpuPerc();
         } catch (SigarException e) {
@@ -36,7 +33,7 @@ public class GeneralStats {
             e.printStackTrace();
             return error;
         }
-        CpuInfo cpu = null;
+        CpuInfo cpu;
         try {
             cpu = SigarFactory.newSigar().getCpuInfoList()[0];
         } catch (SigarException e) {
@@ -71,14 +68,14 @@ public class GeneralStats {
         return pc;
     }
 
-    public static String round(float d, int decimalPlace) {
+    static String round(float d, int decimalPlace) {
         BigDecimal bd = new BigDecimal(Float.toString(d));
         bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
         return bd.toString();
     }
 
     private static String formatSize(long size) {
-        String hrSize = "";
+        String hrSize;
         long k = size;
         double m = size / 1024.0;
         double g = size / 1048576.0;
@@ -112,13 +109,12 @@ public class GeneralStats {
 
         final Baseboard baseboard = computerSystem.getBaseboard();
         computerSystemString.append(spacing + "Baseboard:" + "\n");
-        computerSystemString.append(spacing + spacing + "manufacturer: " + baseboard.getManufacturer() + "\n");
-        computerSystemString.append(spacing + spacing + "model: " + baseboard.getModel() + "\n");
-        computerSystemString.append(spacing + spacing + "version: " + baseboard.getVersion() + "\n");
+        computerSystemString.append(spacing + spacing+"manufacturer: "+baseboard.getManufacturer()+"\n");
+        computerSystemString.append(spacing + spacing+"model: "+baseboard.getModel()+"\n");
+        computerSystemString.append(spacing + spacing+"version: "+baseboard.getVersion()+"\n");
         //computerSystemString.append(spacing + "  serialnumber: " + baseboard.getSerialNumber() + "\n");
 
         return computerSystemString.toString();
-
     }
 
     public static String getRamMemory() {
@@ -132,7 +128,7 @@ public class GeneralStats {
     }
 
     //todo funzione in sospeso finché non miglioro ulteriormente le performance (meglio usare Sigar, è più veloce)
-    public static String getRamPerProcess() {
+  /*  public static String getRamPerProcess() {
         OperatingSystem operatingSystem = new SystemInfo().getOperatingSystem();
         StringBuilder stringBuilder = new StringBuilder();
         for (OSProcess process : operatingSystem.getProcesses(5, OperatingSystem.ProcessSort.MEMORY)) {
@@ -158,7 +154,7 @@ public class GeneralStats {
         long stopTime = System.currentTimeMillis();
         System.out.println("time to execute code " + (stopTime - startTime) + "");*/
 
-    }
+    //}
 
     public static String getFileSystem() {
         SystemInfo si = new SystemInfo();
@@ -194,7 +190,7 @@ public class GeneralStats {
     }
 
     // for linux SO
-   /* public static String getFileSystem()  {
+  /*  public static String getFileSystem()  {
         SigarProxy sigar = SigarFactory.newSigar();
         FileSystem[] fslist = new FileSystem[0];
         try {
@@ -217,7 +213,7 @@ public class GeneralStats {
             disks = spacing + "Label: " + fslist[i].getDevName();
             type = "Type: " + fslist[i].getTypeName();
             try {
-                filesystemusage = sigar.getFileSystemUsage(fslist[i].getDevName());
+                filesystemusage = sigar.getMountedFileSystemUsage(fslist[i].getDevName());
             } catch (SigarException e) {
                 e.printStackTrace();
                 return "function not supported in getting filesystem";
@@ -265,7 +261,7 @@ public class GeneralStats {
 
     public static String getNetworkSpeed() {
 
-        String networkName = null;
+        String networkName;
         StringBuilder sb = new StringBuilder();
 
         try {
