@@ -18,6 +18,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import pcstatus.connectionPackage.BluetoothSPPServer;
+import pcstatus.springServer.GreetingController;
 
 import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.LocalDevice;
@@ -32,6 +33,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CountDownLatch;
 
 @SpringBootApplication
 public class ServerBatteryMain extends Application implements Observer {
@@ -46,14 +48,18 @@ public class ServerBatteryMain extends Application implements Observer {
     private Stage primaryStage;
     private boolean firstShow = true;
     private static String[] args;
+    private CountDownLatch latch = new CountDownLatch(1);
+    ;
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         //applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
-
+        long startAllTime = System.currentTimeMillis();
         SingletonBatteryStatus.getInstance().addingObserver(ServerBatteryMain.this);
+        firstGetter.start();
         serverThread.start();
-        scheduleTask();
+
         this.primaryStage = primaryStage;
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample.fxml"));
@@ -82,6 +88,10 @@ public class ServerBatteryMain extends Application implements Observer {
         });*/
 
         bluetoothThread();
+        latch.await();
+        long stopAllTime = System.currentTimeMillis();
+        System.out.println("\n\n                                                 fatto tutto e ci ho messo " + (stopAllTime - startAllTime) + "\n");
+        scheduleTask();
     }
 
     public static void main(String[] args) throws IOException {
@@ -95,7 +105,7 @@ public class ServerBatteryMain extends Application implements Observer {
             bluetooth.closeConnection();
         }
         taskCancel();
-        if (startBluetoothServer!=null)
+        if (startBluetoothServer != null)
             startBluetoothServer.interrupt();
     }
 
@@ -110,19 +120,17 @@ public class ServerBatteryMain extends Application implements Observer {
             e.printStackTrace();
         }*/
 
-       // controller.setIpText(ip);
-        if(singletonBatteryStatus.getBattery() !=null){
-            controller.setBatteryText(String.join("\n", singletonBatteryStatus.getBattery()));
-            controller.setCpuText(String.join("\n", singletonBatteryStatus.getCpu()));
-            controller.setDisksText(String.join("\n", singletonBatteryStatus.getDisks()));
-            controller.setSystemText(String.join("\n", singletonBatteryStatus.getComputerInfo()));
-            controller.setMiscellaneous(String.join("\n", singletonBatteryStatus.getMiscellaneous()));
-            // controller.setCpuImage("Image/" + singletonBatteryStatus.getCpu()[0]);
-            primaryStage.sizeToScene();
-            if (firstShow){
-                primaryStage.centerOnScreen();
-                firstShow=false;
-            }
+        // controller.setIpText(ip);
+
+        controller.setBatteryText(String.join("\n", singletonBatteryStatus.getBattery()));
+        controller.setCpuText(String.join("\n", singletonBatteryStatus.getCpu()));
+        controller.setDisksText(String.join("\n", singletonBatteryStatus.getDisks()));
+        controller.setSystemText(String.join("\n", singletonBatteryStatus.getComputerInfo()));
+        controller.setMiscellaneous(String.join("\n", singletonBatteryStatus.getMiscellaneous()));
+        primaryStage.sizeToScene();
+        if (firstShow) {
+            primaryStage.centerOnScreen();
+            firstShow = false;
         }
 
         sendBluetoothMessage();
@@ -187,7 +195,7 @@ public class ServerBatteryMain extends Application implements Observer {
     private void scheduleTask() {
         timer = new Timer();
         System.out.println("task programmato");
-        if (task == null /*|| !taskHasStarted()*/) {
+        if (task == null) {
             task = new TimerTask() {
                 @Override
                 public void run() {
@@ -206,6 +214,7 @@ public class ServerBatteryMain extends Application implements Observer {
             timer.cancel();
         }
     }
+
     private String getMyIp() throws UnknownHostException, SocketException {
         InetAddress addr = InetAddress.getLocalHost();
         return addr.getHostAddress();
@@ -236,7 +245,7 @@ public class ServerBatteryMain extends Application implements Observer {
             dialogStage.setScene(scene);
         }
 
-        public void activateProgressBar(final Task<?> task)  {
+        public void activateProgressBar(final Task<?> task) {
             pin.progressProperty().bind(task.progressProperty());
             dialogStage.show();
         }
@@ -246,7 +255,12 @@ public class ServerBatteryMain extends Application implements Observer {
         }
     }
 
-    Thread serverThread = new Thread(() -> {
+    private Thread serverThread = new Thread(() -> {
         applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
+    });
+
+    private Thread firstGetter = new Thread(() -> {
+        GreetingController.getAllData();
+        latch.countDown();
     });
 }
