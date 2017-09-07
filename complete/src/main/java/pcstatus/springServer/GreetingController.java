@@ -48,34 +48,19 @@ public class GreetingController {
         long startAllTime = System.currentTimeMillis();
 
         new Thread(() -> {
-            long startTime = System.currentTimeMillis();
-            System.out.println("calcolo velocità di rete...");
             networkSpeed[0] = "\n" + GeneralStats.getNetworkSpeed();
-            System.out.println("finito di rilevare la velocità di rete...\n");
-            long stopTime = System.currentTimeMillis();
-            System.out.println("\n\nfinito ramperprocess e ci ho messo " + (stopTime - startTime) + "\n");
         }).start();
 
-        try {
-            long startTime = System.currentTimeMillis();
-            cpuInfo = GeneralStats.getPcInfo();
-            long stopTime = System.currentTimeMillis();
-            System.out.println("CPU time to execute code " + (stopTime - startTime) + "\n");
+        cpuInfo = GeneralStats.getPcInfo();
 
-            startTime = System.currentTimeMillis();
-            disks = GeneralStats.getFileSystem();
-            stopTime = System.currentTimeMillis();
-            System.out.println("DISKS time to execute code " + (stopTime - startTime) + "\n");
+        disks = GeneralStats.getFileSystem();
 
-            startTime = System.currentTimeMillis();
-            computerInfo = GeneralStats.getComputerSystemInfo();
-            stopTime = System.currentTimeMillis();
-            System.out.println("PC INFO time to execute code " + (stopTime - startTime) + "\n");
+        computerInfo = GeneralStats.getComputerSystemInfo();
 
-            StringBuilder sb = new StringBuilder();
-            sb.append(cpuInfo[5] + "\n");
-            sb.append(GeneralStats.getRamMemory() + "\n");
-            sb.append(batteryParts[1] + "\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append(cpuInfo[5] + "\n");
+        sb.append(GeneralStats.getRamMemory() + "\n");
+        sb.append(batteryParts[1] + "\n");
 
            /* try {
                 System.out.println("calcolo velocità di rete...");
@@ -89,22 +74,17 @@ public class GreetingController {
                 e.printStackTrace();
             }*/
 
-            while (networkSpeed[0] == null) {
-                System.out.println("aspetto");
-                //do nothing, waiting for network speed
-            }
-
-            sb.append(networkSpeed[0]);
-
-            miscellaneous = sb.toString();
-
-            numericAvaibleFileSystem = SingletonNumericGeneralStats.getInstance().getAvaibleFileSystem();
-            numericCpuLoad = SingletonNumericGeneralStats.getInstance().getCpuLoad();
-            numericFreeRam = SingletonNumericGeneralStats.getInstance().getFreeRam();
-        } catch (SigarException | InterruptedException e) {
-            ErrorManager.exeptionDialog(e);
-            e.printStackTrace();
+        while (networkSpeed[0] == null) {
+            //do nothing, waiting for network speed
         }
+
+        sb.append(networkSpeed[0]);
+
+        miscellaneous = sb.toString();
+
+        numericAvaibleFileSystem = SingletonNumericGeneralStats.getInstance().getAvaibleFileSystem();
+        numericCpuLoad = SingletonNumericGeneralStats.getInstance().getCpuLoad();
+        numericFreeRam = SingletonNumericGeneralStats.getInstance().getFreeRam();
 
         long stopAllTime = System.currentTimeMillis();
         System.out.println("\n\n                                                 fatto tutto e ci ho messo " + (stopAllTime - startAllTime) + "\n");

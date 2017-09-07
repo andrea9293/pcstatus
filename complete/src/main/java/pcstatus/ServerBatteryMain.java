@@ -162,7 +162,7 @@ public class ServerBatteryMain extends Application implements Observer {
                 startServerBluetooth();
 
             } catch (BluetoothStateException e) {
-                ErrorManager.exeptionDialog(e);
+                //ErrorManager.exeptionDialog(e);
                 System.out.println("Bluetooth non supportato");
             }
         } else {

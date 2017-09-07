@@ -24,11 +24,27 @@ public class GeneralStats {
 
     private static String spacing = "     ";
 
-    public static String[] getPcInfo() throws SigarException, InterruptedException {
+    public static String[] getPcInfo() {
         //this functions use Sigar library because is more faster then Oshi library
 
-        CpuPerc cpuperc = SigarFactory.newSigar().getCpuPerc();
-        CpuInfo cpu = SigarFactory.newSigar().getCpuInfoList()[0];
+        CpuPerc cpuperc = null;
+        try {
+            cpuperc = SigarFactory.newSigar().getCpuPerc();
+        } catch (SigarException e) {
+            String[] error = new String[1];
+            error[0] = "cpu not supported";
+            e.printStackTrace();
+            return error;
+        }
+        CpuInfo cpu = null;
+        try {
+            cpu = SigarFactory.newSigar().getCpuInfoList()[0];
+        } catch (SigarException e) {
+            String[] error = new String[1];
+            error[0] = "cpu not supported";
+            e.printStackTrace();
+            return error;
+        }
 
         // CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
         /*
@@ -162,11 +178,70 @@ public class GeneralStats {
                             "%n", fs.getName(),
                     fs.getDescription().isEmpty() ? "file system" : fs.getDescription(), fs.getType(),
                     FormatUtil.formatBytes(usable), FormatUtil.formatBytes(fs.getTotalSpace()), 100d * usable / total, fs.getLogicalVolume()));
-            numericSpace[i] = round((float) (100d * usable / total), 1);
+            try {
+                if (total == 0) {
+                    numericSpace[i] = "0";
+                } else {
+                    numericSpace[i] = round((100 * usable / total), 1);
+                }
+            } catch (NumberFormatException e) {
+                numericSpace[i] = "error";
+            }
         }
+
         SingletonNumericGeneralStats.getInstance().setAvaibleFileSystem(numericSpace);
         return stringBuilder.toString();
     }
+
+    // for linux SO
+   /* public static String getFileSystem()  {
+        SigarProxy sigar = SigarFactory.newSigar();
+        FileSystem[] fslist = new FileSystem[0];
+        try {
+            fslist = sigar.getFileSystemList();
+        } catch (SigarException e) {
+            e.printStackTrace();
+            return "function not supported in in Sigar declaration";
+        }
+        FileSystemUsage filesystemusage;
+
+        String[] numericSpace = new String[fslist.length];
+
+        String disks = "";
+        String type = "";
+        String size = "";
+        String usage = "";
+        String ris = "";
+
+        for (int i = 0; i < fslist.length; i++) {
+            disks = spacing + "Label: " + fslist[i].getDevName();
+            type = "Type: " + fslist[i].getTypeName();
+            try {
+                filesystemusage = sigar.getFileSystemUsage(fslist[i].getDevName());
+            } catch (SigarException e) {
+                e.printStackTrace();
+                return "function not supported in getting filesystem";
+            }
+            size = "Size: " + formatSize(filesystemusage.getTotal());
+            usage = "Used " + (filesystemusage.getUsePercent() * 100) + "%\n";
+            String disksType = String.format("%-20s %s", disks, type);
+            String sizeUsage = String.format("%-20s %s", size, usage);
+            ris += disksType + "\t" + sizeUsage;
+
+            try {
+                if (filesystemusage.getTotal() == 0) {
+                    numericSpace[i] = "0";
+                } else {
+                    numericSpace[i] = round((100 * filesystemusage.getFree() / filesystemusage.getTotal()), 1);
+                }
+            } catch (NumberFormatException e) {
+                numericSpace[i] = "error";
+            }
+        }
+        SingletonNumericGeneralStats.getInstance().setAvaibleFileSystem(numericSpace);
+        // System.out.println(ris);
+        return ris;
+    }*/
 
 
     private static String getDefaultNetworkInteface() throws SocketException, UnknownHostException {
@@ -212,9 +287,8 @@ public class GeneralStats {
             while (!networkIFs[i].getName().equals(networkName)) {
                 net = networkIFs[i];
                 i++;
-                //System.out.println(networkIFs[i].getName() + " " + networkName);
             }
-        }catch (ArrayIndexOutOfBoundsException e){
+        } catch (ArrayIndexOutOfBoundsException e) {
             sb.append(spacing + "download speed: not supported\n");
             sb.append(spacing + "upload speed: not supported\n");
             return sb.toString();
@@ -226,7 +300,7 @@ public class GeneralStats {
         try {
             Thread.sleep(1000); //Sleep for a bit longer, 2s should cover almost every possible problem
         } catch (InterruptedException e) {
-            ErrorManager.exeptionDialog(e);
+            //ErrorManager.exeptionDialog(e);
             e.printStackTrace();
         }
         net.updateNetworkStats(); //Updating network stats
