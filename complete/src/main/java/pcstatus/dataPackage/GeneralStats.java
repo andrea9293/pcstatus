@@ -43,24 +43,25 @@ public class GeneralStats {
             return error;
         }
 
-        // CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
-        /*
+        /*CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
+
         String[] pc = new String[6];
         pc[0] = spacing + "Vendor: " + processor.getVendor();
         pc[1] = spacing + processor.getName();
         pc[2] = spacing + "Clock: " + FormatUtil.formatHertz(processor.getVendorFreq());
         pc[3] = spacing + "Physical CPU(s): " + processor.getPhysicalProcessorCount();
         pc[4] = spacing + "Logical CPU(s): " + processor.getLogicalProcessorCount();
-        pc[5] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";*/
+        pc[5] = spacing + "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";*/
 
 
-        String[] pc = new String[6];
+        String[] pc = new String[5];
         pc[0] = spacing + "Vendor: " + cpu.getVendor();
         pc[1] = spacing + cpu.getModel();
         pc[2] = spacing + "Clock: " + cpu.getMhz();
         pc[3] = spacing + "Physical CPU(s): " + cpu.getTotalCores();
-        pc[4] = spacing + "Logical CPU(s): " + cpu.getTotalSockets();
-        pc[5] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";
+        //pc[4] = spacing + "Logical CPU(s): " + cpu.getTotalSockets();
+        //pc[5] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";
+        pc[4] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";
 
         SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (cpuperc.getCombined() * 100), 2));
 

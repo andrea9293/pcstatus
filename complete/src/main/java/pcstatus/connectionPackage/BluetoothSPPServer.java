@@ -45,7 +45,6 @@ public class BluetoothSPPServer {
         //open server url
         streamConnNotifier = (StreamConnectionNotifier) Connector.open(connectionString);
 
-
         //Wait for client connection
         System.out.println("\nServer Started. Waiting for clients to connect...");
         try {
@@ -101,39 +100,28 @@ public class BluetoothSPPServer {
                     messageThread.interrupt();
                     messageThread = newMessageThread();
                     messageThread.start();
-                    System.out.println("thread avviato");
-                    //Thread.currentThread().interrupt();
                 }
             }
         }else {
-            System.out.println("stampo id " + Thread.currentThread().getId() + "nome " + Thread.currentThread().getName());
             System.out.println("connessione non stabilita");
         }
-
     }
 
     private Thread newMessageThread() {
         return messageThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println("stampo id " + Thread.currentThread().getId() + "nome " + Thread.currentThread().getName());
                 pWriter = new PrintWriter(new OutputStreamWriter(outStream));
                 pWriter.write(SingletonBatteryStatus.getInstance().getJsonStr() + "\n");
-                System.out.println("stampo " + SingletonBatteryStatus.getInstance().getJsonStr());
                 pWriter.flush();
-                System.out.println("inviato");
 
                 final String[] lineRead = {null};
-            /*new Thread(new Runnable() {
-                @Override
-                public void run() {*/
+
                 try {
-                    //Thread.sleep(1500);
                     BufferedReader bReader = new BufferedReader(new InputStreamReader(inStream));
                     lineRead[0] = bReader.readLine();
                     System.out.println(lineRead[0]);
                 } catch (IOException e) {
-                    //closeConnection();
                     if (!messageThread.isInterrupted()) {
                         System.out.println("sono stato interrotto");
                         messageThread.interrupt();
@@ -144,12 +132,9 @@ public class BluetoothSPPServer {
                             Thread.currentThread().interrupt();
                         closeConnection();
                         serverBatteryMain.startServerBluetooth();
-                        //e.printStackTrace();
                     } else
                         System.out.println("non sono stato interrotto ma sono nel catch");//e.printStackTrace();
                 }
-               /* }
-            }).start();*/
             }
         }, "messageThread");
     }

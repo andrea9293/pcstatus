@@ -54,7 +54,6 @@ public class ServerBatteryMain extends Application implements Observer {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        //applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
         long startAllTime = System.currentTimeMillis();
         SingletonBatteryStatus.getInstance().addingObserver(ServerBatteryMain.this);
         firstGetter.start();
@@ -66,8 +65,8 @@ public class ServerBatteryMain extends Application implements Observer {
         Parent root = loader.load();
 
         ProgressIndicator progressIndicator = new ProgressIndicator();
-        this.primaryStage.setTitle("PCstatus");
-        this.primaryStage.setScene(new Scene(root/*, 500, 250*/));
+        this.primaryStage.setTitle("PCstatus - " + getMyIp());
+        this.primaryStage.setScene(new Scene(root));
         this.primaryStage.setResizable(false);
         this.primaryStage.show();
         this.primaryStage.centerOnScreen();
@@ -80,12 +79,6 @@ public class ServerBatteryMain extends Application implements Observer {
             Platform.exit();
         });
         controller = loader.getController();
-
-        /*Button button = controller.getButtonRefresh();
-
-        button.setOnAction(event -> {
-            refresh();
-        });*/
 
         bluetoothThread();
         latch.await();
@@ -132,7 +125,6 @@ public class ServerBatteryMain extends Application implements Observer {
             primaryStage.centerOnScreen();
             firstShow = false;
         }
-
         sendBluetoothMessage();
     }
 

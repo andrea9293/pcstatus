@@ -50,23 +50,23 @@ public class GreetingController {
             latch.countDown();
         }).start();
 
-        cpuInfo = GeneralStats.getPcInfo();
-
         disks = GeneralStats.getFileSystem();
 
         computerInfo = GeneralStats.getComputerSystemInfo();
 
         StringBuilder sb = new StringBuilder();
-        sb.append(cpuInfo[5] + "\n");
-        sb.append(GeneralStats.getRamMemory() + "\n");
-        sb.append(batteryParts[1] + "\n");
+        String ramMemory = GeneralStats.getRamMemory() + "\n";
 
         try {
-            System.out.println(latch.getCount());
+            //System.out.println(latch.getCount());
             latch.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        cpuInfo = GeneralStats.getPcInfo();
+        sb.append(cpuInfo[4] + "\n");
+        sb.append(ramMemory);
+        sb.append(batteryParts[1] + "\n");
 
         sb.append(networkSpeed[0]);
 
@@ -75,6 +75,8 @@ public class GreetingController {
         numericAvaibleFileSystem = SingletonNumericGeneralStats.getInstance().getAvaibleFileSystem();
         numericCpuLoad = SingletonNumericGeneralStats.getInstance().getCpuLoad();
         numericFreeRam = SingletonNumericGeneralStats.getInstance().getFreeRam();
+
+        cpuInfo = GeneralStats.getPcInfo();
 
         return new Greeting(counter.incrementAndGet(), template, batteryParts, cpuInfo, disks, computerInfo, miscellaneous, numericAvaibleFileSystem, numericCpuLoad, numericFreeRam/* SingletonNumericGeneralStats.getInstance().getRamPerProcess()*/);
     }
@@ -113,9 +115,6 @@ public class GreetingController {
         String batteryParts[] = template.split("\n");
         SingletonBatteryStatus.getInstance().setBattery(batteryParts);
 
-        cpuInfo = GeneralStats.getPcInfo();
-        SingletonBatteryStatus.getInstance().setCpu(cpuInfo);
-
         disks = GeneralStats.getFileSystem().split("\n");;
         SingletonBatteryStatus.getInstance().setDisks(disks);
 
@@ -123,21 +122,26 @@ public class GreetingController {
         SingletonBatteryStatus.getInstance().setComputerInfo(computerInfo);
 
         StringBuilder sb = new StringBuilder();
-        sb.append(cpuInfo[5] + "\n");
-        sb.append(GeneralStats.getRamMemory() + "\n");
-        sb.append(batteryParts[1] + "\n");
+
+        String ramMemory = GeneralStats.getRamMemory() + "\n";
 
         try {
-            System.out.println(latch.getCount());
+            //System.out.println(latch.getCount());
             latch.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        cpuInfo = GeneralStats.getPcInfo();
+        sb.append(cpuInfo[4] + "\n");
+        sb.append(ramMemory);
+        sb.append(batteryParts[1] + "\n");
 
         sb.append(networkSpeed[0]);
 
         miscellaneous = sb.toString().split("\n");;
         SingletonBatteryStatus.getInstance().setMiscellaneous(miscellaneous);
+
+        SingletonBatteryStatus.getInstance().setCpu(cpuInfo);
 
         SingletonBatteryStatus.getInstance().notifyMyObservers();
 
