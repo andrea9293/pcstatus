@@ -40,7 +40,6 @@ public class GeneralStats {
             for (CpuPerc aCpuperclist : cpuperclist) {
                 percPerThread.append(round((float) (aCpuperclist.getCombined() * 100), 2) + "\n");
             }
-            System.out.println(percPerThread.toString());
             SingletonNumericGeneralStats.getInstance().setPercPerThread(percPerThread.toString());
         } catch (SigarException e) {
             String[] error = new String[1];
@@ -171,29 +170,44 @@ public class GeneralStats {
 
         OSFileStore[] fsArray = fileSystem.getFileStores();
         String[] numericSpace = new String[fsArray.length];
-        StringBuilder stringBuilder = new StringBuilder();
+        String[] volume = new String[fsArray.length];
+        String[] stringBuilder = new String[fsArray.length];
         for (int i = 0; i < fsArray.length; i++) {
             OSFileStore fs = fsArray[i];
             long usable = fs.getUsableSpace();
             long total = fs.getTotalSpace();
-            stringBuilder.append(spacing + String.format(" %s (%s) [%s] %s of %s free (%.1f%%) " +
+            stringBuilder[i] = (spacing + String.format(" %s (%s) [%s] %s of %s free (%.1f%%) " +
                             (fs.getLogicalVolume() != null && fs.getLogicalVolume().length() > 0 ? "[%s]" : "%s") +
                             "%n", fs.getName(),
                     fs.getDescription().isEmpty() ? "file system" : fs.getDescription(), fs.getType(),
                     FormatUtil.formatBytes(usable), FormatUtil.formatBytes(fs.getTotalSpace()), 100d * usable / total, fs.getLogicalVolume()));
             try {
                 if (total == 0) {
+                    volume[i] = fs.getMount();
                     numericSpace[i] = "0";
                 } else {
-                    numericSpace[i] = round((100 * usable / total), 1);
+                    volume[i] = fs.getMount();
+                    numericSpace[i] = String.format("%.1f", (100d * usable / total)).replace(",", ".");
                 }
             } catch (NumberFormatException e) {
                 numericSpace[i] = "error";
             }
         }
 
+        for (int i = 0; i < numericSpace.length; i++) {
+            String tmp;
+            if (volume[i].equals("C:\\")) {
+                tmp = numericSpace[i];
+                numericSpace[0] = numericSpace[i];
+                numericSpace[i] = tmp;
+
+                tmp = stringBuilder[i];
+                stringBuilder[0] = stringBuilder[i];
+                stringBuilder[i] = tmp;
+            }
+        }
         SingletonNumericGeneralStats.getInstance().setAvaibleFileSystem(numericSpace);
-        return stringBuilder.toString();
+        return String.join("",stringBuilder);
     }
 
     // for linux SO
