@@ -13,9 +13,10 @@ public class Greeting {
     private final String[] numericAvaibleFileSystem;
     private final String numericCpuLoad;
     private final String numericFreeRam;
+    private final String numericPercPerThread;
    // private final String numericRamPerProcess;
 
-    public Greeting(long id, String content, String[] batteryInfo, String[] cpuInfo, String disks, String computerInfo, String miscellaneuos, String[] numericAvaibleFileSystem, String numericCpuLoad, String numericFreeRam/*, String numericRamPerProcess*/) {
+    public Greeting(long id, String content, String[] batteryInfo, String[] cpuInfo, String disks, String computerInfo, String miscellaneuos, String[] numericAvaibleFileSystem, String numericCpuLoad, String numericFreeRam, String numericPercPerThread) {
         this.id = id;
         this.content = content;
         this.batteryInfo = batteryInfo;
@@ -26,6 +27,7 @@ public class Greeting {
         this.numericAvaibleFileSystem = numericAvaibleFileSystem;
         this.numericCpuLoad = numericCpuLoad;
         this.numericFreeRam = numericFreeRam;
+        this.numericPercPerThread = numericPercPerThread;
         //this.numericRamPerProcess = numericRamPerProcess;
     }
 
@@ -37,6 +39,10 @@ public class Greeting {
         return numericCpuLoad;
     }
 
+    public String getNumericPercPerThread() {
+        return numericPercPerThread;
+    }
+
     public String getNumericFreeRam() {
         return numericFreeRam;
     }
@@ -44,7 +50,6 @@ public class Greeting {
     public String[] getNumericAvaibleFileSystem() {
         return numericAvaibleFileSystem;
     }
-
 
     public String getComputerInfo() {
         return computerInfo;
@@ -70,7 +75,6 @@ public class Greeting {
     public String[] getBatteryInfo() {
         return batteryInfo;
     }
-
 
     public String getContent() {
         return content;

@@ -5,11 +5,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class jsonParser {
-    private String[] batteryInfo;
-    private String[] cpuInfo;
-    private String[] networkSpeed;
-    private String disks;
-    private String miscellaneous;
 
     public jsonParser(String jsonStr) throws JSONException {
         JSONObject jsonObj;
@@ -41,5 +36,3 @@ public class jsonParser {
         SingletonBatteryStatus.getInstance().notifyMyObservers();
     }
 }
-
-

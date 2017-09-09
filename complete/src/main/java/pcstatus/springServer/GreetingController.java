@@ -23,7 +23,7 @@ public class GreetingController {
         Kernel32.INSTANCE.GetSystemPowerStatus(batteryStatus);
         String template = batteryStatus.toString();
         String batteryParts[] = template.split("\n");
-        String[] cpuInfo = null;
+        final String[][] cpuInfo = {null};
         String disks = null;
         String computerInfo = null;
         String miscellaneous = null;
@@ -31,6 +31,7 @@ public class GreetingController {
         String[] numericAvaibleFileSystem = null;
         String numericFreeRam = null;
         final String[] networkSpeed = {null};
+        String numericPercPerThread = null;
         //String numericRamPerProcess = null;
 
         //ramPerProcessThread
@@ -43,7 +44,12 @@ public class GreetingController {
             System.out.println("\n\nfinito ramperprocess e ci ho messo " + (stopTime - startTime) + "\n" );
         }).start();*/
 
-        final CountDownLatch latch = new CountDownLatch(1);
+        final CountDownLatch latch = new CountDownLatch(2);
+
+        new Thread(() -> {
+            cpuInfo[0] = GeneralStats.getPcInfo();
+            latch.countDown();
+        }).start();
 
         new Thread(() -> {
             networkSpeed[0] = "\n" + GeneralStats.getNetworkSpeed();
@@ -63,8 +69,8 @@ public class GreetingController {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        cpuInfo = GeneralStats.getPcInfo();
-        sb.append(cpuInfo[4] + "\n");
+        //cpuInfo[0] = GeneralStats.getPcInfo();
+        sb.append(cpuInfo[0][4] + "\n");
         sb.append(ramMemory);
         sb.append(batteryParts[1] + "\n");
 
@@ -75,14 +81,13 @@ public class GreetingController {
         numericAvaibleFileSystem = SingletonNumericGeneralStats.getInstance().getAvaibleFileSystem();
         numericCpuLoad = SingletonNumericGeneralStats.getInstance().getCpuLoad();
         numericFreeRam = SingletonNumericGeneralStats.getInstance().getFreeRam();
+        numericPercPerThread = SingletonNumericGeneralStats.getInstance().getPercPerThread();
 
-        cpuInfo = GeneralStats.getPcInfo();
-
-        return new Greeting(counter.incrementAndGet(), template, batteryParts, cpuInfo, disks, computerInfo, miscellaneous, numericAvaibleFileSystem, numericCpuLoad, numericFreeRam/* SingletonNumericGeneralStats.getInstance().getRamPerProcess()*/);
+        return new Greeting(counter.incrementAndGet(), template, batteryParts, cpuInfo[0], disks, computerInfo, miscellaneous, numericAvaibleFileSystem, numericCpuLoad, numericFreeRam, numericPercPerThread/* SingletonNumericGeneralStats.getInstance().getRamPerProcess()*/);
     }
 
     public static void getAllData() {
-        String[] cpuInfo = null;
+        final String[][] cpuInfo = {null};
         String[] disks = null;
         String[] computerInfo = null;
         String[] miscellaneous = null;
@@ -102,7 +107,12 @@ public class GreetingController {
             System.out.println("\n\nfinito ramperprocess e ci ho messo " + (stopTime - startTime) + "\n" );
         }).start();*/
 
-        final CountDownLatch latch = new CountDownLatch(1);
+        final CountDownLatch latch = new CountDownLatch(2);
+
+        new Thread(() -> {
+            cpuInfo[0] = GeneralStats.getPcInfo();
+            latch.countDown();
+        }).start();
 
         new Thread(() -> {
             networkSpeed[0] = "\n" + GeneralStats.getNetworkSpeed();
@@ -131,8 +141,8 @@ public class GreetingController {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        cpuInfo = GeneralStats.getPcInfo();
-        sb.append(cpuInfo[4] + "\n");
+        //cpuInfo[0] = GeneralStats.getPcInfo();
+        sb.append(cpuInfo[0][4] + "\n");
         sb.append(ramMemory);
         sb.append(batteryParts[1] + "\n");
 
@@ -141,7 +151,7 @@ public class GreetingController {
         miscellaneous = sb.toString().split("\n");;
         SingletonBatteryStatus.getInstance().setMiscellaneous(miscellaneous);
 
-        SingletonBatteryStatus.getInstance().setCpu(cpuInfo);
+        SingletonBatteryStatus.getInstance().setCpu(cpuInfo[0]);
 
         SingletonBatteryStatus.getInstance().notifyMyObservers();
 

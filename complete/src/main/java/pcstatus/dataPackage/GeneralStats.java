@@ -22,18 +22,7 @@ public class GeneralStats {
     private static String spacing = "     ";
 
     public static String[] getPcInfo() {
-        //this functions use Sigar library because is more faster then Oshi library
-
-        CpuPerc cpuperc;
-        try {
-            cpuperc = SigarFactory.newSigar().getCpuPerc();
-        } catch (SigarException e) {
-            String[] error = new String[1];
-            error[0] = "cpu not supported";
-            e.printStackTrace();
-            return error;
-        }
-        CpuInfo cpu;
+        /*CpuInfo cpu;
         try {
             cpu = SigarFactory.newSigar().getCpuInfoList()[0];
         } catch (SigarException e) {
@@ -41,9 +30,26 @@ public class GeneralStats {
             error[0] = "cpu not supported";
             e.printStackTrace();
             return error;
+        }*/
+
+        CpuPerc cpuperc;
+        try {
+            cpuperc = SigarFactory.newSigar().getCpuPerc();
+            CpuPerc[] cpuperclist = SigarFactory.newSigar().getCpuPercList();
+            StringBuilder percPerThread = new StringBuilder();
+            for (CpuPerc aCpuperclist : cpuperclist) {
+                percPerThread.append(round((float) (aCpuperclist.getCombined() * 100), 2) + "\n");
+            }
+            System.out.println(percPerThread.toString());
+            SingletonNumericGeneralStats.getInstance().setPercPerThread(percPerThread.toString());
+        } catch (SigarException e) {
+            String[] error = new String[1];
+            error[0] = "cpu not supported";
+            e.printStackTrace();
+            return error;
         }
 
-        /*CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
+        CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
 
         String[] pc = new String[6];
         pc[0] = spacing + "Vendor: " + processor.getVendor();
@@ -51,17 +57,17 @@ public class GeneralStats {
         pc[2] = spacing + "Clock: " + FormatUtil.formatHertz(processor.getVendorFreq());
         pc[3] = spacing + "Physical CPU(s): " + processor.getPhysicalProcessorCount();
         pc[4] = spacing + "Logical CPU(s): " + processor.getLogicalProcessorCount();
-        pc[5] = spacing + "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";*/
+        pc[5] = spacing + "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";
 
 
-        String[] pc = new String[5];
+       /* String[] pc = new String[5];
         pc[0] = spacing + "Vendor: " + cpu.getVendor();
         pc[1] = spacing + cpu.getModel();
         pc[2] = spacing + "Clock: " + cpu.getMhz();
         pc[3] = spacing + "Physical CPU(s): " + cpu.getTotalCores();
         //pc[4] = spacing + "Logical CPU(s): " + cpu.getTotalSockets();
         //pc[5] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";
-        pc[4] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";
+        pc[4] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";*/
 
         SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (cpuperc.getCombined() * 100), 2));
 
@@ -110,9 +116,9 @@ public class GeneralStats {
 
         final Baseboard baseboard = computerSystem.getBaseboard();
         computerSystemString.append(spacing + "Baseboard:" + "\n");
-        computerSystemString.append(spacing + spacing+"manufacturer: "+baseboard.getManufacturer()+"\n");
-        computerSystemString.append(spacing + spacing+"model: "+baseboard.getModel()+"\n");
-        computerSystemString.append(spacing + spacing+"version: "+baseboard.getVersion()+"\n");
+        computerSystemString.append(spacing + spacing + "manufacturer: " + baseboard.getManufacturer() + "\n");
+        computerSystemString.append(spacing + spacing + "model: " + baseboard.getModel() + "\n");
+        computerSystemString.append(spacing + spacing + "version: " + baseboard.getVersion() + "\n");
         //computerSystemString.append(spacing + "  serialnumber: " + baseboard.getSerialNumber() + "\n");
 
         return computerSystemString.toString();
