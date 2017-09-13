@@ -32,9 +32,8 @@ public class GeneralStats {
             return error;
         }*/
 
-        CpuPerc cpuperc;
         try {
-            cpuperc = SigarFactory.newSigar().getCpuPerc();
+            //cpuperc = SigarFactory.newSigar().getCpuPerc();
             CpuPerc[] cpuperclist = SigarFactory.newSigar().getCpuPercList();
             StringBuilder percPerThread = new StringBuilder();
             for (CpuPerc aCpuperclist : cpuperclist) {
@@ -50,28 +49,45 @@ public class GeneralStats {
 
         CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
 
-        String[] pc = new String[6];
-        pc[0] = spacing + "Vendor: " + processor.getVendor();
-        pc[1] = spacing + processor.getName();
-        pc[2] = spacing + "Clock: " + FormatUtil.formatHertz(processor.getVendorFreq());
-        pc[3] = spacing + "Physical CPU(s): " + processor.getPhysicalProcessorCount();
-        pc[4] = spacing + "Logical CPU(s): " + processor.getLogicalProcessorCount();
-        pc[5] = spacing + "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";
+        String[] cpuInfo = new String[6];
+        cpuInfo[0] = spacing + "Vendor: " + processor.getVendor();
+        cpuInfo[1] = spacing + processor.getName();
+        cpuInfo[2] = spacing + "Clock: " + FormatUtil.formatHertz(processor.getVendorFreq());
+        cpuInfo[3] = spacing + "Physical CPU(s): " + processor.getPhysicalProcessorCount();
+        cpuInfo[4] = spacing + "Logical CPU(s): " + processor.getLogicalProcessorCount();
+        cpuInfo[5] = spacing + "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";
 
 
-       /* String[] pc = new String[5];
-        pc[0] = spacing + "Vendor: " + cpu.getVendor();
-        pc[1] = spacing + cpu.getModel();
-        pc[2] = spacing + "Clock: " + cpu.getMhz();
-        pc[3] = spacing + "Physical CPU(s): " + cpu.getTotalCores();
-        //pc[4] = spacing + "Logical CPU(s): " + cpu.getTotalSockets();
-        //pc[5] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";
-        pc[4] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";*/
+       /* String[] cpuInfo = new String[5];
+        cpuInfo[0] = spacing + "Vendor: " + cpu.getVendor();
+        cpuInfo[1] = spacing + cpu.getModel();
+        cpuInfo[2] = spacing + "Clock: " + cpu.getMhz();
+        cpuInfo[3] = spacing + "Physical CPU(s): " + cpu.getTotalCores();
+        //cpuInfo[4] = spacing + "Logical CPU(s): " + cpu.getTotalSockets();
+         //cpuInfo[5] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";
+        cpuInfo[4] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";*/
 
-        SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (cpuperc.getCombined() * 100), 2));
+        SingletonNumericGeneralStats.getInstance().setCpuInfo(cpuInfo);
+        SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
 
+        return cpuInfo;
+    }
 
-        return pc;
+    public static String getCpuLoad() {
+        try {
+            CpuPerc[] cpuperclist = SigarFactory.newSigar().getCpuPercList();
+            StringBuilder percPerThread = new StringBuilder();
+            for (CpuPerc aCpuperclist : cpuperclist) {
+                percPerThread.append(round((float) (aCpuperclist.getCombined() * 100), 2) + "\n");
+            }
+            SingletonNumericGeneralStats.getInstance().setPercPerThread(percPerThread.toString());
+        } catch (SigarException e) {
+            SingletonNumericGeneralStats.getInstance().setPercPerThread("0");
+            e.printStackTrace();
+        }
+        CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
+        SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
+        return spacing + "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";
     }
 
     static String round(float d, int decimalPlace) {
@@ -110,8 +126,10 @@ public class GeneralStats {
 
         computerSystemString.append(spacing + os + "\n");
         computerSystemString.append(spacing + computerSystem.getManufacturer() + " " + computerSystem.getModel() + "\n");
+        computerSystemString.append(spacing + "RAM: " + FormatUtil.formatBytes(hal.getMemory().getTotal()) + "\n\n");
         /*computerSystemString.append(spacing + "Model: " + computerSystem.getModel() + "\n");
         computerSystemString.append(spacing + "Serialnumber: " + computerSystem.getSerialNumber() + "\n\n");*/
+
 
         final Baseboard baseboard = computerSystem.getBaseboard();
         computerSystemString.append(spacing + "Baseboard:" + "\n");
@@ -119,6 +137,8 @@ public class GeneralStats {
         computerSystemString.append(spacing + spacing + "model: " + baseboard.getModel() + "\n");
         computerSystemString.append(spacing + spacing + "version: " + baseboard.getVersion() + "\n");
         //computerSystemString.append(spacing + "  serialnumber: " + baseboard.getSerialNumber() + "\n");
+
+        SingletonNumericGeneralStats.getInstance().setSystemInformation(computerSystemString.toString());
 
         return computerSystemString.toString();
     }
@@ -197,17 +217,17 @@ public class GeneralStats {
         for (int i = 0; i < numericSpace.length; i++) {
             String tmp;
             if (volume[i].equals("C:\\")) {
-                tmp = numericSpace[i];
+                tmp = numericSpace[0];
                 numericSpace[0] = numericSpace[i];
                 numericSpace[i] = tmp;
 
-                tmp = stringBuilder[i];
+                tmp = stringBuilder[0];
                 stringBuilder[0] = stringBuilder[i];
                 stringBuilder[i] = tmp;
             }
         }
         SingletonNumericGeneralStats.getInstance().setAvaibleFileSystem(numericSpace);
-        return String.join("",stringBuilder);
+        return String.join("", stringBuilder);
     }
 
     // for linux SO

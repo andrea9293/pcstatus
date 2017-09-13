@@ -47,7 +47,8 @@ public class GreetingController {
         final CountDownLatch latch = new CountDownLatch(2);
 
         new Thread(() -> {
-            cpuInfo[0] = GeneralStats.getPcInfo();
+            cpuInfo[0] = SingletonNumericGeneralStats.getInstance().getCpuInfo();
+            cpuInfo[0][5] = GeneralStats.getCpuLoad();
             latch.countDown();
         }).start();
 
@@ -58,7 +59,7 @@ public class GreetingController {
 
         disks = GeneralStats.getFileSystem();
 
-        computerInfo = GeneralStats.getComputerSystemInfo();
+        computerInfo = SingletonNumericGeneralStats.getInstance().getSystemInformation();
 
         StringBuilder sb = new StringBuilder();
         String ramMemory = GeneralStats.getRamMemory() + "\n";
@@ -70,10 +71,9 @@ public class GreetingController {
             e.printStackTrace();
         }
         //cpuInfo[0] = GeneralStats.getPcInfo();
-        sb.append(cpuInfo[0][4] + "\n");
+        sb.append(cpuInfo[0][5] + "\n");
         sb.append(ramMemory);
         sb.append(batteryParts[1] + "\n");
-
         sb.append(networkSpeed[0]);
 
         miscellaneous = sb.toString();

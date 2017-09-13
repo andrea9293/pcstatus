@@ -14,6 +14,8 @@ public class SingletonNumericGeneralStats {
     private String percPerThread;
     private Float percRam;
     private String[] avaibleFileSystem;
+    private String systemInformation;
+    private String[] cpuInfo;
     //private String ramPerProcess = null;
 
     public void setCpuLoad(String cpuLoad) {
@@ -46,6 +48,22 @@ public class SingletonNumericGeneralStats {
 
     public String getPercPerThread() {
         return percPerThread;
+    }
+
+    public void setSystemInformation(String systemInformation) {
+        this.systemInformation = systemInformation;
+    }
+
+    public String getSystemInformation() {
+        return systemInformation;
+    }
+
+    public void setCpuInfo(String[] cpuInfo) {
+        this.cpuInfo = cpuInfo;
+    }
+
+    public String[] getCpuInfo() {
+        return cpuInfo;
     }
 
     /*public void setRamPerProcess(String ramPerProcess) {
