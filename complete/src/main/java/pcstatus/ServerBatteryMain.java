@@ -16,6 +16,7 @@ import javafx.stage.StageStyle;
 import org.json.JSONException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.embedded.tomcat.ConnectorStartFailedException;
 import org.springframework.context.ConfigurableApplicationContext;
 import pcstatus.connectionPackage.BluetoothSPPServer;
 import pcstatus.springServer.GreetingController;
@@ -49,11 +50,11 @@ public class ServerBatteryMain extends Application implements Observer {
     private boolean firstShow = true;
     private static String[] args;
     private CountDownLatch latch = new CountDownLatch(1);
-    ;
+    private int port = 8080;
 
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         long startAllTime = System.currentTimeMillis();
         SingletonBatteryStatus.getInstance().addingObserver(ServerBatteryMain.this);
         firstGetter.start();
@@ -62,26 +63,42 @@ public class ServerBatteryMain extends Application implements Observer {
         this.primaryStage = primaryStage;
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample.fxml"));
-        Parent root = loader.load();
+        Parent root = null;
+        try {
+            root = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         ProgressIndicator progressIndicator = new ProgressIndicator();
-        this.primaryStage.setTitle("PCstatus - " + getMyIp());
+        try {
+            this.primaryStage.setTitle("PCstatus - " + getMyIp());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (SocketException e) {
+            this.primaryStage.setTitle("PCstatus - problem with IP identifier");
+            e.printStackTrace();
+        }
         this.primaryStage.setScene(new Scene(root));
         this.primaryStage.setResizable(false);
         this.primaryStage.show();
         this.primaryStage.centerOnScreen();
         this.primaryStage.setOnCloseRequest(event -> {
-            try {
-                shutDown();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            shutDown();
             Platform.exit();
         });
         controller = loader.getController();
 
-        bluetoothThread();
-        latch.await();
+        try {
+            bluetoothThread();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         long stopAllTime = System.currentTimeMillis();
         System.out.println("\n\n                                                 fatto tutto e ci ho messo " + (stopAllTime - startAllTime) + "\n");
         scheduleTask();
@@ -92,14 +109,19 @@ public class ServerBatteryMain extends Application implements Observer {
         launch(args);
     }
 
-    private void shutDown() throws IOException {
-        SpringApplication.exit(applicationContext, () -> 0);
+    private void shutDown() {
+        try {
+            SpringApplication.exit(applicationContext, () -> 0);
+        } catch (IllegalArgumentException e) {
+            System.out.println("il constesto è null, non si è avviato il server");
+        }
         if (bluetooth != null) {
             bluetooth.closeConnection();
         }
         taskCancel();
         if (startBluetoothServer != null)
             startBluetoothServer.interrupt();
+
     }
 
     @Override
@@ -132,7 +154,7 @@ public class ServerBatteryMain extends Application implements Observer {
         //update(null,null);
         URL prova = null;
         try {
-            prova = new URL("http://localhost:8080/greeting/");
+            prova = new URL("http://localhost:" + port + "/greeting/");
             BufferedReader in = new BufferedReader(new InputStreamReader(prova.openStream()));
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
@@ -248,8 +270,20 @@ public class ServerBatteryMain extends Application implements Observer {
     }
 
     private Thread serverThread = new Thread(() -> {
-        applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
+        runSpringApplication();
+
     });
+
+    private void runSpringApplication() {
+        try {
+            applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
+        } catch (ConnectorStartFailedException e) {
+            System.out.println("c'è qualcosa che non va con la porta");
+            port = port + 1;
+            System.getProperties().put("server.port", port);
+            runSpringApplication();
+        }
+    }
 
     private Thread firstGetter = new Thread(() -> {
         GreetingController.getAllData();
