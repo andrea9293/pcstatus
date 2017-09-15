@@ -12,8 +12,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox alignment="CENTER" spacing="8.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pcstatus.Controller">
-   <VBox spacing="8.0">
+<VBox alignment="CENTER" spacing="8.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pcstatus.Controller">
+   <!--<HBox spacing="8.0">
       <children>
           <Button fx:id="buttonSystemLoad" mnemonicParsing="false">
               <graphic>
@@ -62,11 +62,11 @@
               </graphic>
           </Button>
       </children>
-   </VBox>
-    <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="200.0" prefWidth="20.0" />
+   </HBox>
+    <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="200.0" prefWidth="20.0" />-->
 
     <VBox fx:id="mainVbox" alignment="TOP_LEFT" VBox.vgrow="ALWAYS">
-        <HBox alignment="CENTER_LEFT" spacing="8.0" HBox.hgrow="ALWAYS">
+        <HBox alignment="TOP_CENTER" spacing="8.0" HBox.hgrow="ALWAYS">
             <VBox alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
                 <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
                     <Image url="@Images/Speedometer_96px.png" />
@@ -87,7 +87,7 @@
                 </LineChart>
             </VBox>
         </HBox>
-        <HBox alignment="CENTER_LEFT" spacing="8.0" HBox.hgrow="ALWAYS">
+        <HBox alignment="TOP_CENTER" spacing="8.0" HBox.hgrow="ALWAYS">
             <VBox alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
                 <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
                     <Image url="@Images/battery/Charging Battery_96px.png" />
@@ -100,7 +100,7 @@
                 <Label fx:id="batteryText" text="Battery" VBox.vgrow="ALWAYS" />
             </VBox>
         </HBox>
-        <HBox alignment="CENTER_LEFT" spacing="8.0" HBox.hgrow="ALWAYS">
+        <HBox alignment="TOP_CENTER" spacing="8.0" HBox.hgrow="ALWAYS">
             <VBox alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
                 <ImageView fx:id="cpuImage" fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
                     <Image url="@Images/Processor_96px.png" />
@@ -113,12 +113,11 @@
                 <Label fx:id="cpuText" text="CPU" />
             </VBox>
         </HBox>
-        <HBox alignment="CENTER_LEFT" spacing="8.0" HBox.hgrow="ALWAYS">
-          <!--  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
-                <Image url="@Images/HDD_96px.png" />
-            </ImageView> -->
-            <VBox alignment="TOP_LEFT" VBox.vgrow="ALWAYS">
-
+        <HBox alignment="TOP_CENTER" spacing="8.0" HBox.hgrow="ALWAYS">
+            <VBox alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+                <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
+                    <Image url="@Images/HDD_96px.png" />
+                </ImageView>
                 <Label text="Disks" textAlignment="CENTER">
                     <font>
                         <Font name="System Bold" size="20.0" />
@@ -127,11 +126,11 @@
                 <Label fx:id="disksText" text="Disks" />
             </VBox>
         </HBox>
-        <HBox alignment="CENTER_LEFT" spacing="8.0" HBox.hgrow="ALWAYS">
-       <!--     <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
-                <Image url="@Images/System Task_96px.png" />
-            </ImageView> -->
-            <VBox alignment="TOP_LEFT" VBox.vgrow="ALWAYS">
+        <HBox alignment="TOP_CENTER" spacing="8.0" HBox.hgrow="ALWAYS">
+            <VBox alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+                <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
+                    <Image url="@Images/System Task_96px.png" />
+                </ImageView>
                 <Label text="System Information" textAlignment="CENTER">
                     <font>
                         <Font name="System Bold" size="20.0" />
@@ -140,11 +139,63 @@
                 <Label fx:id="systemText" text="systemText" VBox.vgrow="ALWAYS" />
             </VBox>
         </HBox>
+
         <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
         </padding>
     </VBox>
+    <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="HORIZONTAL" prefHeight="20.0" prefWidth="200.0" />
+    <HBox alignment="TOP_CENTER" prefWidth="-Infinity" spacing="8.0">
+        <children>
+            <Button fx:id="buttonSystemLoad" mnemonicParsing="false">
+                <graphic>
+                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@Images/icons/Speedometer_104px.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button fx:id="buttonBattery" mnemonicParsing="false">
+                <graphic>
+                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@Images/icons/Charging Battery_96px.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="buttonProcessor" mnemonicParsing="false">
+                <graphic>
+                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@Images/icons/Processor_104px.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="buttonHdd" mnemonicParsing="false">
+                <graphic>
+                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@Images/icons/HDD_96px.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="buttonSystemInfo" mnemonicParsing="false">
+                <graphic>
+                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@Images/icons/System Task_104px.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </children>
+    </HBox>
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
-</HBox>
+</VBox>

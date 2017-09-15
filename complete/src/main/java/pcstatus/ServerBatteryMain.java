@@ -32,7 +32,6 @@ import java.util.concurrent.CountDownLatch;
 @SpringBootApplication
 public class ServerBatteryMain extends Application implements Observer {
 
-
     private Controller controller;
     private static ConfigurableApplicationContext applicationContext;
     private BluetoothSPPServer bluetooth;
@@ -82,7 +81,6 @@ public class ServerBatteryMain extends Application implements Observer {
             Platform.exit();
         });
         controller = loader.getController();
-        controller.setServerBatteryMain(ServerBatteryMain.this);
 
         try {
             bluetoothThread();
@@ -127,13 +125,6 @@ public class ServerBatteryMain extends Application implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         SingletonBatteryStatus singletonBatteryStatus = SingletonBatteryStatus.getInstance();
-        /*String ip = "";
-        try {
-            ip = "This is your IP: " + getMyIp() + "\n\n";
-        } catch (UnknownHostException | SocketException e) {
-            ip = "Unable to find your IP";
-            e.printStackTrace();
-        }*/
 
         controller.setBatteryText(String.join("\n", singletonBatteryStatus.getBattery()));
         controller.setCpuText(String.join("\n", singletonBatteryStatus.getCpu()));
@@ -146,8 +137,8 @@ public class ServerBatteryMain extends Application implements Observer {
     }
 
     public void resizeWindow(){
-        primaryStage.sizeToScene();
         if (firstShow) {
+            primaryStage.sizeToScene();
             primaryStage.centerOnScreen();
             firstShow = false;
         }
@@ -252,9 +243,7 @@ public class ServerBatteryMain extends Application implements Observer {
         return addr.getHostAddress();
     }
 
-    private Thread serverThread = new Thread(() -> {
-        runSpringApplication();
-    });
+    private Thread serverThread = new Thread(this::runSpringApplication);
 
     private void runSpringApplication() {
         try {

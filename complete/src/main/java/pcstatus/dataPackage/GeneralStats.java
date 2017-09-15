@@ -19,8 +19,6 @@ import java.util.Enumeration;
 
 public class GeneralStats {
 
-    private static String spacing = "     ";
-
     public static String[] getPcInfo() {
         /*CpuInfo cpu;
         try {
@@ -50,22 +48,22 @@ public class GeneralStats {
         CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
 
         String[] cpuInfo = new String[6];
-        cpuInfo[0] = spacing + "Vendor: " + processor.getVendor();
-        cpuInfo[1] = spacing + processor.getName();
-        cpuInfo[2] = spacing + "Clock: " + FormatUtil.formatHertz(processor.getVendorFreq());
-        cpuInfo[3] = spacing + "Physical CPU(s): " + processor.getPhysicalProcessorCount();
-        cpuInfo[4] = spacing + "Logical CPU(s): " + processor.getLogicalProcessorCount();
-        cpuInfo[5] = spacing + "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";
+        cpuInfo[0] = "Vendor: " + processor.getVendor();
+        cpuInfo[1] =  processor.getName();
+        cpuInfo[2] =  "Clock: " + FormatUtil.formatHertz(processor.getVendorFreq());
+        cpuInfo[3] =  "Physical CPU(s): " + processor.getPhysicalProcessorCount();
+        cpuInfo[4] =  "Logical CPU(s): " + processor.getLogicalProcessorCount();
+        cpuInfo[5] =  "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";
 
 
        /* String[] cpuInfo = new String[5];
-        cpuInfo[0] = spacing + "Vendor: " + cpu.getVendor();
-        cpuInfo[1] = spacing + cpu.getModel();
-        cpuInfo[2] = spacing + "Clock: " + cpu.getMhz();
-        cpuInfo[3] = spacing + "Physical CPU(s): " + cpu.getTotalCores();
-        //cpuInfo[4] = spacing + "Logical CPU(s): " + cpu.getTotalSockets();
-         //cpuInfo[5] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";
-        cpuInfo[4] = spacing + "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";*/
+        cpuInfo[0] =  "Vendor: " + cpu.getVendor();
+        cpuInfo[1] =  cpu.getModel();
+        cpuInfo[2] =  "Clock: " + cpu.getMhz();
+        cpuInfo[3] =  "Physical CPU(s): " + cpu.getTotalCores();
+        //cpuInfo[4] =  "Logical CPU(s): " + cpu.getTotalSockets();
+         //cpuInfo[5] =  "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";
+        cpuInfo[4] =  "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";*/
 
         SingletonNumericGeneralStats.getInstance().setCpuInfo(cpuInfo);
         SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
@@ -87,7 +85,7 @@ public class GeneralStats {
         }
         CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
         SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
-        return spacing + "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";
+        return  "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";
     }
 
     static String round(float d, int decimalPlace) {
@@ -124,19 +122,19 @@ public class GeneralStats {
         ComputerSystem computerSystem = hal.getComputerSystem();
         StringBuilder computerSystemString = new StringBuilder();
 
-        computerSystemString.append(spacing + os + "\n");
-        computerSystemString.append(spacing + computerSystem.getManufacturer() + " " + computerSystem.getModel() + "\n");
-        computerSystemString.append(spacing + "RAM: " + FormatUtil.formatBytes(hal.getMemory().getTotal()) + "\n\n");
-        /*computerSystemString.append(spacing + "Model: " + computerSystem.getModel() + "\n");
-        computerSystemString.append(spacing + "Serialnumber: " + computerSystem.getSerialNumber() + "\n\n");*/
+        computerSystemString.append( os + "\n");
+        computerSystemString.append( computerSystem.getManufacturer() + " " + computerSystem.getModel() + "\n");
+        computerSystemString.append( "RAM: " + FormatUtil.formatBytes(hal.getMemory().getTotal()) + "\n\n");
+        /*computerSystemString.append( "Model: " + computerSystem.getModel() + "\n");
+        computerSystemString.append( "Serialnumber: " + computerSystem.getSerialNumber() + "\n\n");*/
 
 
         final Baseboard baseboard = computerSystem.getBaseboard();
-        computerSystemString.append(spacing + "Baseboard:" + "\n");
-        computerSystemString.append(spacing + spacing + "manufacturer: " + baseboard.getManufacturer() + "\n");
-        computerSystemString.append(spacing + spacing + "model: " + baseboard.getModel() + "\n");
-        computerSystemString.append(spacing + spacing + "version: " + baseboard.getVersion() + "\n");
-        //computerSystemString.append(spacing + "  serialnumber: " + baseboard.getSerialNumber() + "\n");
+        computerSystemString.append("Baseboard:" + "\n");
+        computerSystemString.append("manufacturer: " + baseboard.getManufacturer() + "\n");
+        computerSystemString.append("     " + "model: " + baseboard.getModel() + "\n");
+        computerSystemString.append("     " + "version: " + baseboard.getVersion() + "\n");
+        //computerSystemString.append( "  serialnumber: " + baseboard.getSerialNumber() + "\n");
 
         SingletonNumericGeneralStats.getInstance().setSystemInformation(computerSystemString.toString());
 
@@ -149,7 +147,7 @@ public class GeneralStats {
         GlobalMemory memory = hal.getMemory();
 
         SingletonNumericGeneralStats.getInstance().setFreeRam(memory.getAvailable(), memory.getTotal());
-        return spacing + "Memory: " + FormatUtil.formatBytes(memory.getAvailable()) + " free of "
+        return  "Memory: " + FormatUtil.formatBytes(memory.getAvailable()) + " free of "
                 + FormatUtil.formatBytes(memory.getTotal());
     }
 
@@ -196,7 +194,7 @@ public class GeneralStats {
             OSFileStore fs = fsArray[i];
             long usable = fs.getUsableSpace();
             long total = fs.getTotalSpace();
-            stringBuilder[i] = (spacing + String.format(" %s (%s) [%s] %s of %s free (%.1f%%) " +
+            stringBuilder[i] = ( String.format(" %s (%s) [%s] %s of %s free (%.1f%%) " +
                             (fs.getLogicalVolume() != null && fs.getLogicalVolume().length() > 0 ? "[%s]" : "%s") +
                             "%n", fs.getName(),
                     fs.getDescription().isEmpty() ? "file system" : fs.getDescription(), fs.getType(),
@@ -251,7 +249,7 @@ public class GeneralStats {
         String ris = "";
 
         for (int i = 0; i < fslist.length; i++) {
-            disks = spacing + "Label: " + fslist[i].getDevName();
+            disks =  "Label: " + fslist[i].getDevName();
             type = "Type: " + fslist[i].getTypeName();
             try {
                 filesystemusage = sigar.getMountedFileSystemUsage(fslist[i].getDevName());
@@ -308,8 +306,8 @@ public class GeneralStats {
         try {
             networkName = getDefaultNetworkInteface();
         } catch (SocketException | UnknownHostException e) {
-            sb.append(spacing + "download speed: not supported\n");
-            sb.append(spacing + "upload speed: not supported\n");
+            sb.append( "download speed: not supported\n");
+            sb.append( "upload speed: not supported\n");
             e.printStackTrace();
             return sb.toString();
         }
@@ -326,8 +324,8 @@ public class GeneralStats {
                 i++;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            sb.append(spacing + "download speed: not supported\n");
-            sb.append(spacing + "upload speed: not supported\n");
+            sb.append( "download speed: not supported\n");
+            sb.append( "upload speed: not supported\n");
             return sb.toString();
         }
 
@@ -345,8 +343,8 @@ public class GeneralStats {
         long upload2 = net.getBytesSent();
         long timestamp2 = net.getTimeStamp();
 
-        sb.append(spacing + "download speed: " + formatSize((download2 - download1) / (timestamp2 - timestamp1)) + "/s\n");
-        sb.append(spacing + "upload speed: " + formatSize((upload2 - upload1) / (timestamp2 - timestamp1)) + "/s\n");
+        sb.append( "download speed: " + formatSize((download2 - download1) / (timestamp2 - timestamp1)) + "/s\n");
+        sb.append( "upload speed: " + formatSize((upload2 - upload1) / (timestamp2 - timestamp1)) + "/s\n");
 
         return sb.toString();
     }

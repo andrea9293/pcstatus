@@ -83,9 +83,9 @@ public interface Kernel32 extends StdCallLibrary {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append("     " + "AC status: " + getACLineStatusString() + "\n");
-            sb.append("     " + "Battery percentage: " + getBatteryLifePercent() + "\n");
-            sb.append("     " + "Remaining battery: " + getHours(getBatteryLifeTime()) + "\n");
+            sb.append("AC status: " + getACLineStatusString() + "\n");
+            sb.append("Battery percentage: " + getBatteryLifePercent() + "\n");
+            sb.append("Remaining battery: " + getHours(getBatteryLifeTime()) + "\n");
             return sb.toString();
         }
 

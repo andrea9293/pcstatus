@@ -46,8 +46,6 @@ public class Controller {
     private Node systemInfoBox;
     private Node disksBox;
 
-    private ServerBatteryMain serverBatteryMain;
-
     @FXML
     @Autowired
     private void initialize() {
@@ -92,14 +90,10 @@ public class Controller {
         });
     }
 
-    public void setServerBatteryMain(ServerBatteryMain serverBatteryMain) {
-        this.serverBatteryMain = serverBatteryMain;
-    }
 
     public void changeView(Node view){
         mainVbox.getChildren().removeAll(systemInfoBox, batteryBox, cpuBox, disksBox, systemLoadBox);
         mainVbox.getChildren().add(view);
-        serverBatteryMain.resizeWindow();
     }
 
     public LineChartClass getLineChartClass() {
