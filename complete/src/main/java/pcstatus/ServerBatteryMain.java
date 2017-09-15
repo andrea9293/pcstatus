@@ -2,17 +2,10 @@ package pcstatus;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.layout.HBox;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.json.JSONException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -49,8 +42,9 @@ public class ServerBatteryMain extends Application implements Observer {
     private Stage primaryStage;
     private boolean firstShow = true;
     private static String[] args;
-    private CountDownLatch latch = new CountDownLatch(1);
+    private CountDownLatch latch = new CountDownLatch(2);
     private int port = 8080;
+    private boolean isServerCreated;
 
 
     @Override
@@ -70,7 +64,7 @@ public class ServerBatteryMain extends Application implements Observer {
             e.printStackTrace();
         }
 
-        ProgressIndicator progressIndicator = new ProgressIndicator();
+        // ProgressIndicator progressIndicator = new ProgressIndicator();
         try {
             this.primaryStage.setTitle("PCstatus - " + getMyIp());
         } catch (UnknownHostException e) {
@@ -88,6 +82,7 @@ public class ServerBatteryMain extends Application implements Observer {
             Platform.exit();
         });
         controller = loader.getController();
+        controller.setServerBatteryMain(ServerBatteryMain.this);
 
         try {
             bluetoothThread();
@@ -95,13 +90,18 @@ public class ServerBatteryMain extends Application implements Observer {
             e.printStackTrace();
         }
         try {
+            System.out.println("aspetto");
             latch.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        System.out.println("finito di aspettare");
         long stopAllTime = System.currentTimeMillis();
         System.out.println("\n\n                                                 fatto tutto e ci ho messo " + (stopAllTime - startAllTime) + "\n");
-        scheduleTask();
+        if (isServerCreated)
+            scheduleTask();
+        else
+            scheduleTaskWithoutServer();
     }
 
     public static void main(String[] args) throws IOException {
@@ -135,19 +135,22 @@ public class ServerBatteryMain extends Application implements Observer {
             e.printStackTrace();
         }*/
 
-        // controller.setIpText(ip);
-
         controller.setBatteryText(String.join("\n", singletonBatteryStatus.getBattery()));
         controller.setCpuText(String.join("\n", singletonBatteryStatus.getCpu()));
         controller.setDisksText(String.join("\n", singletonBatteryStatus.getDisks()));
         controller.setSystemText(String.join("\n", singletonBatteryStatus.getComputerInfo()));
         controller.setMiscellaneous(String.join("\n", singletonBatteryStatus.getMiscellaneous()));
+        controller.getLineChartClass().addEntryLineChart(singletonBatteryStatus.getNumericCpuLoad());
+        resizeWindow();
+        sendBluetoothMessage();
+    }
+
+    public void resizeWindow(){
         primaryStage.sizeToScene();
         if (firstShow) {
             primaryStage.centerOnScreen();
             firstShow = false;
         }
-        sendBluetoothMessage();
     }
 
     private void refresh() {
@@ -221,6 +224,21 @@ public class ServerBatteryMain extends Application implements Observer {
         }
     }
 
+    private void scheduleTaskWithoutServer() {
+        timer = new Timer();
+        System.out.println("task programmato senza server");
+        if (task == null) {
+            task = new TimerTask() {
+                @Override
+                public void run() {
+                    //System.out.println("Inside Timer Task" + System.currentTimeMillis());
+                    GreetingController.getAllData();
+                }
+            };
+            timer.schedule(task, 0, 3000); //it executes this every 1 minute
+        }
+    }
+
     private void taskCancel() {
         if (task != null) {
             System.out.println("interrotto il timer");
@@ -234,7 +252,34 @@ public class ServerBatteryMain extends Application implements Observer {
         return addr.getHostAddress();
     }
 
-    public static class ProgressForm {
+    private Thread serverThread = new Thread(() -> {
+        runSpringApplication();
+    });
+
+    private void runSpringApplication() {
+        try {
+            applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
+            isServerCreated = true;
+            latch.countDown();
+        } catch (ConnectorStartFailedException e) {
+            System.out.println("c'è qualcosa che non va con la porta");
+            port = port + 1;
+            if (port < 8091) {
+                System.getProperties().put("server.port", port);
+                runSpringApplication();
+            } else {
+                isServerCreated = false;
+                latch.countDown();
+            }
+        }
+    }
+
+    private Thread firstGetter = new Thread(() -> {
+        GreetingController.getAllData();
+        latch.countDown();
+    });
+
+       /*public static class ProgressForm {
         private final Stage dialogStage;
         private final ProgressIndicator pin = new ProgressIndicator();
 
@@ -267,26 +312,5 @@ public class ServerBatteryMain extends Application implements Observer {
         public Stage getDialogStage() {
             return dialogStage;
         }
-    }
-
-    private Thread serverThread = new Thread(() -> {
-        runSpringApplication();
-
-    });
-
-    private void runSpringApplication() {
-        try {
-            applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
-        } catch (ConnectorStartFailedException e) {
-            System.out.println("c'è qualcosa che non va con la porta");
-            port = port + 1;
-            System.getProperties().put("server.port", port);
-            runSpringApplication();
-        }
-    }
-
-    private Thread firstGetter = new Thread(() -> {
-        GreetingController.getAllData();
-        latch.countDown();
-    });
+    }*/
 }

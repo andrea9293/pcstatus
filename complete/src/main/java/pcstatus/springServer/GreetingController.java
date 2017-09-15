@@ -48,7 +48,7 @@ public class GreetingController {
 
         new Thread(() -> {
             cpuInfo[0] = SingletonNumericGeneralStats.getInstance().getCpuInfo();
-            cpuInfo[0][5] = GeneralStats.getCpuLoad();
+            cpuInfo[0][5] = GeneralStats.getCpuLoad();//todo a volte crasha, capisci perché
             latch.countDown();
         }).start();
 
@@ -142,7 +142,8 @@ public class GreetingController {
             e.printStackTrace();
         }
         //cpuInfo[0] = GeneralStats.getPcInfo();
-        sb.append(cpuInfo[0][4] + "\n");
+        SingletonNumericGeneralStats.getInstance().setCpuLoad(cpuInfo[0][5]);
+        sb.append(cpuInfo[0][5] + "\n");
         sb.append(ramMemory);
         sb.append(batteryParts[1] + "\n");
 

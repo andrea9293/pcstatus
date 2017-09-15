@@ -16,7 +16,7 @@ apply plugin: 'org.springframework.boot'
 
 jar {
     baseName = 'PC-status'
-    version =  '1.0alpha'
+    version =  '1.1alpha'
 }
 
 repositories {

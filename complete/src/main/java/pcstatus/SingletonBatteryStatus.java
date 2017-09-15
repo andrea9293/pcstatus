@@ -18,6 +18,7 @@ public class SingletonBatteryStatus extends Observable{
     private String jsonStr;
     private String[] computerInfo;
     private String[] miscellaneous;
+    private Float numericCpuLoad;
 
 
     private SingletonBatteryStatus() {}
@@ -82,5 +83,13 @@ public class SingletonBatteryStatus extends Observable{
 
     public String[] getMiscellaneous() {
         return miscellaneous;
+    }
+
+    public void setNumericCpuLoad(String numericCpuLoad) {
+        this.numericCpuLoad = Float.parseFloat(numericCpuLoad);
+    }
+
+    public Float getNumericCpuLoad() {
+        return numericCpuLoad;
     }
 }

@@ -33,6 +33,10 @@ public class jsonParser {
         strings = jsonObj.getString("miscellaneous").split("\n");
         SingletonBatteryStatus.getInstance().setMiscellaneous(strings);
 
+        String string;
+        string = jsonObj.getString("numericCpuLoad");
+        SingletonBatteryStatus.getInstance().setNumericCpuLoad(string);
+
         SingletonBatteryStatus.getInstance().notifyMyObservers();
     }
 }
