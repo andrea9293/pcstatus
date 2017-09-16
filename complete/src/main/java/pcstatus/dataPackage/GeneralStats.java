@@ -8,6 +8,7 @@ import oshi.SystemInfo;
 import oshi.hardware.*;
 import oshi.software.os.OSFileStore;
 import oshi.util.FormatUtil;
+import pcstatus.SingletonBatteryStatus;
 
 import java.math.BigDecimal;
 import java.net.InetAddress;
@@ -79,8 +80,10 @@ public class GeneralStats {
                 percPerThread.append(round((float) (aCpuperclist.getCombined() * 100), 2) + "\n");
             }
             SingletonNumericGeneralStats.getInstance().setPercPerThread(percPerThread.toString());
+            SingletonBatteryStatus.getInstance().setPercPerThread(percPerThread.toString());
         } catch (SigarException e) {
             SingletonNumericGeneralStats.getInstance().setPercPerThread("0");
+            SingletonBatteryStatus.getInstance().setPercPerThread("0");
             e.printStackTrace();
         }
         CentralProcessor processor = new SystemInfo().getHardware().getProcessor();

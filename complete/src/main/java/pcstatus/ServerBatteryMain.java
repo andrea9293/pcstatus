@@ -132,16 +132,20 @@ public class ServerBatteryMain extends Application implements Observer {
         controller.setSystemText(String.join("\n", singletonBatteryStatus.getComputerInfo()));
         controller.setMiscellaneous(String.join("\n", singletonBatteryStatus.getMiscellaneous()));
         controller.getLineChartClass().addEntryLineChart(singletonBatteryStatus.getNumericCpuLoad());
-        resizeWindow();
+        if (firstShow) {
+            controller.getMultipleLineChartClass().createSeries();
+            controller.getMultipleLineChartClass().addEntryLineChart(singletonBatteryStatus.getPercPerThread());
+            resizeWindow();
+        }else {
+            controller.getMultipleLineChartClass().addEntryLineChart(singletonBatteryStatus.getPercPerThread());
+        }
         sendBluetoothMessage();
     }
 
-    public void resizeWindow(){
-        if (firstShow) {
-            primaryStage.sizeToScene();
-            primaryStage.centerOnScreen();
-            firstShow = false;
-        }
+    public void resizeWindow() {
+        primaryStage.sizeToScene();
+        primaryStage.centerOnScreen();
+        firstShow = false;
     }
 
     private void refresh() {

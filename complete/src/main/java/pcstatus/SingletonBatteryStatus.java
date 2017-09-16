@@ -19,6 +19,7 @@ public class SingletonBatteryStatus extends Observable{
     private String[] computerInfo;
     private String[] miscellaneous;
     private Float numericCpuLoad;
+    private Float[] percPerThread;
 
 
     private SingletonBatteryStatus() {}
@@ -91,5 +92,18 @@ public class SingletonBatteryStatus extends Observable{
 
     public Float getNumericCpuLoad() {
         return numericCpuLoad;
+    }
+
+    public void setPercPerThread(String percPerThread) {
+        String[] tmpStr = percPerThread.split("\n");
+        Float[] tmpFlo = new Float[tmpStr.length];
+        for (int i = 0; i < tmpStr.length; i++) {
+            tmpFlo[i] = Float.valueOf(tmpStr[i]);
+        }
+        this.percPerThread=tmpFlo;
+    }
+
+    public Float[] getPercPerThread() {
+        return percPerThread;
     }
 }

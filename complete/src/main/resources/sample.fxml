@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
@@ -77,7 +78,7 @@
                     </font>
                 </Label>
                 <Label fx:id="miscellaneous" text="Miscellaneous" />
-                <LineChart fx:id="lineChart" prefHeight="300" prefWidth="500">
+                <LineChart fx:id="lineChartSystemLoad" prefHeight="300" prefWidth="500">
                     <xAxis>
                         <NumberAxis side="BOTTOM" />
                     </xAxis>
@@ -102,7 +103,7 @@
         </HBox>
         <HBox alignment="TOP_CENTER" spacing="8.0" HBox.hgrow="ALWAYS">
             <VBox alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
-                <ImageView fx:id="cpuImage" fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
+                <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
                     <Image url="@Images/Processor_96px.png" />
                 </ImageView>
                 <Label text="CPU" textAlignment="CENTER">
@@ -111,6 +112,14 @@
                     </font>
                 </Label>
                 <Label fx:id="cpuText" text="CPU" />
+            <LineChart fx:id="lineChartPercPerThread" prefHeight="300" prefWidth="500">
+              <xAxis>
+                <NumberAxis side="BOTTOM" />
+              </xAxis>
+              <yAxis>
+                <NumberAxis side="LEFT" />
+              </yAxis>
+            </LineChart>
             </VBox>
         </HBox>
         <HBox alignment="TOP_CENTER" spacing="8.0" HBox.hgrow="ALWAYS">
