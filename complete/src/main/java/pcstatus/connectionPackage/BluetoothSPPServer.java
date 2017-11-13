@@ -3,6 +3,7 @@ package pcstatus.connectionPackage;
 import pcstatus.ErrorManager;
 import pcstatus.ServerBatteryMain;
 import pcstatus.SingletonBatteryStatus;
+import pcstatus.springServer.ServerManager;
 
 import javax.bluetooth.RemoteDevice;
 import javax.bluetooth.UUID;
@@ -23,11 +24,11 @@ public class BluetoothSPPServer {
     private RemoteDevice device;
     private InputStream inStream;
     private Thread messageThread;
-    private ServerBatteryMain serverBatteryMain;
+    private ServerManager serverManager;
     private boolean connectionIsAvaible = false;
 
-    public BluetoothSPPServer(ServerBatteryMain serverBatteryMain) {
-        this.serverBatteryMain = serverBatteryMain;
+    public BluetoothSPPServer(ServerManager serverManager) {
+        this.serverManager = serverManager;
     }
 
     //start server
@@ -131,7 +132,7 @@ public class BluetoothSPPServer {
                         else
                             Thread.currentThread().interrupt();
                         closeConnection();
-                        serverBatteryMain.startServerBluetooth();
+                        serverManager.startServerBluetooth();
                     } else
                         System.out.println("non sono stato interrotto ma sono nel catch");//e.printStackTrace();
                 }

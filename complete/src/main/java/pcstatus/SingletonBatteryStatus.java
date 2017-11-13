@@ -24,7 +24,7 @@ public class SingletonBatteryStatus extends Observable{
 
     private SingletonBatteryStatus() {}
 
-    void setJsonStr(String jsonStr) throws JSONException {
+    public void setJsonStr(String jsonStr) throws JSONException {
         this.jsonStr = jsonStr;
         new jsonParser (jsonStr);
     }

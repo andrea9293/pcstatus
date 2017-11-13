@@ -13,6 +13,7 @@ import org.springframework.boot.context.embedded.tomcat.ConnectorStartFailedExce
 import org.springframework.context.ConfigurableApplicationContext;
 import pcstatus.connectionPackage.BluetoothSPPServer;
 import pcstatus.springServer.GreetingController;
+import pcstatus.springServer.ServerManager;
 
 import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.LocalDevice;
@@ -34,22 +35,20 @@ public class ServerBatteryMain extends Application implements Observer {
 
     private Controller controller;
     private static ConfigurableApplicationContext applicationContext;
-    private BluetoothSPPServer bluetooth;
-    private Thread startBluetoothServer;
-    private TimerTask task;
-    private Timer timer;
     private Stage primaryStage;
     private boolean firstShow = true;
     private static String[] args;
     private CountDownLatch latch = new CountDownLatch(2);
     private int port = 8080;
     private boolean isServerCreated;
+    private ServerManager serverManager;
 
 
     @Override
     public void start(Stage primaryStage) {
         long startAllTime = System.currentTimeMillis();
         SingletonBatteryStatus.getInstance().addingObserver(ServerBatteryMain.this);
+        serverManager = new ServerManager(ServerBatteryMain.this);
         firstGetter.start();
         serverThread.start();
 
@@ -64,14 +63,6 @@ public class ServerBatteryMain extends Application implements Observer {
         }
 
         // ProgressIndicator progressIndicator = new ProgressIndicator();
-        try {
-            this.primaryStage.setTitle("PCstatus - " + getMyIp());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (SocketException e) {
-            this.primaryStage.setTitle("PCstatus - problem with IP identifier");
-            e.printStackTrace();
-        }
         this.primaryStage.setScene(new Scene(root));
         this.primaryStage.setResizable(false);
         this.primaryStage.show();
@@ -83,7 +74,7 @@ public class ServerBatteryMain extends Application implements Observer {
         controller = loader.getController();
 
         try {
-            bluetoothThread();
+            serverManager.bluetoothThread();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -94,12 +85,21 @@ public class ServerBatteryMain extends Application implements Observer {
             e.printStackTrace();
         }
         System.out.println("finito di aspettare");
+        try {
+            this.primaryStage.setTitle("PCstatus - " + getMyIp() + ":" + port);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (SocketException e) {
+            this.primaryStage.setTitle("PCstatus - problem with IP identifier");
+            e.printStackTrace();
+        }
         long stopAllTime = System.currentTimeMillis();
-        System.out.println("\n\n                                                 fatto tutto e ci ho messo " + (stopAllTime - startAllTime) + "\n");
+        System.out.println("\n\n                                                " +
+                " fatto tutto e ci ho messo " + (stopAllTime - startAllTime) + "\n");
         if (isServerCreated)
-            scheduleTask();
+            serverManager.scheduleTask();
         else
-            scheduleTaskWithoutServer();
+            serverManager.scheduleTaskWithoutServer();
     }
 
     public static void main(String[] args) throws IOException {
@@ -110,16 +110,12 @@ public class ServerBatteryMain extends Application implements Observer {
     private void shutDown() {
         try {
             SpringApplication.exit(applicationContext, () -> 0);
+
         } catch (IllegalArgumentException e) {
             System.out.println("il constesto è null, non si è avviato il server");
         }
-        if (bluetooth != null) {
-            bluetooth.closeConnection();
-        }
-        taskCancel();
-        if (startBluetoothServer != null)
-            startBluetoothServer.interrupt();
 
+        serverManager.shutDown();
     }
 
     @Override
@@ -139,108 +135,15 @@ public class ServerBatteryMain extends Application implements Observer {
         }else {
             controller.getMultipleLineChartClass().addEntryLineChart(singletonBatteryStatus.getPercPerThread());
         }
-        sendBluetoothMessage();
+        serverManager.sendBluetoothMessage();
     }
 
-    public void resizeWindow() {
+    private void resizeWindow() {
         primaryStage.sizeToScene();
         primaryStage.centerOnScreen();
         firstShow = false;
     }
 
-    private void refresh() {
-        //update(null,null);
-        URL prova = null;
-        try {
-            prova = new URL("http://localhost:" + port + "/greeting/");
-            BufferedReader in = new BufferedReader(new InputStreamReader(prova.openStream()));
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                SingletonBatteryStatus.getInstance().setJsonStr(inputLine);
-            }
-            in.close();
-        } catch (IOException | JSONException e) {
-            System.out.println("server non pronto");
-            //e.printStackTrace();
-        }
-    }
-
-    private void sendBluetoothMessage() {
-        if (bluetooth != null) bluetooth.sendMessage();
-    }
-
-    private void bluetoothThread() throws IOException {
-        if (startBluetoothServer == null || !startBluetoothServer.isAlive()) {
-
-            //display local device address and name
-            LocalDevice localDevice;
-            try {
-                localDevice = LocalDevice.getLocalDevice();
-                System.out.println("Address: " + localDevice.getBluetoothAddress());
-                System.out.println("Name: " + localDevice.getFriendlyName());
-                bluetooth = new BluetoothSPPServer(ServerBatteryMain.this);
-                startServerBluetooth();
-
-            } catch (BluetoothStateException e) {
-                //ErrorManager.exeptionDialog(e);
-                System.out.println("Bluetooth non supportato");
-            }
-        } else {
-            System.out.println("sono in esecuzione");
-        }
-    }
-
-    public void startServerBluetooth() {
-        if (startBluetoothServer == null || !startBluetoothServer.isAlive()) {
-            startBluetoothServer = new Thread(() -> {
-                try {
-                    bluetooth.startBluetoothServer();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-
-            startBluetoothServer.start();
-        }
-    }
-
-    private void scheduleTask() {
-        timer = new Timer();
-        System.out.println("task programmato");
-        if (task == null) {
-            task = new TimerTask() {
-                @Override
-                public void run() {
-                    //System.out.println("Inside Timer Task" + System.currentTimeMillis());
-                    refresh();
-                }
-            };
-            timer.schedule(task, 0, 3000); //it executes this every 1 minute
-        }
-    }
-
-    private void scheduleTaskWithoutServer() {
-        timer = new Timer();
-        System.out.println("task programmato senza server");
-        if (task == null) {
-            task = new TimerTask() {
-                @Override
-                public void run() {
-                    //System.out.println("Inside Timer Task" + System.currentTimeMillis());
-                    GreetingController.getAllData();
-                }
-            };
-            timer.schedule(task, 0, 3000); //it executes this every 1 minute
-        }
-    }
-
-    private void taskCancel() {
-        if (task != null) {
-            System.out.println("interrotto il timer");
-            task.cancel();
-            timer.cancel();
-        }
-    }
 
     private String getMyIp() throws UnknownHostException, SocketException {
         InetAddress addr = InetAddress.getLocalHost();

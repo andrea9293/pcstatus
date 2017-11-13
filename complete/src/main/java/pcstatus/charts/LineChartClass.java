@@ -6,7 +6,6 @@ import javafx.scene.chart.XYChart;
 
 public class LineChartClass {
     private XYChart.Series series;
-    private int maxRange = 10;
     private int time = 0;
     private NumberAxis xBoundLineChart;
 
@@ -28,6 +27,7 @@ public class LineChartClass {
 
     public void addEntryLineChart(Float value) {
         series.getData().add(new XYChart.Data(time, value));
+        int maxRange = 10;
         if (time > maxRange) {
             series.getData().remove(0);
         }

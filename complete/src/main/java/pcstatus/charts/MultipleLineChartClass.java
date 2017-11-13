@@ -12,7 +12,6 @@ public class MultipleLineChartClass {
 
     private XYChart.Series[] series;
     private LineChart multiLineChart;
-    private int maxRange = 10;
     private int time = 0;
     private NumberAxis xBoundLineChart;
 
@@ -27,7 +26,6 @@ public class MultipleLineChartClass {
         yaxis.setAutoRanging(false);
         yaxis.setLowerBound(0);
         yaxis.setUpperBound(100);
-        //createSeries();
     }
 
     public void createSeries() {
@@ -44,7 +42,8 @@ public class MultipleLineChartClass {
 
     public void addEntryLineChart(Float[] value) {
         System.out.println("stampo dimensione di value " + value.length);
-        for (int i =0;i<value.length;i++){
+        int maxRange = 10;
+        for (int i = 0; i<value.length; i++){
             series[i].getData().add(new XYChart.Data(time, value[i]));
             if (time > maxRange) {
                 series[i].getData().remove(0);
