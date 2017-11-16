@@ -94,7 +94,9 @@ public class GreetingController {
         String numericCpuLoad = null;
         String[] numericAvaibleFileSystem = null;
         String numericFreeRam = null;
+        String numericPercPerThread = null;
         final String[] networkSpeed = {null};
+
         //String numericRamPerProcess = null;
 
         //ramPerProcessThread
@@ -125,10 +127,12 @@ public class GreetingController {
         String batteryParts[] = template.split("\n");
         SingletonBatteryStatus.getInstance().setBattery(batteryParts);
 
-        disks = GeneralStats.getFileSystem().split("\n");;
+        disks = GeneralStats.getFileSystem().split("\n");
+
         SingletonBatteryStatus.getInstance().setDisks(disks);
 
-        computerInfo = GeneralStats.getComputerSystemInfo().split("\n");;
+        computerInfo = GeneralStats.getComputerSystemInfo().split("\n");
+
         SingletonBatteryStatus.getInstance().setComputerInfo(computerInfo);
 
         StringBuilder sb = new StringBuilder();
@@ -149,15 +153,19 @@ public class GreetingController {
 
         sb.append(networkSpeed[0]);
 
-        miscellaneous = sb.toString().split("\n");;
+        miscellaneous = sb.toString().split("\n");
+        ;
         SingletonBatteryStatus.getInstance().setMiscellaneous(miscellaneous);
 
         SingletonBatteryStatus.getInstance().setCpu(cpuInfo[0]);
 
-        SingletonBatteryStatus.getInstance().notifyMyObservers();
+        SingletonBatteryStatus.getInstance().setAvaibleFileSystem(SingletonNumericGeneralStats.getInstance().getAvaibleFileSystem());
 
-        /*numericAvaibleFileSystem = SingletonNumericGeneralStats.getInstance().getAvaibleFileSystem();
-        numericCpuLoad = SingletonNumericGeneralStats.getInstance().getCpuLoad();
-        numericFreeRam = SingletonNumericGeneralStats.getInstance().getFreeRam();*/
+        // numericAvaibleFileSystem = ;
+//        SingletonBatteryStatus.getInstance().setNumericCpuLoad(SingletonNumericGeneralStats.getInstance().getCpuLoad());
+       // SingletonBatteryStatus.getInstance().set = SingletonNumericGeneralStats.getInstance().getFreeRam();
+        SingletonBatteryStatus.getInstance().setPercPerThread(SingletonNumericGeneralStats.getInstance().getPercPerThread());
+
+        SingletonBatteryStatus.getInstance().notifyMyObservers();
     }
 }

@@ -20,6 +20,8 @@ public class SingletonBatteryStatus extends Observable{
     private String[] miscellaneous;
     private Float numericCpuLoad;
     private Float[] percPerThread;
+    private String[] avaibleFileSystem;
+
 
 
     private SingletonBatteryStatus() {}
@@ -50,7 +52,6 @@ public class SingletonBatteryStatus extends Observable{
     }
 
     public void setBattery(String[] s){
-        //System.out.println("modificato il valore in\n " + s);
         battery = s;
     }
 
@@ -105,5 +106,13 @@ public class SingletonBatteryStatus extends Observable{
 
     public Float[] getPercPerThread() {
         return percPerThread;
+    }
+
+    public void setAvaibleFileSystem(String[] avaibleFileSystem) {
+        this.avaibleFileSystem = avaibleFileSystem;
+    }
+
+    public String[] getAvaibleFileSystem() {
+        return avaibleFileSystem;
     }
 }

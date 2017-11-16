@@ -6,28 +6,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.json.JSONException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.tomcat.ConnectorStartFailedException;
 import org.springframework.context.ConfigurableApplicationContext;
-import pcstatus.connectionPackage.BluetoothSPPServer;
 import pcstatus.springServer.GreetingController;
 import pcstatus.springServer.ServerManager;
 
-import javax.bluetooth.BluetoothStateException;
-import javax.bluetooth.LocalDevice;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 
 @SpringBootApplication
@@ -86,7 +77,7 @@ public class ServerBatteryMain extends Application implements Observer {
         }
         System.out.println("finito di aspettare");
         try {
-            this.primaryStage.setTitle("PCstatus - " + getMyIp() + ":" + port);
+            this.primaryStage.setTitle("PCstatus - " + getMyIp());
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (SocketException e) {
@@ -127,7 +118,10 @@ public class ServerBatteryMain extends Application implements Observer {
         controller.setDisksText(String.join("\n", singletonBatteryStatus.getDisks()));
         controller.setSystemText(String.join("\n", singletonBatteryStatus.getComputerInfo()));
         controller.setMiscellaneous(String.join("\n", singletonBatteryStatus.getMiscellaneous()));
+        System.out.println("kjsbdfjkbdss         " + singletonBatteryStatus.getNumericCpuLoad());
         controller.getLineChartClass().addEntryLineChart(singletonBatteryStatus.getNumericCpuLoad());
+        controller.getPieChartClass().addEntryPieChart(singletonBatteryStatus.getAvaibleFileSystem());
+
         if (firstShow) {
             controller.getMultipleLineChartClass().createSeries();
             controller.getMultipleLineChartClass().addEntryLineChart(singletonBatteryStatus.getPercPerThread());

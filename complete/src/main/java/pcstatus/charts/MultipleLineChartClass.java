@@ -4,7 +4,6 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import pcstatus.SingletonBatteryStatus;
-import pcstatus.dataPackage.SingletonNumericGeneralStats;
 
 import java.util.stream.Stream;
 
@@ -33,7 +32,6 @@ public class MultipleLineChartClass {
         series = Stream.<XYChart.Series<String, Number>>generate(XYChart.Series::new).limit(seriesValues.length).toArray(XYChart.Series[]::new);
 
         for (int i = 0;i<series.length;i++){
-            System.out.println("inizializzo" + i);
             series[i] = new XYChart.Series();
             series[i].setName("Thread " + i);
             multiLineChart.getData().add(series[i]);
@@ -41,7 +39,6 @@ public class MultipleLineChartClass {
     }
 
     public void addEntryLineChart(Float[] value) {
-        System.out.println("stampo dimensione di value " + value.length);
         int maxRange = 10;
         for (int i = 0; i<value.length; i++){
             series[i].getData().add(new XYChart.Data(time, value[i]));

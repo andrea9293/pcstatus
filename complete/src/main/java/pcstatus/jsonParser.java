@@ -24,6 +24,13 @@ public class jsonParser {
         }
         SingletonBatteryStatus.getInstance().setCpu(strings);
 
+        jsonArray = jsonObj.getJSONArray("numericAvaibleFileSystem");
+        strings = new String[jsonArray.length()];
+        for(int i =0;i<jsonArray.length();i++){
+            strings[i] = jsonArray.getString(i);
+        }
+        SingletonBatteryStatus.getInstance().setAvaibleFileSystem(strings);
+
         strings = jsonObj.getString("disks").split("\n");
         SingletonBatteryStatus.getInstance().setDisks(strings);
 

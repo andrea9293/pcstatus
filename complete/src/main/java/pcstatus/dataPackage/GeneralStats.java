@@ -56,18 +56,8 @@ public class GeneralStats {
         cpuInfo[4] =  "Logical CPU(s): " + processor.getLogicalProcessorCount();
         cpuInfo[5] =  "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";
 
-
-       /* String[] cpuInfo = new String[5];
-        cpuInfo[0] =  "Vendor: " + cpu.getVendor();
-        cpuInfo[1] =  cpu.getModel();
-        cpuInfo[2] =  "Clock: " + cpu.getMhz();
-        cpuInfo[3] =  "Physical CPU(s): " + cpu.getTotalCores();
-        //cpuInfo[4] =  "Logical CPU(s): " + cpu.getTotalSockets();
-         //cpuInfo[5] =  "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";
-        cpuInfo[4] =  "CPU load: " + round((float) (cpuperc.getCombined() * 100), 2) + "%";*/
-
         SingletonNumericGeneralStats.getInstance().setCpuInfo(cpuInfo);
-        SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
+        SingletonBatteryStatus.getInstance().setNumericCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
 
         return cpuInfo;
     }
@@ -88,6 +78,7 @@ public class GeneralStats {
         }
         CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
         SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
+        SingletonBatteryStatus.getInstance().setNumericCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
         return  "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";
     }
 
