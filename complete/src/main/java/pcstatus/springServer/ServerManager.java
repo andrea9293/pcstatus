@@ -15,12 +15,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class ServerManager {
-    ServerBatteryMain serverBatteryMain;
-    int port = 8080;
+    private ServerBatteryMain serverBatteryMain;
+    private int port;
 
-    public ServerManager(ServerBatteryMain serverBatteryMain){
+    public void init(ServerBatteryMain serverBatteryMain, int port){
         this.serverBatteryMain = serverBatteryMain;
-        //this.port = port;
+        this.port = port;
     }
     public ServerManager(){
 
@@ -101,8 +101,7 @@ public class ServerManager {
     }
 
     private void refresh() {
-        //update(null,null);
-        URL prova = null;
+        URL prova;
         try {
             prova = new URL("http://localhost:" + port + "/greeting/");
             BufferedReader in = new BufferedReader(new InputStreamReader(prova.openStream()));

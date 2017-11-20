@@ -30,7 +30,7 @@ public class ServerBatteryMain extends Application implements Observer {
     private boolean firstShow = true;
     private static String[] args;
     private CountDownLatch latch = new CountDownLatch(2);
-    private int port = 8080;
+    public int port = 8080;
     private boolean isServerCreated;
     private ServerManager serverManager;
 
@@ -39,7 +39,7 @@ public class ServerBatteryMain extends Application implements Observer {
     public void start(Stage primaryStage) {
         long startAllTime = System.currentTimeMillis();
         SingletonBatteryStatus.getInstance().addingObserver(ServerBatteryMain.this);
-        serverManager = new ServerManager(ServerBatteryMain.this);
+        serverManager = new ServerManager();
         firstGetter.start();
         serverThread.start();
 
@@ -119,7 +119,9 @@ public class ServerBatteryMain extends Application implements Observer {
         controller.setSystemText(String.join("\n", singletonBatteryStatus.getComputerInfo()));
         controller.setMiscellaneous(String.join("\n", singletonBatteryStatus.getMiscellaneous()));
         controller.getLineChartClass().addEntryLineChart(singletonBatteryStatus.getNumericCpuLoad());
-        controller.getStackedAreaChartClass().addEntryStackedAreaChart(singletonBatteryStatus.getBatteryPerc());
+
+        if (singletonBatteryStatus.getBatteryPerc() != null)
+            controller.getStackedAreaChartClass().addEntryStackedAreaChart(singletonBatteryStatus.getBatteryPerc());
         controller.getPieChartClass().addEntryPieChart(singletonBatteryStatus.getAvaibleFileSystem());
 
         if (firstShow) {
@@ -150,6 +152,7 @@ public class ServerBatteryMain extends Application implements Observer {
         try {
             applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
             isServerCreated = true;
+            serverManager.init(ServerBatteryMain.this, port);
             latch.countDown();
         } catch (ConnectorStartFailedException e) {
             System.out.println("c'è qualcosa che non va con la porta");
