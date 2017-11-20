@@ -21,6 +21,7 @@ public class SingletonBatteryStatus extends Observable{
     private Float numericCpuLoad;
     private Float[] percPerThread;
     private String[] avaibleFileSystem;
+    private Integer batteryPerc;
 
 
 
@@ -114,5 +115,13 @@ public class SingletonBatteryStatus extends Observable{
 
     public String[] getAvaibleFileSystem() {
         return avaibleFileSystem;
+    }
+
+    public void setBatteryPerc(String batteryPerc) {
+        this.batteryPerc = Integer.parseInt(batteryPerc);
+    }
+
+    public Integer getBatteryPerc() {
+        return batteryPerc;
     }
 }

@@ -118,8 +118,8 @@ public class ServerBatteryMain extends Application implements Observer {
         controller.setDisksText(String.join("\n", singletonBatteryStatus.getDisks()));
         controller.setSystemText(String.join("\n", singletonBatteryStatus.getComputerInfo()));
         controller.setMiscellaneous(String.join("\n", singletonBatteryStatus.getMiscellaneous()));
-        System.out.println("kjsbdfjkbdss         " + singletonBatteryStatus.getNumericCpuLoad());
         controller.getLineChartClass().addEntryLineChart(singletonBatteryStatus.getNumericCpuLoad());
+        controller.getStackedAreaChartClass().addEntryStackedAreaChart(singletonBatteryStatus.getBatteryPerc());
         controller.getPieChartClass().addEntryPieChart(singletonBatteryStatus.getAvaibleFileSystem());
 
         if (firstShow) {

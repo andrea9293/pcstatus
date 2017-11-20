@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
+import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -13,9 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import pcstatus.charts.LineChartClass;
 import pcstatus.charts.MultipleLineChartClass;
 import pcstatus.charts.PieChartClass;
+import pcstatus.charts.StackedAreaChartClass;
 
 public class Controller {
 
+    @FXML
+    private StackedAreaChart stackedAreaChartBattery;
     @FXML
     private LineChart lineChartPercPerThread;
     @FXML
@@ -50,6 +54,7 @@ public class Controller {
     private LineChartClass lineChartClass;
     private MultipleLineChartClass multipleLineChartClass;
     private PieChartClass pieChartClass;
+    private StackedAreaChartClass stackedAreaChartClass;
     private Node systemLoadBox;
     private Node batteryBox;
     private Node cpuBox;
@@ -62,6 +67,7 @@ public class Controller {
         pieChartClass = new PieChartClass(pieChartDisk);
         lineChartClass = new LineChartClass(lineChartSystemLoad);
         multipleLineChartClass = new MultipleLineChartClass(lineChartPercPerThread);
+        stackedAreaChartClass = new StackedAreaChartClass (stackedAreaChartBattery);
         systemLoadBox = mainVbox.getChildren().get(0);
         batteryBox = mainVbox.getChildren().get(1);
         cpuBox = mainVbox.getChildren().get(2);
@@ -77,6 +83,10 @@ public class Controller {
         buttonSystemInfo.setOnAction(event -> changeView(systemInfoBox));
         buttonSettings.setOnAction(event -> changeView(settingsBox));
 
+    }
+
+    public StackedAreaChartClass getStackedAreaChartClass() {
+        return stackedAreaChartClass;
     }
 
     public MultipleLineChartClass getMultipleLineChartClass() {

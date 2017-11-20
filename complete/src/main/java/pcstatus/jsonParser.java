@@ -44,9 +44,11 @@ public class jsonParser {
         string = jsonObj.getString("numericCpuLoad");
         SingletonBatteryStatus.getInstance().setNumericCpuLoad(string);
 
+        string = jsonObj.getString("numericBatteryPerc");
+        SingletonBatteryStatus.getInstance().setBatteryPerc(string);
+
         string = jsonObj.getString("numericPercPerThread");
         SingletonBatteryStatus.getInstance().setPercPerThread(string);
-
 
         SingletonBatteryStatus.getInstance().notifyMyObservers();
     }

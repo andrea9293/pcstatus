@@ -9,10 +9,8 @@ public class LineChartClass {
     private XYChart.Series series;
     private int time = 0;
     private NumberAxis xBoundLineChart;
-    private LineChart lineChart;
 
     public LineChartClass(LineChart lineChart){
-        this.lineChart = lineChart;
         NumberAxis yaxis;
         yaxis = (NumberAxis) lineChart.getYAxis();
         xBoundLineChart = (NumberAxis) lineChart.getXAxis();
@@ -42,10 +40,6 @@ public class LineChartClass {
         }
         time++;
 
-        series.getNode().setStyle(".default-color0.chart-series-line { -fx-stroke: #f0f0f0; }");
-
-        Node nodew = lineChart.lookup(".chart-series-area-line");
-        // Set the first series fill to translucent pale green
-        nodew.setStyle("-fx-stroke: #989898; -fx-stroke-width: 1px; ");
+       // series.getNode().setStyle(".default-color0.chart-series-line { -fx-stroke: #f0f0f0; }");
     }
 }
