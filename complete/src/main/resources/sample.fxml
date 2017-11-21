@@ -126,6 +126,7 @@
                     </font>
                 </Label>
             <VBox alignment="TOP_LEFT" spacing="8.0" VBox.vgrow="ALWAYS" prefHeight="300" prefWidth="500">
+
                 <!-- WiFi address information -->
                 <VBox alignment="TOP_LEFT">
                     <Label text="IP address">
@@ -134,6 +135,16 @@
                         </font>
                     </Label>
                     <Label fx:id="ipAddressInformation" text="IP Address"/>
+                </VBox>
+
+                <!-- Server port information -->
+                <VBox alignment="TOP_LEFT">
+                    <Label text="Port">
+                        <font>
+                            <Font name="System Bold" size="15.0"/>
+                        </font>
+                    </Label>
+                    <Label fx:id="serverPortInformation" text="IP Address"/>
                 </VBox>
 
                 <!-- Bluetooth information -->

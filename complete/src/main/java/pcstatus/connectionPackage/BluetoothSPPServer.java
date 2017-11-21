@@ -1,9 +1,7 @@
 package pcstatus.connectionPackage;
 
 import pcstatus.ErrorManager;
-import pcstatus.ServerBatteryMain;
 import pcstatus.SingletonBatteryStatus;
-import pcstatus.springServer.ServerManager;
 
 import javax.bluetooth.RemoteDevice;
 import javax.bluetooth.UUID;
@@ -16,7 +14,7 @@ import java.io.*;
  * Class that implements an SPP Server which accepts single line of
  * message from an SPP client and sends a single line of response to the client.
  */
-public class BluetoothSPPServer {
+class BluetoothSPPServer {
     private StreamConnection connection;
     private OutputStream outStream = null;
     private PrintWriter pWriter;
@@ -24,18 +22,19 @@ public class BluetoothSPPServer {
     private RemoteDevice device;
     private InputStream inStream;
     private Thread messageThread;
-    private ServerManager serverManager;
+    private ConnectionManager connectionManager;
     private boolean connectionIsAvaible = false;
+    private Thread startBluetoothServer;
 
-    public BluetoothSPPServer(ServerManager serverManager) {
-        this.serverManager = serverManager;
+    BluetoothSPPServer(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
     }
 
     //start server
-    public void startBluetoothServer() throws IOException {
+    void bluetoothServer() throws IOException {
 
         if (messageThread != null){
-            System.out.println("in startBluetoothServer messageThread non è null");
+            System.out.println("in bluetoothServer messageThread non è null");
             messageThread.interrupt();
         }
         //Create a UUID for SPP
@@ -72,7 +71,7 @@ public class BluetoothSPPServer {
         sendMessage();
     }
 
-    public void closeConnection() {
+    void closeConnection() {
         try {
             if (messageThread != null && messageThread.isAlive())
                 messageThread.interrupt();
@@ -90,7 +89,7 @@ public class BluetoothSPPServer {
         }
     }
 
-    public void sendMessage() {
+    void sendMessage() {
         if(connectionIsAvaible){
             if (outStream != null) {
                 if (messageThread == null) {
@@ -132,11 +131,25 @@ public class BluetoothSPPServer {
                         else
                             Thread.currentThread().interrupt();
                         closeConnection();
-                        serverManager.startServerBluetooth();
+                        startServerBluetooth();
                     } else
                         System.out.println("non sono stato interrotto ma sono nel catch");//e.printStackTrace();
                 }
             }
         }, "messageThread");
+    }
+
+    void startServerBluetooth() {
+        if (startBluetoothServer == null || !startBluetoothServer.isAlive()) {
+            startBluetoothServer = new Thread(() -> {
+                try {
+                    bluetoothServer();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }, "startServerBluetooth");
+
+            startBluetoothServer.start();
+        }
     }
 }

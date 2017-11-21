@@ -1,5 +1,6 @@
 package pcstatus;
 
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -11,40 +12,44 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public class ErrorManager {
+
     public static void exeptionDialog(Exception ex) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Exception Dialog");
-        alert.setHeaderText("Ops! something went wrong!");
-        alert.setContentText("Please consider to report this message to andreabravaccino@gmail.com");
 
-        //Exception ex = new FileNotFoundException("Could not find file blabla.txt");
+        Platform.runLater(() -> {
 
-        // Create expandable Exception.
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        ex.printStackTrace(pw);
-        String exceptionText = sw.toString();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Exception Dialog");
+            alert.setHeaderText("Ops! something went wrong!");
+            alert.setContentText("Please consider to report this message to andreabravaccino@gmail.com");
 
-        Label label = new Label("The exception stacktrace was:");
+            // Create expandable Exception.
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String exceptionText = sw.toString();
 
-        TextArea textArea = new TextArea(exceptionText);
-        textArea.setEditable(false);
-        textArea.setWrapText(true);
+            Label label = new Label("The exception stacktrace was:");
 
-        textArea.setMaxWidth(Double.MAX_VALUE);
-        textArea.setMaxHeight(Double.MAX_VALUE);
-        GridPane.setVgrow(textArea, Priority.ALWAYS);
-        GridPane.setHgrow(textArea, Priority.ALWAYS);
+            TextArea textArea = new TextArea(exceptionText);
+            textArea.setEditable(false);
+            textArea.setWrapText(true);
 
-        GridPane expContent = new GridPane();
-        expContent.setMaxWidth(Double.MAX_VALUE);
-        expContent.add(label, 0, 0);
-        expContent.add(textArea, 0, 1);
+            textArea.setMaxWidth(Double.MAX_VALUE);
+            textArea.setMaxHeight(Double.MAX_VALUE);
+            GridPane.setVgrow(textArea, Priority.ALWAYS);
+            GridPane.setHgrow(textArea, Priority.ALWAYS);
 
-        // Set expandable Exception into the dialog pane.
-        alert.getDialogPane().setExpandableContent(expContent);
+            GridPane expContent = new GridPane();
+            expContent.setMaxWidth(Double.MAX_VALUE);
+            expContent.add(label, 0, 0);
+            expContent.add(textArea, 0, 1);
 
-        alert.showAndWait();
+            // Set expandable Exception into the dialog pane.
+            alert.getDialogPane().setExpandableContent(expContent);
+
+            alert.showAndWait();
+        });
+
     }
 
 }

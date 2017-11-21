@@ -49,14 +49,14 @@ public class GreetingController {
 
         new Thread(() -> {
             cpuInfo[0] = SingletonNumericGeneralStats.getInstance().getCpuInfo();
-            cpuInfo[0][5] = GeneralStats.getCpuLoad();//todo a volte crasha, capisci perché
+            cpuInfo[0][5] = GeneralStats.getCpuLoad();
             latch.countDown();
-        }).start();
+        },"getCpuInfo").start();
 
         new Thread(() -> {
             networkSpeed[0] = "\n" + GeneralStats.getNetworkSpeed();
             latch.countDown();
-        }).start();
+        },"getNetworkSpeed").start();
 
         disks = GeneralStats.getFileSystem();
 
@@ -119,12 +119,12 @@ public class GreetingController {
         new Thread(() -> {
             cpuInfo[0] = GeneralStats.getPcInfo();
             latch.countDown();
-        }).start();
+        }, "getPCinfoAllData").start();
 
         new Thread(() -> {
             networkSpeed[0] = "\n" + GeneralStats.getNetworkSpeed();
             latch.countDown();
-        }).start();
+        }, "getNetworkSpeedAllData").start();
 
         Kernel32.SYSTEM_POWER_STATUS batteryStatus = new Kernel32.SYSTEM_POWER_STATUS();
         Kernel32.INSTANCE.GetSystemPowerStatus(batteryStatus);
@@ -159,7 +159,7 @@ public class GreetingController {
         sb.append(networkSpeed[0]);
 
         miscellaneous = sb.toString().split("\n");
-        ;
+
         SingletonBatteryStatus.getInstance().setMiscellaneous(miscellaneous);
 
         SingletonBatteryStatus.getInstance().setCpu(cpuInfo[0]);

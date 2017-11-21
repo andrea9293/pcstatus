@@ -1,8 +1,9 @@
-package pcstatus;
+package pcstatus.dataPackage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import pcstatus.SingletonBatteryStatus;
 
 public class jsonParser {
 

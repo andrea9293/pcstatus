@@ -2,6 +2,7 @@ package pcstatus;
 
 import javafx.application.Platform;
 import org.json.JSONException;
+import pcstatus.dataPackage.jsonParser;
 
 import java.util.Observable;
 
@@ -29,7 +30,7 @@ public class SingletonBatteryStatus extends Observable{
 
     public void setJsonStr(String jsonStr) throws JSONException {
         this.jsonStr = jsonStr;
-        new jsonParser (jsonStr);
+        new jsonParser(jsonStr);
     }
 
     public String[] getDisks() {

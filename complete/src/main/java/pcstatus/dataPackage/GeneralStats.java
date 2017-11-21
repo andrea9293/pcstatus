@@ -1,13 +1,13 @@
 package pcstatus.dataPackage;
 
 import org.gridkit.lab.sigar.SigarFactory;
-import org.hyperic.sigar.CpuInfo;
 import org.hyperic.sigar.CpuPerc;
 import org.hyperic.sigar.SigarException;
 import oshi.SystemInfo;
 import oshi.hardware.*;
 import oshi.software.os.OSFileStore;
 import oshi.util.FormatUtil;
+import pcstatus.ErrorManager;
 import pcstatus.SingletonBatteryStatus;
 
 import java.math.BigDecimal;
@@ -20,19 +20,16 @@ import java.util.Enumeration;
 
 public class GeneralStats {
 
+
+    private static SystemInfo systemInfo = new SystemInfo();
+    private static OSFileStore[] fsArray;
+    private static oshi.software.os.FileSystem fileSystem;
+
     public static String[] getPcInfo() {
-        /*CpuInfo cpu;
-        try {
-            cpu = SigarFactory.newSigar().getCpuInfoList()[0];
-        } catch (SigarException e) {
-            String[] error = new String[1];
-            error[0] = "cpu not supported";
-            e.printStackTrace();
-            return error;
-        }*/
+
+
 
         try {
-            //cpuperc = SigarFactory.newSigar().getCpuPerc();
             CpuPerc[] cpuperclist = SigarFactory.newSigar().getCpuPercList();
             StringBuilder percPerThread = new StringBuilder();
             for (CpuPerc aCpuperclist : cpuperclist) {
@@ -46,7 +43,7 @@ public class GeneralStats {
             return error;
         }
 
-        CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
+        CentralProcessor processor = systemInfo.getHardware().getProcessor();
 
         String[] cpuInfo = new String[6];
         cpuInfo[0] = "Vendor: " + processor.getVendor();
@@ -76,7 +73,8 @@ public class GeneralStats {
             SingletonBatteryStatus.getInstance().setPercPerThread("0");
             e.printStackTrace();
         }
-        CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
+
+        CentralProcessor processor = systemInfo.getHardware().getProcessor();
         SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
         SingletonBatteryStatus.getInstance().setNumericCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
         return  "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";
@@ -110,25 +108,21 @@ public class GeneralStats {
 
     public static String getComputerSystemInfo() {
 
-        SystemInfo si = new SystemInfo();
-        HardwareAbstractionLayer hal = si.getHardware();
-        oshi.software.os.OperatingSystem os = si.getOperatingSystem();
+       // SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = systemInfo.getHardware();
+        oshi.software.os.OperatingSystem os = systemInfo.getOperatingSystem();
         ComputerSystem computerSystem = hal.getComputerSystem();
         StringBuilder computerSystemString = new StringBuilder();
 
         computerSystemString.append( os + "\n");
         computerSystemString.append( computerSystem.getManufacturer() + " " + computerSystem.getModel() + "\n");
         computerSystemString.append( "RAM: " + FormatUtil.formatBytes(hal.getMemory().getTotal()) + "\n\n");
-        /*computerSystemString.append( "Model: " + computerSystem.getModel() + "\n");
-        computerSystemString.append( "Serialnumber: " + computerSystem.getSerialNumber() + "\n\n");*/
-
 
         final Baseboard baseboard = computerSystem.getBaseboard();
         computerSystemString.append("Baseboard:" + "\n");
         computerSystemString.append("manufacturer: " + baseboard.getManufacturer() + "\n");
         computerSystemString.append("     " + "model: " + baseboard.getModel() + "\n");
         computerSystemString.append("     " + "version: " + baseboard.getVersion() + "\n");
-        //computerSystemString.append( "  serialnumber: " + baseboard.getSerialNumber() + "\n");
 
         SingletonNumericGeneralStats.getInstance().setSystemInformation(computerSystemString.toString());
 
@@ -136,8 +130,8 @@ public class GeneralStats {
     }
 
     public static String getRamMemory() {
-        SystemInfo si = new SystemInfo();
-        HardwareAbstractionLayer hal = si.getHardware();
+        //SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = systemInfo.getHardware();
         GlobalMemory memory = hal.getMemory();
 
         SingletonNumericGeneralStats.getInstance().setFreeRam(memory.getAvailable(), memory.getTotal());
@@ -145,42 +139,13 @@ public class GeneralStats {
                 + FormatUtil.formatBytes(memory.getTotal());
     }
 
-    //todo funzione in sospeso finché non miglioro ulteriormente le performance (meglio usare Sigar, è più veloce)
-  /*  public static String getRamPerProcess() {
-        OperatingSystem operatingSystem = new SystemInfo().getOperatingSystem();
-        StringBuilder stringBuilder = new StringBuilder();
-        for (OSProcess process : operatingSystem.getProcesses(5, OperatingSystem.ProcessSort.MEMORY)) {
-            long privateWorkingSet = Long.parseLong(WmiUtil.selectStringFrom(null, "Win32_perfRawData_PerfProc_Process",
-                    "WorkingSetPrivate", "WHERE IDprocess = " + process.getProcessID())); //retrieve memory in bytes
-            stringBuilder.append(process.getName() + "\t" + privateWorkingSet + "\n");
-        }
-        System.out.println("\n\n\n" + stringBuilder.toString() + "\n\n");
-        return stringBuilder.toString();
-
-        /*long startTime = System.currentTimeMillis();
-        OperatingSystem operatingSystem = new SystemInfo().getOperatingSystem();
-        StringBuilder stringBuilder = new StringBuilder();
-        ProcMem procMem;
-
-        long[] processes = SigarFactory.newSigar().getProcList();
-        System.out.println("\n\n\n\n\n ");
-        for (int i = 0; i < processes.length; i++) {
-            procMem = SigarFactory.newSigar().getProcMem(processes[i]);
-            System.out.println("pid " + processes[i] + " " + (procMem.getShare()) + " workingset: " + (procMem.getSize() / 1024) + " " + (procMem.getResident() / 1024));
-        }
-        System.out.println("\n\n\n\n\n ");
-        long stopTime = System.currentTimeMillis();
-        System.out.println("time to execute code " + (stopTime - startTime) + "");*/
-
-    //}
-
     public static String getFileSystem() {
-        SystemInfo si = new SystemInfo();
+        //SystemInfo si = new SystemInfo();
 
-        oshi.software.os.OperatingSystem os = si.getOperatingSystem();
-        oshi.software.os.FileSystem fileSystem = os.getFileSystem();
+        //oshi.software.os.OperatingSystem os = systemInfo.getOperatingSystem();
+        fileSystem = systemInfo.getOperatingSystem().getFileSystem();
 
-        OSFileStore[] fsArray = fileSystem.getFileStores();
+        fsArray = fileSystem.getFileStores();
         String[] numericSpace = new String[fsArray.length];
         String[] volume = new String[fsArray.length];
         String[] stringBuilder = new String[fsArray.length];
@@ -221,6 +186,107 @@ public class GeneralStats {
         SingletonNumericGeneralStats.getInstance().setAvaibleFileSystem(numericSpace);
         return String.join("", stringBuilder);
     }
+
+    private static String getDefaultNetworkInteface() throws SocketException, UnknownHostException {
+        final Enumeration<NetworkInterface> netifs = NetworkInterface.getNetworkInterfaces();
+
+        // hostname is passed to your method
+        InetAddress myAddr = InetAddress.getLocalHost();
+
+        while (netifs.hasMoreElements()) {
+            NetworkInterface networkInterface = netifs.nextElement();
+            Enumeration<InetAddress> inAddrs = networkInterface.getInetAddresses();
+            while (inAddrs.hasMoreElements()) {
+                InetAddress inAddr = inAddrs.nextElement();
+                if (inAddr.equals(myAddr)) {
+                    return networkInterface.getName();
+                }
+            }
+        }
+        return "";
+    }
+
+    public static String getNetworkSpeed() {
+
+        String networkName;
+        StringBuilder sb = new StringBuilder();
+
+        try {
+            networkName = getDefaultNetworkInteface();
+        } catch (SocketException | UnknownHostException e) {
+            sb.append( "download speed: not supported\n");
+            sb.append( "upload speed: not supported\n");
+            e.printStackTrace();
+            return sb.toString();
+        }
+        //System.out.println(networkName);
+
+        //SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = systemInfo.getHardware();
+        NetworkIF[] networkIFs = hal.getNetworkIFs();
+        int i = 0;
+        NetworkIF net = networkIFs[0];
+        try {
+            while (!networkIFs[i].getName().equals(networkName)) {
+                net = networkIFs[i];
+                i++;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            sb.append( "download speed: not supported\n");
+            sb.append( "upload speed: not supported\n");
+            return sb.toString();
+        }
+
+        long download1 = net.getBytesRecv();
+        long upload1 = net.getBytesSent();
+        long timestamp1 = net.getTimeStamp();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            ErrorManager.exeptionDialog(e);
+            e.printStackTrace();
+        }
+        net.updateNetworkStats(); //Updating network stats
+        long download2 = net.getBytesRecv();
+        long upload2 = net.getBytesSent();
+        long timestamp2 = net.getTimeStamp();
+
+        sb.append( "download speed: " + formatSize((download2 - download1) / (timestamp2 - timestamp1)) + "/s\n");
+        sb.append( "upload speed: " + formatSize((upload2 - upload1) / (timestamp2 - timestamp1)) + "/s\n");
+
+        return sb.toString();
+    }
+
+
+    //todo funzione in sospeso finché non miglioro ulteriormente le performance (meglio usare Sigar, è più veloce)
+  /*  public static String getRamPerProcess() {
+        OperatingSystem operatingSystem = new SystemInfo().getOperatingSystem();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (OSProcess process : operatingSystem.getProcesses(5, OperatingSystem.ProcessSort.MEMORY)) {
+            long privateWorkingSet = Long.parseLong(WmiUtil.selectStringFrom(null, "Win32_perfRawData_PerfProc_Process",
+                    "WorkingSetPrivate", "WHERE IDprocess = " + process.getProcessID())); //retrieve memory in bytes
+            stringBuilder.append(process.getName() + "\t" + privateWorkingSet + "\n");
+        }
+        System.out.println("\n\n\n" + stringBuilder.toString() + "\n\n");
+        return stringBuilder.toString();
+
+        /*long startTime = System.currentTimeMillis();
+        OperatingSystem operatingSystem = new SystemInfo().getOperatingSystem();
+        StringBuilder stringBuilder = new StringBuilder();
+        ProcMem procMem;
+
+        long[] processes = SigarFactory.newSigar().getProcList();
+        System.out.println("\n\n\n\n\n ");
+        for (int i = 0; i < processes.length; i++) {
+            procMem = SigarFactory.newSigar().getProcMem(processes[i]);
+            System.out.println("pid " + processes[i] + " " + (procMem.getShare()) + " workingset: " + (procMem.getSize() / 1024) + " " + (procMem.getResident() / 1024));
+        }
+        System.out.println("\n\n\n\n\n ");
+        long stopTime = System.currentTimeMillis();
+        System.out.println("time to execute code " + (stopTime - startTime) + "");
+
+    }*/
+
 
     // for linux SO
   /*  public static String getFileSystem()  {
@@ -271,75 +337,4 @@ public class GeneralStats {
         // System.out.println(ris);
         return ris;
     }*/
-
-
-    private static String getDefaultNetworkInteface() throws SocketException, UnknownHostException {
-        final Enumeration<NetworkInterface> netifs = NetworkInterface.getNetworkInterfaces();
-
-        // hostname is passed to your method
-        InetAddress myAddr = InetAddress.getLocalHost();
-
-        while (netifs.hasMoreElements()) {
-            NetworkInterface networkInterface = netifs.nextElement();
-            Enumeration<InetAddress> inAddrs = networkInterface.getInetAddresses();
-            while (inAddrs.hasMoreElements()) {
-                InetAddress inAddr = inAddrs.nextElement();
-                if (inAddr.equals(myAddr)) {
-                    return networkInterface.getName();
-                }
-            }
-        }
-        return "";
-    }
-
-    public static String getNetworkSpeed() {
-
-        String networkName;
-        StringBuilder sb = new StringBuilder();
-
-        try {
-            networkName = getDefaultNetworkInteface();
-        } catch (SocketException | UnknownHostException e) {
-            sb.append( "download speed: not supported\n");
-            sb.append( "upload speed: not supported\n");
-            e.printStackTrace();
-            return sb.toString();
-        }
-        //System.out.println(networkName);
-
-        SystemInfo si = new SystemInfo();
-        HardwareAbstractionLayer hal = si.getHardware();
-        NetworkIF[] networkIFs = hal.getNetworkIFs();
-        int i = 0;
-        NetworkIF net = networkIFs[0];
-        try {
-            while (!networkIFs[i].getName().equals(networkName)) {
-                net = networkIFs[i];
-                i++;
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            sb.append( "download speed: not supported\n");
-            sb.append( "upload speed: not supported\n");
-            return sb.toString();
-        }
-
-        long download1 = net.getBytesRecv();
-        long upload1 = net.getBytesSent();
-        long timestamp1 = net.getTimeStamp();
-        try {
-            Thread.sleep(1000); //Sleep for a bit longer, 2s should cover almost every possible problem
-        } catch (InterruptedException e) {
-            //ErrorManager.exeptionDialog(e);
-            e.printStackTrace();
-        }
-        net.updateNetworkStats(); //Updating network stats
-        long download2 = net.getBytesRecv();
-        long upload2 = net.getBytesSent();
-        long timestamp2 = net.getTimeStamp();
-
-        sb.append( "download speed: " + formatSize((download2 - download1) / (timestamp2 - timestamp1)) + "/s\n");
-        sb.append( "upload speed: " + formatSize((upload2 - upload1) / (timestamp2 - timestamp1)) + "/s\n");
-
-        return sb.toString();
-    }
 }
