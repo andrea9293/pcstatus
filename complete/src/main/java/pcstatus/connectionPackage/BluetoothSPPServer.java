@@ -51,14 +51,14 @@ class BluetoothSPPServer {
             connection = streamConnNotifier.acceptAndOpen();
         } catch (IOException e) {
             System.out.println("streamConnNotifier.acceptAndOpen()");
-            ErrorManager.exeptionDialog(e);
+            //ErrorManager.exeptionDialog(e);
             e.printStackTrace();
         }
 
         try {
             device = RemoteDevice.getRemoteDevice(connection);
         } catch (IOException e) {
-            ErrorManager.exeptionDialog(e);
+            //ErrorManager.exeptionDialog(e);
             System.out.println("RemoteDevice.getRemoteDevice(connection)");
 
         }
@@ -84,7 +84,7 @@ class BluetoothSPPServer {
             streamConnNotifier.close();
             connectionIsAvaible = false;
         } catch (IOException e) {
-            ErrorManager.exeptionDialog(e);
+            //ErrorManager.exeptionDialog(e);
             e.printStackTrace();
         }
     }

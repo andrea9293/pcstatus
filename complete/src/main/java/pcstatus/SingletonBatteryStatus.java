@@ -8,6 +8,7 @@ import java.util.Observable;
 
 public class SingletonBatteryStatus extends Observable{
     private static SingletonBatteryStatus ourInstance = new SingletonBatteryStatus();
+
     public static SingletonBatteryStatus getInstance() {
         return ourInstance;
     }
@@ -22,7 +23,6 @@ public class SingletonBatteryStatus extends Observable{
     private Float[] percPerThread;
     private String[] avaibleFileSystem;
     private Integer batteryPerc;
-    private String batteryPercString; //for pc without battery
 
 
 
@@ -119,14 +119,7 @@ public class SingletonBatteryStatus extends Observable{
     }
 
     public void setBatteryPerc(String batteryPerc) {
-        if(!batteryPerc.equals(""))
-            this.batteryPerc = Integer.parseInt(batteryPerc);
-        else
-            this.batteryPercString = batteryPerc;
-    }
-
-    public String getBatteryPercString() {
-        return batteryPercString;
+        this.batteryPerc = Integer.parseInt(batteryPerc);
     }
 
     public Integer getBatteryPerc() {

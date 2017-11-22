@@ -8,6 +8,8 @@ import pcstatus.dataPackage.Kernel32;
 import pcstatus.dataPackage.SingletonNumericGeneralStats;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
 
@@ -15,15 +17,36 @@ import java.util.concurrent.atomic.AtomicLong;
 public class GreetingController {
 
     private final AtomicLong counter = new AtomicLong();
+    public static ExecutorService getCpuInfo = Executors.newSingleThreadExecutor();
+    public static ExecutorService getNetworkSpeed = Executors.newSingleThreadExecutor();
+    private static Kernel32.SYSTEM_POWER_STATUS batteryStatus = new Kernel32.SYSTEM_POWER_STATUS();
+
+    private static final String[][] cpuInfo = {null};
+    private static String diskString = null;
+    private static String computerInfoString = null;
+    private static String miscellaneousString = null;
+    private static String numericCpuLoad = null;
+    private static String[] numericAvaibleFileSystem = null;
+    private static String numericFreeRam = null;
+    private static final String[] networkSpeed = {null};
+    private static String numericPercPerThread = null;
+    private static String numericBatteryPerc = null ;
+
+    private static String[] disks = null;
+    private static String[] computerInfo = null;
+    private static String[] miscellaneous = null;
+    private static StringBuilder sb = new StringBuilder();
+    private static String ramMemory;
+
 
     @RequestMapping("/greeting")
     public Greeting greeting() {
 
-        Kernel32.SYSTEM_POWER_STATUS batteryStatus = new Kernel32.SYSTEM_POWER_STATUS();
+        //Kernel32.SYSTEM_POWER_STATUS batteryStatus = new Kernel32.SYSTEM_POWER_STATUS();
         Kernel32.INSTANCE.GetSystemPowerStatus(batteryStatus);
         String template = batteryStatus.toString();
         String batteryParts[] = template.split("\n");
-        final String[][] cpuInfo = {null};
+       /* final String[][] cpuInfo = {null};
         String disks = null;
         String computerInfo = null;
         String miscellaneous = null;
@@ -33,7 +56,7 @@ public class GreetingController {
         final String[] networkSpeed = {null};
         String numericPercPerThread = null;
         String numericBatteryPerc = null ;
-        //String numericRamPerProcess = null;
+        //String numericRamPerProcess = null;*/
 
         //ramPerProcessThread
       /*  new Thread(() -> {
@@ -47,20 +70,36 @@ public class GreetingController {
 
         final CountDownLatch latch = new CountDownLatch(2);
 
+
+        getCpuInfo.execute(new Thread(() -> {
+            Thread.currentThread().setName("getCpuInfo");
+            cpuInfo[0] = SingletonNumericGeneralStats.getInstance().getCpuInfo();
+            cpuInfo[0][5] = GeneralStats.getCpuLoad();
+            latch.countDown();
+        },"getCpuInfo"));
+
+
+/*
         new Thread(() -> {
             cpuInfo[0] = SingletonNumericGeneralStats.getInstance().getCpuInfo();
             cpuInfo[0][5] = GeneralStats.getCpuLoad();
             latch.countDown();
-        },"getCpuInfo").start();
+        },"getCpuInfo").start();*/
 
-        new Thread(() -> {
+        getNetworkSpeed.execute(new Thread(() -> {
+            Thread.currentThread().setName("getNetworkSpeed");
             networkSpeed[0] = "\n" + GeneralStats.getNetworkSpeed();
             latch.countDown();
-        },"getNetworkSpeed").start();
+        },"getNetworkSpeed"));
 
-        disks = GeneralStats.getFileSystem();
+        /*new Thread(() -> {
+            networkSpeed[0] = "\n" + GeneralStats.getNetworkSpeed();
+            latch.countDown();
+        },"getNetworkSpeed").start();*/
 
-        computerInfo = SingletonNumericGeneralStats.getInstance().getSystemInformation();
+        diskString = GeneralStats.getFileSystem();
+
+        computerInfoString = SingletonNumericGeneralStats.getInstance().getSystemInformation();
 
         StringBuilder sb = new StringBuilder();
         String ramMemory = GeneralStats.getRamMemory() + "\n";
@@ -77,7 +116,7 @@ public class GreetingController {
         sb.append(batteryParts[1] + "\n");
         sb.append(networkSpeed[0]);
 
-        miscellaneous = sb.toString();
+        miscellaneousString = sb.toString();
 
         numericBatteryPerc = batteryParts[1].replaceAll("[^0-9]", "");
         SingletonBatteryStatus.getInstance().setBatteryPerc(numericBatteryPerc);
@@ -86,11 +125,13 @@ public class GreetingController {
         numericFreeRam = SingletonNumericGeneralStats.getInstance().getFreeRam();
         numericPercPerThread = SingletonNumericGeneralStats.getInstance().getPercPerThread();
 
-        return new Greeting(counter.incrementAndGet(), template, batteryParts, cpuInfo[0], disks, computerInfo, miscellaneous, numericAvaibleFileSystem, numericCpuLoad, numericFreeRam, numericPercPerThread, numericBatteryPerc/* SingletonNumericGeneralStats.getInstance().getRamPerProcess()*/);
+        //System.gc();
+        return new Greeting(counter.incrementAndGet(), template, batteryParts, cpuInfo[0], diskString, computerInfoString, miscellaneousString, numericAvaibleFileSystem, numericCpuLoad, numericFreeRam, numericPercPerThread, numericBatteryPerc/* SingletonNumericGeneralStats.getInstance().getRamPerProcess()*/);
     }
 
+    //todo provare a spostare getAllData nel metodo greeting così da creare il json anche con il bluetooth senza connessione ad internet
     public static void getAllData() {
-        final String[][] cpuInfo = {null};
+       /* final String[][] cpuInfo = {null};
         String[] disks = null;
         String[] computerInfo = null;
         String[] miscellaneous = null;
@@ -99,7 +140,7 @@ public class GreetingController {
         String numericFreeRam = null;
         String numericPercPerThread = null;
         final String[] networkSpeed = {null};
-        String numericBatteryPerc = null ;
+        String numericBatteryPerc = null ;*/
 
 
         //String numericRamPerProcess = null;
@@ -126,7 +167,7 @@ public class GreetingController {
             latch.countDown();
         }, "getNetworkSpeedAllData").start();
 
-        Kernel32.SYSTEM_POWER_STATUS batteryStatus = new Kernel32.SYSTEM_POWER_STATUS();
+        //Kernel32.SYSTEM_POWER_STATUS batteryStatus = new Kernel32.SYSTEM_POWER_STATUS();
         Kernel32.INSTANCE.GetSystemPowerStatus(batteryStatus);
         String template = batteryStatus.toString();
         String batteryParts[] = template.split("\n");
@@ -140,9 +181,9 @@ public class GreetingController {
 
         SingletonBatteryStatus.getInstance().setComputerInfo(computerInfo);
 
-        StringBuilder sb = new StringBuilder();
+        //StringBuilder sb = new StringBuilder();
 
-        String ramMemory = GeneralStats.getRamMemory() + "\n";
+        ramMemory = GeneralStats.getRamMemory() + "\n";
 
         try {
             //System.out.println(latch.getCount());
@@ -170,6 +211,7 @@ public class GreetingController {
         SingletonBatteryStatus.getInstance().setBatteryPerc(numericBatteryPerc);
         SingletonBatteryStatus.getInstance().setPercPerThread(SingletonNumericGeneralStats.getInstance().getPercPerThread());
 
+        //System.gc();
         SingletonBatteryStatus.getInstance().notifyMyObservers();
     }
 }

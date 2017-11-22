@@ -148,7 +148,13 @@ public class ServerBatteryMain extends Application implements Observer {
             applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
             connectionManager.setPort(port);
             controller.setServerPortInformation(String.valueOf(port));
-            controller.setBluetoothInformation(LocalDevice.getLocalDevice().getFriendlyName());
+            try {
+                controller.setBluetoothInformation(LocalDevice.getLocalDevice().getFriendlyName());
+            }
+            catch (BluetoothStateException e) {
+                System.out.println("bluetooth non supportato");
+                //e.printStackTrace();
+            }
             isServerCreated = true;
             latch.countDown();
         } catch (ConnectorStartFailedException e) {
@@ -165,8 +171,6 @@ public class ServerBatteryMain extends Application implements Observer {
                 isServerCreated = false;
                 latch.countDown();
             }
-        } catch (BluetoothStateException e) {
-            ErrorManager.exeptionDialog(e);//e.printStackTrace();
         }
     }
 

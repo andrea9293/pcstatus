@@ -4,6 +4,7 @@ import org.json.JSONException;
 import pcstatus.SingletonBatteryStatus;
 import pcstatus.springServer.GreetingController;
 
+import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.LocalDevice;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.util.concurrent.CountDownLatch;
 public class ConnectionManager {
     private int port;
     private BluetoothSPPServer bluetooth;
-    private Thread startBluetoothServer;
+    //private Thread startBluetoothServer;
     private TimerTask task;
     private Timer timer;
 
@@ -36,13 +37,14 @@ public class ConnectionManager {
 
 
         //display local device address and name
-        LocalDevice localDevice;
-            /* localDevice = LocalDevice.getLocalDevice();
-             System.out.println("Address: " + localDevice.getBluetoothAddress());
-             System.out.println("Name: " + localDevice.getFriendlyName());*/
-        bluetooth = new BluetoothSPPServer(this);
-        bluetooth.startServerBluetooth();
-
+        try {
+            LocalDevice.getLocalDevice();
+            bluetooth = new BluetoothSPPServer(this);
+            bluetooth.startServerBluetooth();
+        } catch (BluetoothStateException e) {
+            System.out.println("server bluetooth non avviato");
+            //e.printStackTrace();
+        }
     }
 
    /* public void bluetoothThread() throws IOException {
@@ -83,11 +85,13 @@ public class ConnectionManager {
         timer = new Timer();
         if (isServerCreated) {
             System.out.println("task programmato");
+
             bluetoothThread();
             if (task == null) {
                 task = new TimerTask() {
                     @Override
                     public void run() {
+                        Thread.currentThread().setName("refresh");
                         refresh();
                     }
                 };
@@ -106,14 +110,13 @@ public class ConnectionManager {
                 timer.schedule(task, 0, 3000); //it executes this every 1 minute
             }
         }
-
     }
 
     public void firstGetter(CountDownLatch latch) {
         new Thread(() -> {
             GreetingController.getAllData();
             latch.countDown();
-        }).start();
+        }, "firstGetter").start();
     }
 
     private URL prova;
@@ -143,8 +146,8 @@ public class ConnectionManager {
             bluetooth.closeConnection();
         }
         taskCancel();
-        if (startBluetoothServer != null)
-            startBluetoothServer.interrupt();
+      /*  if (startBluetoothServer != null)
+            startBluetoothServer.interrupt();*/
     }
 
     private void taskCancel() {
@@ -152,6 +155,8 @@ public class ConnectionManager {
             System.out.println("interrotto il timer");
             task.cancel();
             timer.cancel();
+            GreetingController.getNetworkSpeed.shutdownNow();
+            GreetingController.getCpuInfo.shutdownNow();
         }
     }
 }

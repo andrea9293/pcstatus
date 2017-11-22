@@ -1,7 +1,5 @@
 package pcstatus;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
@@ -15,9 +13,6 @@ import pcstatus.charts.LineChartClass;
 import pcstatus.charts.MultipleLineChartClass;
 import pcstatus.charts.PieChartClass;
 import pcstatus.charts.StackedAreaChartClass;
-
-import javax.bluetooth.BluetoothStateException;
-import javax.bluetooth.LocalDevice;
 
 public class Controller {
 
