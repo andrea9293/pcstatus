@@ -8,7 +8,6 @@ import oshi.hardware.*;
 import oshi.software.os.OSFileStore;
 import oshi.util.FormatUtil;
 import pcstatus.ErrorManager;
-import pcstatus.SingletonBatteryStatus;
 
 import java.math.BigDecimal;
 import java.net.InetAddress;
@@ -16,7 +15,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.Enumeration;
 
 public class GeneralStats {
@@ -83,7 +81,7 @@ public class GeneralStats {
         cpuInfo[5] = "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";
 
         SingletonNumericGeneralStats.getInstance().setCpuInfo(cpuInfo);
-        SingletonBatteryStatus.getInstance().setNumericCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
+        SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
 
         return cpuInfo;
     }
@@ -107,7 +105,7 @@ public class GeneralStats {
 
         //CentralProcessor processor = systemInfo.getHardware().getProcessor();
         SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
-        SingletonBatteryStatus.getInstance().setNumericCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
+        //SingletonBatteryStatus.getInstance().setNumericCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
         return "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";
     }
 

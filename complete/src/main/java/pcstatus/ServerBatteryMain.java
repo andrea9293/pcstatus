@@ -11,6 +11,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.tomcat.ConnectorStartFailedException;
 import org.springframework.context.ConfigurableApplicationContext;
 import pcstatus.connectionPackage.ConnectionManager;
+import pcstatus.dataPackage.SingletonBatteryStatus;
+import pcstatus.dataPackage.SingletonNumericGeneralStats;
 
 import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.LocalDevice;
@@ -113,7 +115,7 @@ public class ServerBatteryMain extends Application implements Observer {
         controller.setDisksText(String.join("\n", singletonBatteryStatus.getDisks()));
         controller.setSystemText(String.join("\n", singletonBatteryStatus.getComputerInfo()));
         controller.setMiscellaneous(String.join("\n", singletonBatteryStatus.getMiscellaneous()));
-        controller.getLineChartClass().addEntryLineChart(singletonBatteryStatus.getNumericCpuLoad());
+        controller.getLineChartClass().addEntryLineChart(Float.parseFloat(SingletonNumericGeneralStats.getInstance().getCpuLoad()));
 
         if (singletonBatteryStatus.getBatteryPerc() != null)
             controller.getStackedAreaChartClass().addEntryStackedAreaChart(singletonBatteryStatus.getBatteryPerc());

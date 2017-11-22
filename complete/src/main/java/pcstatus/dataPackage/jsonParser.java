@@ -3,7 +3,6 @@ package pcstatus.dataPackage;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import pcstatus.SingletonBatteryStatus;
 
 public class jsonParser {
 
@@ -43,7 +42,7 @@ public class jsonParser {
 
         String string;
         string = jsonObj.getString("numericCpuLoad");
-        SingletonBatteryStatus.getInstance().setNumericCpuLoad(string);
+        SingletonNumericGeneralStats.getInstance().setCpuLoad(string);
 
         string = jsonObj.getString("numericBatteryPerc");
         SingletonBatteryStatus.getInstance().setBatteryPerc(string);

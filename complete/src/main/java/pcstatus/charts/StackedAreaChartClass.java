@@ -18,7 +18,7 @@ public class StackedAreaChartClass {
         xBoundstackedAreaChart.setUpperBound(10);
         xBoundstackedAreaChart.setAutoRanging(false);
         xBoundstackedAreaChart.setTickLabelsVisible(false); //hide numbers on x axis
-        stackedAreaChart.setCreateSymbols(false); //hide dots
+       // stackedAreaChart.setCreateSymbols(false); //hide dots
         stackedAreaChart.setVerticalGridLinesVisible(false);//hide vertical lines
         yaxis.setAutoRanging(false);
         yaxis.setLowerBound(0);
@@ -34,7 +34,7 @@ public class StackedAreaChartClass {
         Node line = series.getNode().lookup(".chart-series-area-line");
         line.setStyle("-fx-stroke: #8bc34a;" +
                 "-fx-stroke-width: 3px;"); // set width of line
-        stackedAreaChart.setStyle("CHART_COLOR_1: #8bc34a;"); //color of dot
+        stackedAreaChart.setStyle("CHART_COLOR_1: #8bc34a;"); //color of dots
     }
 
     public void addEntryStackedAreaChart(Integer value) {

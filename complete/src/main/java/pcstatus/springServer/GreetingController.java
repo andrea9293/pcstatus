@@ -2,7 +2,7 @@ package pcstatus.springServer;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pcstatus.SingletonBatteryStatus;
+import pcstatus.dataPackage.SingletonBatteryStatus;
 import pcstatus.dataPackage.GeneralStats;
 import pcstatus.dataPackage.Kernel32;
 import pcstatus.dataPackage.SingletonNumericGeneralStats;

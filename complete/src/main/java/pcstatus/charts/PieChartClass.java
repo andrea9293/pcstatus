@@ -1,12 +1,6 @@
 package pcstatus.charts;
 
-import javafx.event.EventHandler;
-import javafx.geometry.Side;
 import javafx.scene.chart.PieChart;
-import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
-import pcstatus.SingletonBatteryStatus;
 
 public class PieChartClass {
     private PieChart pieChart;

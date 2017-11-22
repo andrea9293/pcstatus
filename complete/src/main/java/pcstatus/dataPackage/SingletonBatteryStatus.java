@@ -1,8 +1,8 @@
-package pcstatus;
+package pcstatus.dataPackage;
 
 import javafx.application.Platform;
 import org.json.JSONException;
-import pcstatus.dataPackage.jsonParser;
+import pcstatus.ServerBatteryMain;
 
 import java.util.Observable;
 
@@ -19,7 +19,6 @@ public class SingletonBatteryStatus extends Observable{
     private String jsonStr;
     private String[] computerInfo;
     private String[] miscellaneous;
-    private Float numericCpuLoad;
     private Float[] percPerThread;
     private String[] avaibleFileSystem;
     private Integer batteryPerc;
@@ -69,7 +68,7 @@ public class SingletonBatteryStatus extends Observable{
         return computerInfo;
     }
 
-    void addingObserver(ServerBatteryMain serverBatteryMain){
+    public void addingObserver(ServerBatteryMain serverBatteryMain){
         addObserver(serverBatteryMain);
     }
 
@@ -87,14 +86,6 @@ public class SingletonBatteryStatus extends Observable{
 
     public String[] getMiscellaneous() {
         return miscellaneous;
-    }
-
-    public void setNumericCpuLoad(String numericCpuLoad) {
-        this.numericCpuLoad = Float.parseFloat(numericCpuLoad);
-    }
-
-    public Float getNumericCpuLoad() {
-        return numericCpuLoad;
     }
 
     public void setPercPerThread(String percPerThread) {

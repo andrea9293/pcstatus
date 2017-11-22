@@ -1,7 +1,7 @@
 package pcstatus.connectionPackage;
 
 import org.json.JSONException;
-import pcstatus.SingletonBatteryStatus;
+import pcstatus.dataPackage.SingletonBatteryStatus;
 import pcstatus.springServer.GreetingController;
 
 import javax.bluetooth.BluetoothStateException;

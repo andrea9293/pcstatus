@@ -14,6 +14,7 @@ import pcstatus.charts.MultipleLineChartClass;
 import pcstatus.charts.PieChartClass;
 import pcstatus.charts.StackedAreaChartClass;
 
+//todo splittare in classi view
 public class Controller {
 
     @FXML private Label serverPortInformation;

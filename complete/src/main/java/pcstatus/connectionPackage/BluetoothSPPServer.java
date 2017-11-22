@@ -1,7 +1,6 @@
 package pcstatus.connectionPackage;
 
-import pcstatus.ErrorManager;
-import pcstatus.SingletonBatteryStatus;
+import pcstatus.dataPackage.SingletonBatteryStatus;
 
 import javax.bluetooth.RemoteDevice;
 import javax.bluetooth.UUID;
