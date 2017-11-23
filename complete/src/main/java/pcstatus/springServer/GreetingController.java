@@ -192,11 +192,10 @@ public class GreetingController {
             e.printStackTrace();
         }
         //cpuInfo[0] = GeneralStats.getPcInfo();
-        SingletonNumericGeneralStats.getInstance().setCpuLoad(cpuInfo[0][5]);
+        //SingletonNumericGeneralStats.getInstance().setCpuLoad(cpuInfo[0][5]);
         sb.append(cpuInfo[0][5] + "\n");
         sb.append(ramMemory);
         sb.append(batteryParts[1] + "\n");
-
         sb.append(networkSpeed[0]);
 
         miscellaneous = sb.toString().split("\n");

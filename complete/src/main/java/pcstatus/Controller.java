@@ -13,8 +13,8 @@ import pcstatus.charts.LineChartClass;
 import pcstatus.charts.MultipleLineChartClass;
 import pcstatus.charts.PieChartClass;
 import pcstatus.charts.StackedAreaChartClass;
+import pcstatus.viewsPackage.*;
 
-//todo splittare in classi view
 public class Controller {
 
     @FXML private Label serverPortInformation;
@@ -31,8 +31,8 @@ public class Controller {
     @FXML private VBox mainVbox;
     @FXML private LineChart lineChartSystemLoad;
     @FXML private Button buttonSystemLoad;
-    @FXML private Label systemText;
-    @FXML private Label miscellaneous;
+    @FXML private Label systemInfoText;
+    @FXML private Label systemLoadText;
     @FXML private Label cpuText;
     @FXML private Label batteryText;
     @FXML private Label disksText;
@@ -65,15 +65,28 @@ public class Controller {
         settingsBox = mainVbox.getChildren().get(5);
         changeView(systemLoadBox); //set first view
 
-        //button listener on bottom
+        new SystemLoadBoxView(systemLoadText, lineChartClass);
+        new BatteryBoxView(batteryText, stackedAreaChartClass);
+        new CpuBoxView(cpuText, multipleLineChartClass);
+        new DisksBoxView(disksText, pieChartClass);
+        new SystemInfoBoxView(systemInfoText);
+        new SettingsBoxView(ipAddressInformation, bluetoothInformation, serverPortInformation);
+
+        //todo splittare in classi view
+
+        // button listener on bottom
         buttonSystemLoad.setOnAction(event -> changeView(systemLoadBox));
         buttonBattery.setOnAction(event -> changeView(batteryBox));
         buttonProcessor.setOnAction(event -> changeView(cpuBox));
         buttonHdd.setOnAction(event -> changeView(disksBox));
         buttonSystemInfo.setOnAction(event -> changeView(systemInfoBox));
         buttonSettings.setOnAction(event -> changeView(settingsBox));
+    }
 
 
+    public void changeView(Node view) {
+        mainVbox.getChildren().removeAll(systemInfoBox, batteryBox, cpuBox, disksBox, systemLoadBox, settingsBox);
+        mainVbox.getChildren().add(view);
     }
 
     public StackedAreaChartClass getStackedAreaChartClass() {
@@ -84,11 +97,6 @@ public class Controller {
         return multipleLineChartClass;
     }
 
-    public void changeView(Node view) {
-        mainVbox.getChildren().removeAll(systemInfoBox, batteryBox, cpuBox, disksBox, systemLoadBox, settingsBox);
-        mainVbox.getChildren().add(view);
-    }
-
     public LineChartClass getLineChartClass() {
         return lineChartClass;
     }
@@ -97,12 +105,12 @@ public class Controller {
         return pieChartClass;
     }
 
-    public void setSystemText(String systemText) {
-        this.systemText.setText(systemText);
+    public void setSystemText(String systemInfoText) {
+        this.systemInfoText.setText(systemInfoText);
     }
 
-    public void setMiscellaneous(String miscellaneous) {
-        this.miscellaneous.setText(miscellaneous);
+    public void setMiscellaneous(String systemLoadText) {
+        this.systemLoadText.setText(systemLoadText);
     }
 
     public void setBatteryText(String labelTexts) {

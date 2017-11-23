@@ -12,7 +12,6 @@ import org.springframework.boot.context.embedded.tomcat.ConnectorStartFailedExce
 import org.springframework.context.ConfigurableApplicationContext;
 import pcstatus.connectionPackage.ConnectionManager;
 import pcstatus.dataPackage.SingletonBatteryStatus;
-import pcstatus.dataPackage.SingletonNumericGeneralStats;
 
 import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.LocalDevice;
@@ -30,18 +29,17 @@ public class ServerBatteryMain extends Application implements Observer {
     private Controller controller;
     private static ConfigurableApplicationContext applicationContext;
     private Stage primaryStage;
-    private boolean firstShow = true;
     private static String[] args;
     private CountDownLatch latch = new CountDownLatch(2);
     private int port = 8080;
     private ConnectionManager connectionManager;
-    private Boolean isServerCreated;
 
 
     @Override
     public void start(Stage primaryStage) {
         long startAllTime = System.currentTimeMillis();
         SingletonBatteryStatus.getInstance().addingObserver(ServerBatteryMain.this);
+        SingletonBatteryStatus.getInstance().setFirstShow(true);
         connectionManager = new ConnectionManager();
         connectionManager.firstGetter(latch);
         serverThread.start();
@@ -76,7 +74,8 @@ public class ServerBatteryMain extends Application implements Observer {
         System.out.println("finito di aspettare");
         try {
             this.primaryStage.setTitle("PCstatus - " + getMyIp());
-            controller.setIpAddressInformation(getMyIp());
+            SingletonBatteryStatus.getInstance().setIpAddress(getMyIp());
+            //controller.setIpAddressInformation(getMyIp());
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (SocketException e) {
@@ -87,7 +86,7 @@ public class ServerBatteryMain extends Application implements Observer {
         System.out.println("\n\n                                                " +
                 " fatto tutto e ci ho messo " + (stopAllTime - startAllTime) + "\n");
 
-        connectionManager.scheduleTask(isServerCreated);
+        connectionManager.scheduleTask(SingletonBatteryStatus.getInstance().isServerCreated());
     }
 
     public static void main(String[] args) throws IOException {
@@ -102,41 +101,22 @@ public class ServerBatteryMain extends Application implements Observer {
         } catch (IllegalArgumentException e) {
             System.out.println("il constesto è null, non si è avviato il server");
         }
-
         connectionManager.shutDown();
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        SingletonBatteryStatus singletonBatteryStatus = SingletonBatteryStatus.getInstance();
-
-        controller.setBatteryText(String.join("\n", singletonBatteryStatus.getBattery()));
-        controller.setCpuText(String.join("\n", singletonBatteryStatus.getCpu()));
-        controller.setDisksText(String.join("\n", singletonBatteryStatus.getDisks()));
-        controller.setSystemText(String.join("\n", singletonBatteryStatus.getComputerInfo()));
-        controller.setMiscellaneous(String.join("\n", singletonBatteryStatus.getMiscellaneous()));
-        controller.getLineChartClass().addEntryLineChart(Float.parseFloat(SingletonNumericGeneralStats.getInstance().getCpuLoad()));
-
-        if (singletonBatteryStatus.getBatteryPerc() != null)
-            controller.getStackedAreaChartClass().addEntryStackedAreaChart(singletonBatteryStatus.getBatteryPerc());
-        controller.getPieChartClass().addEntryPieChart(singletonBatteryStatus.getAvaibleFileSystem());
-
-        if (firstShow) {
-            controller.getMultipleLineChartClass().createSeries();
-            controller.getMultipleLineChartClass().addEntryLineChart(singletonBatteryStatus.getPercPerThread());
+        if (SingletonBatteryStatus.getInstance().isFirtShow()) {
             resizeWindow();
-        } else {
-            controller.getMultipleLineChartClass().addEntryLineChart(singletonBatteryStatus.getPercPerThread());
         }
-        connectionManager.sendBluetoothMessage();
+        connectionManager.sendBluetoothMessage(); //todo controllare va bene per l'mvc
     }
 
     private void resizeWindow() {
         primaryStage.sizeToScene();
         primaryStage.centerOnScreen();
-        firstShow = false;
+        SingletonBatteryStatus.getInstance().setFirstShow(false);
     }
-
 
     private String getMyIp() throws UnknownHostException, SocketException {
         InetAddress addr = InetAddress.getLocalHost();
@@ -149,7 +129,7 @@ public class ServerBatteryMain extends Application implements Observer {
         try {
             applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
             connectionManager.setPort(port);
-            controller.setServerPortInformation(String.valueOf(port));
+            //controller.setServerPortInformation(String.valueOf(port));
             try {
                 controller.setBluetoothInformation(LocalDevice.getLocalDevice().getFriendlyName());
             }
@@ -157,7 +137,7 @@ public class ServerBatteryMain extends Application implements Observer {
                 System.out.println("bluetooth non supportato");
                 //e.printStackTrace();
             }
-            isServerCreated = true;
+            SingletonBatteryStatus.getInstance().setServerCreated(true);
             latch.countDown();
         } catch (ConnectorStartFailedException e) {
             System.out.println("c'è qualcosa che non va con la porta");
@@ -169,8 +149,8 @@ public class ServerBatteryMain extends Application implements Observer {
                 ErrorManager.exeptionDialog(e);
                 controller.setIpAddressInformation("Server is not created");
                 controller.setServerPortInformation("Server is not created");
-                controller.setBluetoothInformation("Server is not created");
-                isServerCreated = false;
+                //controller.setBluetoothInformation("Server is not created");
+                SingletonBatteryStatus.getInstance().setServerCreated(false);
                 latch.countDown();
             }
         }

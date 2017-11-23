@@ -103,7 +103,6 @@ public class GeneralStats {
             e.printStackTrace();
         }
 
-        //CentralProcessor processor = systemInfo.getHardware().getProcessor();
         SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
         //SingletonBatteryStatus.getInstance().setNumericCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
         return "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";

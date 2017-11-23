@@ -20,31 +20,42 @@ public class ConnectionManager {
     //private Thread startBluetoothServer;
     private TimerTask task;
     private Timer timer;
+    private URL prova;
+    private BufferedReader in;
+    private String inputLine;
 
     public ConnectionManager() {
     }
 
     public void setPort(int port) {
         this.port = port;
+        SingletonBatteryStatus.getInstance().setPort(port);
     }
-
 
     public void sendBluetoothMessage() {
-        if (bluetooth != null) bluetooth.sendMessage();
+
+        if (bluetooth != null) {
+            if (SingletonBatteryStatus.getInstance().isBluetoothServerCreated())
+                bluetooth.sendMessage();
+            else
+                bluetooth = null;
+        }
+        System.out.println(SingletonBatteryStatus.getInstance().isBluetoothServerCreated());
+
     }
 
-    public void bluetoothThread() {
-
-
-        //display local device address and name
+    private void bluetoothThread() {
         try {
-            LocalDevice.getLocalDevice();
-            bluetooth = new BluetoothSPPServer(this);
+            SingletonBatteryStatus.getInstance().setBluetoothName(LocalDevice.getLocalDevice().getFriendlyName());
+            bluetooth = new BluetoothSPPServer();
             bluetooth.startServerBluetooth();
         } catch (BluetoothStateException e) {
+            SingletonBatteryStatus.getInstance().setBluetoothServerCreated(false);
+            SingletonBatteryStatus.getInstance().setBluetoothName("Bluetooth not available");
             System.out.println("server bluetooth non avviato");
             //e.printStackTrace();
         }
+
     }
 
    /* public void bluetoothThread() throws IOException {
@@ -118,10 +129,6 @@ public class ConnectionManager {
             latch.countDown();
         }, "firstGetter").start();
     }
-
-    private URL prova;
-    private BufferedReader in;
-    private String inputLine;
 
     private void refresh() {
 

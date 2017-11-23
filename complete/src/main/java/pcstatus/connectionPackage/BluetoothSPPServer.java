@@ -2,6 +2,8 @@ package pcstatus.connectionPackage;
 
 import pcstatus.dataPackage.SingletonBatteryStatus;
 
+import javax.bluetooth.BluetoothStateException;
+import javax.bluetooth.LocalDevice;
 import javax.bluetooth.RemoteDevice;
 import javax.bluetooth.UUID;
 import javax.microedition.io.Connector;
@@ -21,53 +23,45 @@ class BluetoothSPPServer {
     private RemoteDevice device;
     private InputStream inStream;
     private Thread messageThread;
-    private ConnectionManager connectionManager;
     private boolean connectionIsAvaible = false;
     private Thread startBluetoothServer;
 
-    BluetoothSPPServer(ConnectionManager connectionManager) {
-        this.connectionManager = connectionManager;
+    BluetoothSPPServer() {
     }
 
     //start server
-    void bluetoothServer() throws IOException {
+    private void bluetoothServer() {
 
-        if (messageThread != null){
+        if (messageThread != null) {
             System.out.println("in bluetoothServer messageThread non è null");
             messageThread.interrupt();
         }
-        //Create a UUID for SPP
-        UUID uuid = new UUID("1101", true);
-        //Create the servicve url
-        String connectionString = "btspp://localhost:" + uuid + ";name=Sample SPP Server";
-
-        //open server url
-        streamConnNotifier = (StreamConnectionNotifier) Connector.open(connectionString);
-
-        //Wait for client connection
-        System.out.println("\nServer Started. Waiting for clients to connect...");
         try {
+            //Create a UUID for SPP
+            UUID uuid = new UUID("1101", true);
+            //Create the servicve url
+            String connectionString = "btspp://localhost:" + uuid + ";name=Sample SPP Server";
+
+            //open server url
+            streamConnNotifier = (StreamConnectionNotifier) Connector.open(connectionString);
+
+            //Wait for client connection
+            System.out.println("\nServer Started. Waiting for clients to connect...");
+
             connection = streamConnNotifier.acceptAndOpen();
-        } catch (IOException e) {
-            System.out.println("streamConnNotifier.acceptAndOpen()");
-            //ErrorManager.exeptionDialog(e);
-            e.printStackTrace();
-        }
 
-        try {
+
             device = RemoteDevice.getRemoteDevice(connection);
+            System.out.println("Remote device address: " + device.getBluetoothAddress());
+            System.out.println("Remote device name: " + device.getFriendlyName(true));
+            outStream = connection.openOutputStream();
+            inStream = connection.openInputStream();
+            connectionIsAvaible = true;
+            sendMessage();
         } catch (IOException e) {
-            //ErrorManager.exeptionDialog(e);
-            System.out.println("RemoteDevice.getRemoteDevice(connection)");
-
+            e.printStackTrace();
+            closeConnection();
         }
-        System.out.println("Remote device address: " + device.getBluetoothAddress());
-        System.out.println("Remote device name: " + device.getFriendlyName(true));
-
-        outStream = connection.openOutputStream();
-        inStream = connection.openInputStream();
-        connectionIsAvaible=true;
-        sendMessage();
     }
 
     void closeConnection() {
@@ -82,14 +76,17 @@ class BluetoothSPPServer {
                 inStream.close();
             streamConnNotifier.close();
             connectionIsAvaible = false;
+            SingletonBatteryStatus.getInstance().setBluetoothServerCreated(false);
         } catch (IOException e) {
             //ErrorManager.exeptionDialog(e);
             e.printStackTrace();
         }
+        SingletonBatteryStatus.getInstance().setBluetoothName("Bluetooth not available");
+        connectionIsAvaible = false;
     }
 
     void sendMessage() {
-        if(connectionIsAvaible){
+        if (connectionIsAvaible) {
             if (outStream != null) {
                 if (messageThread == null) {
                     messageThread = newMessageThread();
@@ -101,8 +98,17 @@ class BluetoothSPPServer {
                     messageThread.start();
                 }
             }
-        }else {
-            System.out.println("connessione non stabilita");
+        } else {
+            try {
+                if (LocalDevice.getLocalDevice() != null && !LocalDevice.getLocalDevice().getFriendlyName().equals("null"))
+                    System.out.println("connessione non stabilita " + LocalDevice.getLocalDevice().getFriendlyName());
+                else {
+                    closeConnection();
+                }
+            } catch (BluetoothStateException | NullPointerException e) {
+                e.printStackTrace();
+                closeConnection();
+            }
         }
     }
 
@@ -140,13 +146,7 @@ class BluetoothSPPServer {
 
     void startServerBluetooth() {
         if (startBluetoothServer == null || !startBluetoothServer.isAlive()) {
-            startBluetoothServer = new Thread(() -> {
-                try {
-                    bluetoothServer();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }, "startServerBluetooth");
+            startBluetoothServer = new Thread(this::bluetoothServer, "startServerBluetooth");
 
             startBluetoothServer.start();
         }

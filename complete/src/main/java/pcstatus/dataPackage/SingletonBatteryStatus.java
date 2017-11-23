@@ -5,14 +5,12 @@ import org.json.JSONException;
 import pcstatus.ServerBatteryMain;
 
 import java.util.Observable;
+import java.util.Observer;
 
 public class SingletonBatteryStatus extends Observable{
     private static SingletonBatteryStatus ourInstance = new SingletonBatteryStatus();
-
-    public static SingletonBatteryStatus getInstance() {
-        return ourInstance;
-    }
-
+    private boolean firtShow;
+    private boolean isServerCreated;
     private String[] battery;
     private String[] cpu;
     private String[] disks;
@@ -22,14 +20,27 @@ public class SingletonBatteryStatus extends Observable{
     private Float[] percPerThread;
     private String[] avaibleFileSystem;
     private Integer batteryPerc;
+    private int port;
+    private String bluetoothName;
+    private String ipAddress;
+    private boolean bluetoothServerCreated = true;
 
-
-
+    public static SingletonBatteryStatus getInstance() {
+        return ourInstance;
+    }
     private SingletonBatteryStatus() {}
 
     public void setJsonStr(String jsonStr) throws JSONException {
         this.jsonStr = jsonStr;
         new jsonParser(jsonStr);
+    }
+
+    public boolean isServerCreated() {
+        return isServerCreated;
+    }
+
+    public void setServerCreated(boolean serverCreated) {
+        isServerCreated = serverCreated;
     }
 
     public String[] getDisks() {
@@ -68,8 +79,12 @@ public class SingletonBatteryStatus extends Observable{
         return computerInfo;
     }
 
-    public void addingObserver(ServerBatteryMain serverBatteryMain){
+   /* public void addingObserver(ServerBatteryMain serverBatteryMain){
         addObserver(serverBatteryMain);
+    }*/
+
+    public void addingObserver(Observer observer){
+        addObserver(observer);
     }
 
     public void notifyMyObservers() {
@@ -115,5 +130,45 @@ public class SingletonBatteryStatus extends Observable{
 
     public Integer getBatteryPerc() {
         return batteryPerc;
+    }
+
+    public void setFirstShow(boolean firstShow){
+        this.firtShow = firstShow;
+    }
+
+    public boolean isFirtShow() {
+        return firtShow;
+    }
+
+    public void setPort (int port){
+        this.port = port;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setBluetoothName(String bluetoothName) {
+        this.bluetoothName = bluetoothName;
+    }
+
+    public String getBluetoothName() {
+        return bluetoothName;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public void setBluetoothServerCreated(boolean bluetoothServerCreated) {
+        this.bluetoothServerCreated = bluetoothServerCreated;
+    }
+
+    public boolean isBluetoothServerCreated() {
+        return bluetoothServerCreated;
     }
 }
