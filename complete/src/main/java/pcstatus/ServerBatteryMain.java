@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.tomcat.ConnectorStartFailedException;
 import org.springframework.context.ConfigurableApplicationContext;
 import pcstatus.connectionPackage.ConnectionManager;
-import pcstatus.dataPackage.SingletonBatteryStatus;
+import pcstatus.dataPackage.SingletonStaticGeneralStats;
 
 import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.LocalDevice;
@@ -23,23 +23,36 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * Main Class
+ */
 @SpringBootApplication
 public class ServerBatteryMain extends Application implements Observer {
 
-    private Controller controller;
     private static ConfigurableApplicationContext applicationContext;
     private Stage primaryStage;
     private static String[] args;
     private CountDownLatch latch = new CountDownLatch(2);
+    /**
+     * default port for server
+     */
     private int port = 8080;
+    /**
+     * @see ConnectionManager
+     */
     private ConnectionManager connectionManager;
+    private Thread serverThread = new Thread(this::runSpringApplication,"serverThread");
 
 
+    /**
+     * initialize the program
+     * @param primaryStage main frame
+     */
     @Override
     public void start(Stage primaryStage) {
         long startAllTime = System.currentTimeMillis();
-        SingletonBatteryStatus.getInstance().addingObserver(ServerBatteryMain.this);
-        SingletonBatteryStatus.getInstance().setFirstShow(true);
+        SingletonStaticGeneralStats.getInstance().addingObserver(ServerBatteryMain.this);
+        SingletonStaticGeneralStats.getInstance().setFirstShow(true);
         connectionManager = new ConnectionManager();
         connectionManager.firstGetter(latch);
         serverThread.start();
@@ -55,7 +68,9 @@ public class ServerBatteryMain extends Application implements Observer {
         }
 
         // ProgressIndicator progressIndicator = new ProgressIndicator();
-        this.primaryStage.setScene(new Scene(root));
+        if (root != null) {
+            this.primaryStage.setScene(new Scene(root));
+        }
         this.primaryStage.setResizable(false);
         this.primaryStage.show();
         this.primaryStage.centerOnScreen();
@@ -63,7 +78,6 @@ public class ServerBatteryMain extends Application implements Observer {
             shutDown();
             Platform.exit();
         });
-        controller = loader.getController();
 
         try {
             System.out.println("aspetto");
@@ -74,8 +88,7 @@ public class ServerBatteryMain extends Application implements Observer {
         System.out.println("finito di aspettare");
         try {
             this.primaryStage.setTitle("PCstatus - " + getMyIp());
-            SingletonBatteryStatus.getInstance().setIpAddress(getMyIp());
-            //controller.setIpAddressInformation(getMyIp());
+            SingletonStaticGeneralStats.getInstance().setIpAddress(getMyIp());
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (SocketException e) {
@@ -86,7 +99,7 @@ public class ServerBatteryMain extends Application implements Observer {
         System.out.println("\n\n                                                " +
                 " fatto tutto e ci ho messo " + (stopAllTime - startAllTime) + "\n");
 
-        connectionManager.scheduleTask(SingletonBatteryStatus.getInstance().isServerCreated());
+        connectionManager.scheduleTask(SingletonStaticGeneralStats.getInstance().isServerCreated());
     }
 
     public static void main(String[] args) throws IOException {
@@ -94,6 +107,9 @@ public class ServerBatteryMain extends Application implements Observer {
         launch(args);
     }
 
+    /**
+     * shutdown all threads and close the program
+     */
     private void shutDown() {
         try {
             SpringApplication.exit(applicationContext, () -> 0);
@@ -104,18 +120,27 @@ public class ServerBatteryMain extends Application implements Observer {
         connectionManager.shutDown();
     }
 
+    /**
+     * method updating view with new data
+     * @see Observer#update(Observable, Object)
+     * @param o not used
+     * @param arg not used
+     */
     @Override
     public void update(Observable o, Object arg) {
-        if (SingletonBatteryStatus.getInstance().isFirtShow()) {
+        if (SingletonStaticGeneralStats.getInstance().isFirtShow()) {
             resizeWindow();
         }
-        connectionManager.sendBluetoothMessage(); //todo controllare va bene per l'mvc
+        connectionManager.sendBluetoothMessage();
     }
 
+    /**
+     * adapt size of main frame
+     */
     private void resizeWindow() {
         primaryStage.sizeToScene();
         primaryStage.centerOnScreen();
-        SingletonBatteryStatus.getInstance().setFirstShow(false);
+        SingletonStaticGeneralStats.getInstance().setFirstShow(false);
     }
 
     private String getMyIp() throws UnknownHostException, SocketException {
@@ -123,21 +148,20 @@ public class ServerBatteryMain extends Application implements Observer {
         return addr.getHostAddress();
     }
 
-    private Thread serverThread = new Thread(this::runSpringApplication,"serverThread");
-
+    /**
+     * Recursive function that creates Spring Server by testing from port 8080 to 8090
+     */
     private void runSpringApplication() {
         try {
             applicationContext = SpringApplication.run(ServerBatteryMain.class, args);
             connectionManager.setPort(port);
-            //controller.setServerPortInformation(String.valueOf(port));
             try {
-                controller.setBluetoothInformation(LocalDevice.getLocalDevice().getFriendlyName());
+                SingletonStaticGeneralStats.getInstance().setBluetoothName(LocalDevice.getLocalDevice().getFriendlyName());
             }
             catch (BluetoothStateException e) {
                 System.out.println("bluetooth non supportato");
-                //e.printStackTrace();
             }
-            SingletonBatteryStatus.getInstance().setServerCreated(true);
+            SingletonStaticGeneralStats.getInstance().setServerCreated(true);
             latch.countDown();
         } catch (ConnectorStartFailedException e) {
             System.out.println("c'è qualcosa che non va con la porta");
@@ -146,11 +170,8 @@ public class ServerBatteryMain extends Application implements Observer {
                 System.getProperties().put("server.port", port);
                 runSpringApplication();
             } else {
-                ErrorManager.exeptionDialog(e);
-                controller.setIpAddressInformation("Server is not created");
-                controller.setServerPortInformation("Server is not created");
-                //controller.setBluetoothInformation("Server is not created");
-                SingletonBatteryStatus.getInstance().setServerCreated(false);
+                new ErrorManager().exceptionDialog(e);
+                SingletonStaticGeneralStats.getInstance().setServerCreated(false);
                 latch.countDown();
             }
         }

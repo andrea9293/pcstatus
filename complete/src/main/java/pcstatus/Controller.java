@@ -15,6 +15,10 @@ import pcstatus.charts.PieChartClass;
 import pcstatus.charts.StackedAreaChartClass;
 import pcstatus.viewsPackage.*;
 
+/**
+ * this class is responsible of initialization of all graphic side of the program
+ * @author Andrea Bravaccino
+ */
 public class Controller {
 
     @FXML private Label serverPortInformation;
@@ -37,24 +41,23 @@ public class Controller {
     @FXML private Label batteryText;
     @FXML private Label disksText;
 
-    private LineChartClass lineChartClass;
-    private MultipleLineChartClass multipleLineChartClass;
-    private PieChartClass pieChartClass;
-    private StackedAreaChartClass stackedAreaChartClass;
     private Node systemLoadBox;
     private Node batteryBox;
     private Node cpuBox;
     private Node systemInfoBox;
     private Node disksBox;
     private Node settingsBox;
+
+    /**
+     * this function initializes all graphic components
+     */
     @FXML
-    @Autowired
     private void initialize() {
         //initialize all charts
-        pieChartClass = new PieChartClass(pieChartDisk);
-        lineChartClass = new LineChartClass(lineChartSystemLoad);
-        multipleLineChartClass = new MultipleLineChartClass(lineChartPercPerThread);
-        stackedAreaChartClass = new StackedAreaChartClass (stackedAreaChartBattery);
+        PieChartClass pieChartClass = new PieChartClass(pieChartDisk);
+        LineChartClass lineChartClass = new LineChartClass(lineChartSystemLoad);
+        MultipleLineChartClass multipleLineChartClass = new MultipleLineChartClass(lineChartPercPerThread);
+        StackedAreaChartClass stackedAreaChartClass = new StackedAreaChartClass(stackedAreaChartBattery);
 
         //getting all view
         systemLoadBox = mainVbox.getChildren().get(0);
@@ -72,8 +75,6 @@ public class Controller {
         new SystemInfoBoxView(systemInfoText);
         new SettingsBoxView(ipAddressInformation, bluetoothInformation, serverPortInformation);
 
-        //todo splittare in classi view
-
         // button listener on bottom
         buttonSystemLoad.setOnAction(event -> changeView(systemLoadBox));
         buttonBattery.setOnAction(event -> changeView(batteryBox));
@@ -84,57 +85,12 @@ public class Controller {
     }
 
 
-    public void changeView(Node view) {
+    /**
+     * this function removes the current view and shows the user-selected view by clicking the respective button
+     * @param view
+     */
+    private void changeView(Node view) {
         mainVbox.getChildren().removeAll(systemInfoBox, batteryBox, cpuBox, disksBox, systemLoadBox, settingsBox);
         mainVbox.getChildren().add(view);
-    }
-
-    public StackedAreaChartClass getStackedAreaChartClass() {
-        return stackedAreaChartClass;
-    }
-
-    public MultipleLineChartClass getMultipleLineChartClass() {
-        return multipleLineChartClass;
-    }
-
-    public LineChartClass getLineChartClass() {
-        return lineChartClass;
-    }
-
-    public PieChartClass getPieChartClass() {
-        return pieChartClass;
-    }
-
-    public void setSystemText(String systemInfoText) {
-        this.systemInfoText.setText(systemInfoText);
-    }
-
-    public void setMiscellaneous(String systemLoadText) {
-        this.systemLoadText.setText(systemLoadText);
-    }
-
-    public void setBatteryText(String labelTexts) {
-        batteryText.setText(labelTexts);
-    }
-
-    public void setCpuText(String labelTexts) {
-        cpuText.setText(labelTexts);
-    }
-
-    public void setDisksText(String disksText) {
-        this.disksText.setText(disksText);
-    }
-
-    public void setIpAddressInformation (String ipAddressInformation){
-        this.ipAddressInformation.setText(ipAddressInformation);
-    }
-
-    public void setServerPortInformation(String serverPortInformation) {
-        this.serverPortInformation.setText(serverPortInformation);
-    }
-
-    //show bluetooth friendly name in settings tab
-    public void setBluetoothInformation(String bluetoothInformation){
-        this.bluetoothInformation.setText(bluetoothInformation);
     }
 }

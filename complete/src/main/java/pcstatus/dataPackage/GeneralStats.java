@@ -1,287 +1,124 @@
 package pcstatus.dataPackage;
 
-import org.gridkit.lab.sigar.SigarFactory;
-import org.hyperic.sigar.CpuPerc;
-import org.hyperic.sigar.SigarException;
 import oshi.SystemInfo;
-import oshi.hardware.*;
-import oshi.software.os.OSFileStore;
 import oshi.util.FormatUtil;
-import pcstatus.ErrorManager;
 
 import java.math.BigDecimal;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.text.DecimalFormat;
-import java.util.Enumeration;
 
+/**
+ * this class contain getters of all static information of computer like name of pc, types of cpu hardware,
+ * ram memory and baseboard information.
+ *
+ * @author Andrea Bravaccino
+ */
 public class GeneralStats {
+    /**
+     * Intstance of singleton
+     */
+    private static GeneralStats ourInstance = new GeneralStats();
 
+    /**
+     * empty constructor
+     */
+    private GeneralStats() {
+    }
 
-    private static SystemInfo systemInfo = new SystemInfo();
-    private static OSFileStore[] fsArray;
-    private static oshi.software.os.FileSystem fileSystem;
-    private static CpuPerc[] cpuperclist;
-    private static StringBuilder genericStringBuilder = new StringBuilder();
-    private static String[] error = new String[1];
-    private static CentralProcessor processor = systemInfo.getHardware().getProcessor();
-    private static String[] cpuInfo = new String[6];
+    /**
+     * getter for current instance of <code>GeneralStats</code>
+     * @return current instance of <code>GeneralStats</code>
+     */
+    public static GeneralStats getInstance() {
+        return ourInstance;
+    }
 
-    private static HardwareAbstractionLayer hal = systemInfo.getHardware();
-    private static oshi.software.os.OperatingSystem os = systemInfo.getOperatingSystem();
-    private static ComputerSystem computerSystem = hal.getComputerSystem();
-    private static Baseboard baseboard = computerSystem.getBaseboard();
-    private static GlobalMemory memory = hal.getMemory();
+    /**
+     * variable to initialize <code>SystemInfo()</code> of Oshi lib.
+     * This variable is useful for obtaining information about the operating system and computer hardware.
+     * @see oshi.SystemInfo
+     */
+    private SystemInfo systemInfo = new SystemInfo();
 
-    private static String[] numericSpace;
-    private static String[] volume;
-    private static String[] stringBuilder;
-    private static OSFileStore fs;
+    /**
+     * A StringBuilder for build strings of informations
+     */
+    private StringBuilder genericStringBuilder = new StringBuilder();
 
-    private static Enumeration<NetworkInterface> netifs = null;
-    private static InetAddress myAddr;
-    private static NetworkInterface networkInterface;
-    private static Enumeration<InetAddress> inAddrs;
-    private static InetAddress inAddr;
+    /**
+     * this function, using Oshi lib, retrieve information about CPU.
+     * Before returns, this function invoke <code>setCpuInfoInModel(String[] cpuInfo)</code>
+     *
+     * @see GeneralStats#setCpuInfoInModel(String[])
+     * @return array string contains information about CPU with this format
+     * <p>
+     * cpuInfo[0] = Vendor
+     * <p>
+     * cpuInfo[1] = model of CPU
+     * <p>
+     * cpuInfo[2] = frequency of CPU
+     * <p>
+     * cpuInfo[3] = number of physical processors
+     * <p>
+     * cpuInfo[4] = number of logical processors
+     * <p>
+     * cpuInfo[5] = percentage of CPU load
+     * <p>
+     * In case of problems return an array with only one string: "cpu not supported"
+     */
+    public String[] getCpuInfo() {
+        String[] cpuInfo = new String[6];
+        cpuInfo[0] = systemInfo.getHardware().getProcessor().getVendor();
+        cpuInfo[1] = systemInfo.getHardware().getProcessor().getName();
+        cpuInfo[2] = FormatUtil.formatHertz(systemInfo.getHardware().getProcessor().getVendorFreq());
+        cpuInfo[3] = "" + systemInfo.getHardware().getProcessor().getPhysicalProcessorCount();
+        cpuInfo[4] = "" + systemInfo.getHardware().getProcessor().getLogicalProcessorCount();
+        //cpuInfo[5] = round((float) (systemInfo.getHardware().getProcessor().getSystemCpuLoad() * 100), 2);
 
-    //for formatSize method
-    private static String generalString;
-    private static long k;
-    private static double m;
-    private static double g;
-    private static double t;
-
-    public static String[] getPcInfo() {
-
-
-        try {
-            cpuperclist = SigarFactory.newSigar().getCpuPercList();
-            genericStringBuilder.setLength(0); //clear buffer of eventual previous content
-            for (CpuPerc aCpuperclist : cpuperclist) {
-                genericStringBuilder.append(round((float) (aCpuperclist.getCombined() * 100), 2) + "\n");
-            }
-            SingletonNumericGeneralStats.getInstance().setPercPerThread(genericStringBuilder.toString());
-            genericStringBuilder.setLength(0);
-        } catch (SigarException e) {
-            error[0] = "cpu not supported";
-            e.printStackTrace();
-            return error;
-        }
-
-        // processor = systemInfo.getHardware().getProcessor();
-
-        //String[] cpuInfo = new String[6];
-        cpuInfo[0] = "Vendor: " + processor.getVendor();
-        cpuInfo[1] = processor.getName();
-        cpuInfo[2] = "Clock: " + FormatUtil.formatHertz(processor.getVendorFreq());
-        cpuInfo[3] = "Physical CPU(s): " + processor.getPhysicalProcessorCount();
-        cpuInfo[4] = "Logical CPU(s): " + processor.getLogicalProcessorCount();
-        cpuInfo[5] = "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";
-
-        SingletonNumericGeneralStats.getInstance().setCpuInfo(cpuInfo);
-        SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
-
+        setCpuInfoInModel(cpuInfo);
         return cpuInfo;
     }
 
-    public static String getCpuLoad() {
-        try {
-            cpuperclist = SigarFactory.newSigar().getCpuPercList();
-            //StringBuilder percPerThread = new StringBuilder();
-            genericStringBuilder.setLength(0);
-            for (CpuPerc aCpuperclist : cpuperclist) {
-                genericStringBuilder.append(round((float) (aCpuperclist.getCombined() * 100), 2) + "\n");
-            }
-            SingletonNumericGeneralStats.getInstance().setPercPerThread(genericStringBuilder.toString());
-            SingletonBatteryStatus.getInstance().setPercPerThread(genericStringBuilder.toString());
-            genericStringBuilder.setLength(0);
-        } catch (SigarException e) {
-            SingletonNumericGeneralStats.getInstance().setPercPerThread("0");
-            SingletonBatteryStatus.getInstance().setPercPerThread("0");
-            e.printStackTrace();
-        }
-
-        SingletonNumericGeneralStats.getInstance().setCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
-        //SingletonBatteryStatus.getInstance().setNumericCpuLoad(round((float) (processor.getSystemCpuLoad() * 100), 2));
-        return "CPU load: " + round((float) (processor.getSystemCpuLoad() * 100), 2) + "%";
+    /**
+     * this function call a setter from model (SingletonStaticGeneralStats) that sets
+     * the percentage of cpu load
+     * @see GeneralStats#getCpuInfo()
+     * @see SingletonStaticGeneralStats#setCpuInfo(String[])
+     * @param cpuInfo information about CPU
+     */
+    private void setCpuInfoInModel(String[] cpuInfo){
+        SingletonStaticGeneralStats.getInstance().setCpuInfo(cpuInfo);
     }
 
-    static String round(float d, int decimalPlace) {
-        BigDecimal bd = new BigDecimal(Float.toString(d));
+    /**
+     * this function round up a number
+     * @param value the number to be rounded
+     * @param decimalPlace how many decimal places are needed
+     * @return rounded number
+     */
+    Float round(float value, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(value));
         bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
-        return bd.toString();
+        return bd.floatValue();
     }
 
-    private static String formatSize(long size) {
-        k = size;
-        m = size / 1024.0;
-        g = size / 1048576.0;
-        t = size / 1073741824.0;
-
-        DecimalFormat dec = new DecimalFormat("0.000");
-        if (t > 1) {
-            generalString = dec.format(t).concat(" TB");
-        } else if (g > 1) {
-            generalString = dec.format(g).concat(" GB");
-        } else if (m > 1) {
-            generalString = dec.format(m).concat(" MB");
-        } else {
-            generalString = size + " KB";
-        }
-        return generalString;
-    }
-
-    public static String getComputerSystemInfo() {
-
-        // SystemInfo si = new SystemInfo();
-        //hal = systemInfo.getHardware();
-        //oshi.software.os.OperatingSystem os = systemInfo.getOperatingSystem();
-        //ComputerSystem computerSystem = hal.getComputerSystem();
-
+    /**
+     * using oshi lib, this function retrieve information like SO, name of PC, total RAM and informations about baseboard
+     * @return a string with all informations retrieved separated by a "\n"
+     */
+    public String getComputerSystemInfo() {
         genericStringBuilder.setLength(0);
-        genericStringBuilder.append(os + "\n");
-        genericStringBuilder.append(computerSystem.getManufacturer() + " " + computerSystem.getModel() + "\n");
-        genericStringBuilder.append("RAM: " + FormatUtil.formatBytes(hal.getMemory().getTotal()) + "\n\n");
+        genericStringBuilder.append(systemInfo.getOperatingSystem()).append("\n");
+        genericStringBuilder.append(systemInfo.getHardware().getComputerSystem().getManufacturer()).append(" ").append(systemInfo.getHardware().getComputerSystem().getModel()).append("\n");
+        genericStringBuilder.append("RAM: ").append(FormatUtil.formatBytes(systemInfo.getHardware().getMemory().getTotal())).append("\n\n");
 
-        //final Baseboard baseboard = computerSystem.getBaseboard();
-        genericStringBuilder.append("Baseboard:" + "\n");
-        genericStringBuilder.append("manufacturer: " + baseboard.getManufacturer() + "\n");
-        genericStringBuilder.append("     " + "model: " + baseboard.getModel() + "\n");
-        genericStringBuilder.append("     " + "version: " + baseboard.getVersion() + "\n");
+        genericStringBuilder.append("Baseboard:").append("\n");
+        genericStringBuilder.append("manufacturer: ").append(systemInfo.getHardware().getComputerSystem().getBaseboard().getManufacturer()).append("\n");
+        genericStringBuilder.append("     ").append("model: ").append(systemInfo.getHardware().getComputerSystem().getBaseboard().getModel()).append("\n");
+        genericStringBuilder.append("     ").append("version: ").append(systemInfo.getHardware().getComputerSystem().getBaseboard().getVersion()).append("\n");
 
-        SingletonNumericGeneralStats.getInstance().setSystemInformation(genericStringBuilder.toString());
+        SingletonStaticGeneralStats.getInstance().setSystemInformation(genericStringBuilder.toString());
 
         return genericStringBuilder.toString();
     }
-
-    public static String getRamMemory() {
-        //SystemInfo si = new SystemInfo();
-        //HardwareAbstractionLayer hal = systemInfo.getHardware();
-        //GlobalMemory memory = hal.getMemory();
-
-        SingletonNumericGeneralStats.getInstance().setFreeRam(memory.getAvailable(), memory.getTotal());
-        return "Memory: " + FormatUtil.formatBytes(memory.getAvailable()) + " free of "
-                + FormatUtil.formatBytes(memory.getTotal());
-    }
-
-    public static String getFileSystem() {
-        //SystemInfo si = new SystemInfo();
-
-        //oshi.software.os.OperatingSystem os = systemInfo.getOperatingSystem();
-        fileSystem = systemInfo.getOperatingSystem().getFileSystem();
-
-        fsArray = fileSystem.getFileStores();
-        numericSpace = new String[fsArray.length];
-        volume = new String[fsArray.length];
-        stringBuilder = new String[fsArray.length];
-        for (int i = 0; i < fsArray.length; i++) {
-            fs = fsArray[i];
-            long usable = fs.getUsableSpace();
-            long total = fs.getTotalSpace();
-            stringBuilder[i] = (String.format(" %s (%s) [%s] %s of %s free (%.1f%%) " +
-                            (fs.getLogicalVolume() != null && fs.getLogicalVolume().length() > 0 ? "[%s]" : "%s") +
-                            "%n", fs.getName(),
-                    fs.getDescription().isEmpty() ? "file system" : fs.getDescription(), fs.getType(),
-                    FormatUtil.formatBytes(usable), FormatUtil.formatBytes(fs.getTotalSpace()), 100d * usable / total, fs.getLogicalVolume()));
-            try {
-                if (total == 0) {
-                    volume[i] = fs.getMount();
-                    numericSpace[i] = "0";
-                } else {
-                    volume[i] = fs.getMount();
-                    numericSpace[i] = String.format("%.1f", (100d * usable / total)).replace(",", ".");
-                }
-            } catch (NumberFormatException e) {
-                numericSpace[i] = "error";
-            }
-        }
-
-        for (int i = 0; i < numericSpace.length; i++) {
-            if (volume[i].equals("C:\\")) {
-                generalString = numericSpace[0];
-                numericSpace[0] = numericSpace[i];
-                numericSpace[i] = generalString;
-
-                generalString = stringBuilder[0];
-                stringBuilder[0] = stringBuilder[i];
-                stringBuilder[i] = generalString;
-            }
-        }
-        SingletonNumericGeneralStats.getInstance().setAvaibleFileSystem(numericSpace);
-        return String.join("", stringBuilder);
-    }
-
-    private static String getDefaultNetworkInteface() throws SocketException, UnknownHostException {
-        netifs = NetworkInterface.getNetworkInterfaces();
-
-        // hostname is passed to your method
-        myAddr = InetAddress.getLocalHost();
-
-        while (netifs.hasMoreElements()) {
-            networkInterface = netifs.nextElement();
-            inAddrs = networkInterface.getInetAddresses();
-            while (inAddrs.hasMoreElements()) {
-                inAddr = inAddrs.nextElement();
-                if (inAddr.equals(myAddr)) {
-                    return networkInterface.getName();
-                }
-            }
-        }
-        return "";
-    }
-
-    //todo controllare le allocazioni
-    public static String getNetworkSpeed() {
-
-        genericStringBuilder.setLength(0);
-        try {
-            generalString = getDefaultNetworkInteface();
-        } catch (SocketException | UnknownHostException e) {
-            genericStringBuilder.append("download speed: not supported\n");
-            genericStringBuilder.append("upload speed: not supported\n");
-            e.printStackTrace();
-            return genericStringBuilder.toString();
-        }
-        //System.out.println(generalString);
-
-        //SystemInfo si = new SystemInfo();
-        //HardwareAbstractionLayer hal = systemInfo.getHardware();
-        NetworkIF[] networkIFs = hal.getNetworkIFs();
-        int i = 0;
-        NetworkIF net = networkIFs[0];
-        try {
-            while (!networkIFs[i].getName().equals(generalString)) {
-                net = networkIFs[i];
-                i++;
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            genericStringBuilder.append("download speed: not supported\n");
-            genericStringBuilder.append("upload speed: not supported\n");
-            return genericStringBuilder.toString();
-        }
-
-        long download1 = net.getBytesRecv();
-        long upload1 = net.getBytesSent();
-        long timestamp1 = net.getTimeStamp();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            ErrorManager.exeptionDialog(e);
-            e.printStackTrace();
-        }
-        net.updateNetworkStats(); //Updating network stats
-        long download2 = net.getBytesRecv();
-        long upload2 = net.getBytesSent();
-        long timestamp2 = net.getTimeStamp();
-
-        genericStringBuilder.append("download speed: " + formatSize((download2 - download1) / (timestamp2 - timestamp1)) + "/s\n");
-        genericStringBuilder.append("upload speed: " + formatSize((upload2 - upload1) / (timestamp2 - timestamp1)) + "/s\n");
-
-        return genericStringBuilder.toString();
-    }
-
 
     //todo funzione in sospeso finché non miglioro ulteriormente le performance (meglio usare Sigar, è più veloce)
   /*  public static String getRamPerProcess() {
@@ -314,7 +151,7 @@ public class GeneralStats {
 
 
     // for linux SO
-  /*  public static String getFileSystem()  {
+  /*  public static String getFileSystems()  {
         SigarProxy sigar = SigarFactory.newSigar();
         FileSystem[] fslist = new FileSystem[0];
         try {
@@ -358,7 +195,7 @@ public class GeneralStats {
                 numericSpace[i] = "error";
             }
         }
-        SingletonNumericGeneralStats.getInstance().setAvaibleFileSystem(numericSpace);
+        SingletonDynamicGeneralStats.getInstance().setAvaibleFileSystem(numericSpace);
         // System.out.println(ris);
         return ris;
     }*/

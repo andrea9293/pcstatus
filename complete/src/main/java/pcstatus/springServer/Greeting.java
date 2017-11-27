@@ -1,6 +1,11 @@
 package pcstatus.springServer;
 
 
+/**
+ *  Spring uses the Jackson JSON library to automatically marshal instances of type <code>Greeting</code>into JSON.
+ * @see <a href="https://spring.io/guides/gs/rest-service/" target="_blank">Building a RESTful Web Service - Spring</a>
+ * @author Andrea Bravaccino
+ */
 public class Greeting {
 
     private final long id;
@@ -10,14 +15,14 @@ public class Greeting {
     private final String disks;
     private final String computerInfo;
     private final String miscellaneous;
-    private final String[] numericAvaibleFileSystem;
+    private final Float[] numericAvaibleFileSystem;
     private final String numericCpuLoad;
     private final String numericFreeRam;
     private final String numericPercPerThread;
     private final String numericBatteryPerc;
    // private final String numericRamPerProcess;
 
-    public Greeting(long id, String content, String[] batteryInfo, String[] cpuInfo, String disks, String computerInfo, String miscellaneuos, String[] numericAvaibleFileSystem, String numericCpuLoad, String numericFreeRam, String numericPercPerThread, String numericBatteryPerc) {
+    Greeting(long id, String content, String[] batteryInfo, String[] cpuInfo, String disks, String computerInfo, String miscellaneuos, Float[] numericAvaibleFileSystem, String numericCpuLoad, String numericFreeRam, String numericPercPerThread, String numericBatteryPerc) {
         this.id = id;
         this.content = content;
         this.batteryInfo = batteryInfo;
@@ -49,7 +54,7 @@ public class Greeting {
         return numericFreeRam;
     }
 
-    public String[] getNumericAvaibleFileSystem() {
+    public Float[] getNumericAvaibleFileSystem() {
         return numericAvaibleFileSystem;
     }
 
@@ -68,7 +73,6 @@ public class Greeting {
     public long getId() {
         return id;
     }
-
 
     public String[] getCpuInfo() {
         return cpuInfo;

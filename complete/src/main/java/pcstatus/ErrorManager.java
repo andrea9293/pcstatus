@@ -7,13 +7,20 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+/**
+ * This class shows an alert dialog with a captured exception and suggests sending an email to the developer
+ * @author Andrea Bravaccino
+ */
 public class ErrorManager {
 
-    public static void exeptionDialog(Exception ex) {
+    /**
+     * shows an alert dialog with a captured exception and suggests sending an email to the developer
+     * @param ex exception to send to developer
+     */
+    public void exceptionDialog(Exception ex) {
 
         Platform.runLater(() -> {
 
@@ -49,7 +56,6 @@ public class ErrorManager {
 
             alert.showAndWait();
         });
-
     }
 
 }

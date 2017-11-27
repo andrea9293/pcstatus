@@ -1,7 +1,7 @@
 package pcstatus.connectionPackage;
 
 import org.json.JSONException;
-import pcstatus.dataPackage.SingletonBatteryStatus;
+import pcstatus.dataPackage.SingletonStaticGeneralStats;
 import pcstatus.springServer.GreetingController;
 
 import javax.bluetooth.BluetoothStateException;
@@ -14,88 +14,68 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * this class implements a manager for the local server and the bluetooth server
+ *
+ * @author Andrea Bravaccino
+ */
 public class ConnectionManager {
     private int port;
     private BluetoothSPPServer bluetooth;
-    //private Thread startBluetoothServer;
     private TimerTask task;
     private Timer timer;
     private URL prova;
-    private BufferedReader in;
-    private String inputLine;
 
-    public ConnectionManager() {
-    }
 
+    /**
+     * this method call server port setter in the model (SingletonStaticGeneralStats) and
+     * set a local private variable port
+     *
+     * @param port this number is the number of the local server port
+     */
     public void setPort(int port) {
         this.port = port;
-        SingletonBatteryStatus.getInstance().setPort(port);
+        SingletonStaticGeneralStats.getInstance().setPort(port);
     }
 
+    /**
+     * communicates to the Bluetooth APPS server that he should send a Bluetooth message after
+     * verifying if a Bluetooth server exists
+     */
     public void sendBluetoothMessage() {
-
         if (bluetooth != null) {
-            if (SingletonBatteryStatus.getInstance().isBluetoothServerCreated())
-                bluetooth.sendMessage();
-            else
-                bluetooth = null;
+            if (SingletonStaticGeneralStats.getInstance().isBluetoothServerCreated())
+                bluetooth.sendBluetoothMessage();
         }
-        System.out.println(SingletonBatteryStatus.getInstance().isBluetoothServerCreated());
-
     }
 
+    /**
+     * this method instantiates the class and starts the server, otherwise
+     * tells the model that the bluetooth is unavailable
+     */
     private void bluetoothThread() {
         try {
-            SingletonBatteryStatus.getInstance().setBluetoothName(LocalDevice.getLocalDevice().getFriendlyName());
+            SingletonStaticGeneralStats.getInstance().setBluetoothName(LocalDevice.getLocalDevice().getFriendlyName());
             bluetooth = new BluetoothSPPServer();
             bluetooth.startServerBluetooth();
         } catch (BluetoothStateException e) {
-            SingletonBatteryStatus.getInstance().setBluetoothServerCreated(false);
-            SingletonBatteryStatus.getInstance().setBluetoothName("Bluetooth not available");
-            System.out.println("server bluetooth non avviato");
-            //e.printStackTrace();
+            SingletonStaticGeneralStats.getInstance().setBluetoothServerCreated(false);
+            SingletonStaticGeneralStats.getInstance().setBluetoothName("Bluetooth not available");
+            System.out.println("bluetooth server no started");
         }
-
     }
 
-   /* public void bluetoothThread() throws IOException {
-        if (startBluetoothServer == null || !startBluetoothServer.isAlive()) {
-
-            //display local device address and name
-            LocalDevice localDevice;
-            try {
-                localDevice = LocalDevice.getLocalDevice();
-                System.out.println("Address: " + localDevice.getBluetoothAddress());
-                System.out.println("Name: " + localDevice.getFriendlyName());
-                bluetooth = new BluetoothSPPServer(this);
-                bluetooth.startServerBluetooth();
-
-            } catch (BluetoothStateException e) {
-                System.out.println("Bluetooth non supportato");
-            }
-        } else {
-            System.out.println("sono in esecuzione");
-        }
-    }*/
-
-    /*void startServerBluetooth() {
-        if (startBluetoothServer == null || !startBluetoothServer.isAlive()) {
-            startBluetoothServer = new Thread(() -> {
-                try {
-                    bluetooth.startBluetoothServer();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-
-            startBluetoothServer.start();
-        }
-    }*/
-
+    /**
+     * This method starts a periodic thread (timer set to 3 seconds) that invokes
+     * the refresh() method if the server is created, or else
+     * schedules a thread without connecting to the server
+     *
+     * @param isServerCreated boolean variable that communicates whether the server was created or not
+     */
     public void scheduleTask(Boolean isServerCreated) {
         timer = new Timer();
         if (isServerCreated) {
-            System.out.println("task programmato");
+            System.out.println("task scheduled");
 
             bluetoothThread();
             if (task == null) {
@@ -109,13 +89,12 @@ public class ConnectionManager {
                 timer.schedule(task, 0, 3000); //it executes this every 3 seconds
             }
         } else {
-            System.out.println("task programmato senza server");
+            System.out.println("task scheduled without server");
             if (task == null) {
                 task = new TimerTask() {
                     @Override
                     public void run() {
-                        //System.out.println("Inside Timer Task" + System.currentTimeMillis());
-                        GreetingController.getAllData();
+                        GreetingController.getInstance().getAllData();
                     }
                 };
                 timer.schedule(task, 0, 3000); //it executes this every 1 minute
@@ -123,40 +102,58 @@ public class ConnectionManager {
         }
     }
 
+    /**
+     *  this method is called upon to start the program to start
+     *  a thread responsible for recovering data in parallel
+     *  to the server creation tasks
+     *
+     *  @see GreetingController#getAllData()
+     *  @param latch Latch variable to synchronize the threads
+     */
     public void firstGetter(CountDownLatch latch) {
         new Thread(() -> {
-            GreetingController.getAllData();
+            GreetingController.getInstance().getAllData();
             latch.countDown();
         }, "firstGetter").start();
     }
 
+    /**
+     * this method connects to the server address, downloads the json
+     * content and sends it to the model
+     */
     private void refresh() {
 
         try {
             if (prova == null)
                 prova = new URL("http://localhost:" + port + "/greeting/");
 
-            in = new BufferedReader(new InputStreamReader(prova.openStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(prova.openStream()));
 
+            String inputLine;
             while ((inputLine = in.readLine()) != null) {
-                SingletonBatteryStatus.getInstance().setJsonStr(inputLine);
+                SingletonStaticGeneralStats.getInstance().setJsonStr(inputLine);
             }
             in.close();
         } catch (IOException | JSONException e) {
-            System.out.println("server non pronto");
+            System.out.println("server is not ready");
             e.printStackTrace();
         }
     }
 
+    /**
+     * close bluetooth connection (if exists) and invoke taskCancel()
+     */
     public void shutDown() {
         if (bluetooth != null) {
             bluetooth.closeConnection();
+            bluetooth.terminateExecutors();
         }
         taskCancel();
-      /*  if (startBluetoothServer != null)
-            startBluetoothServer.interrupt();*/
     }
 
+    /**
+     * taskCancel() is resonsabile closing timer and all the threads
+     */
     private void taskCancel() {
         if (task != null) {
             System.out.println("interrotto il timer");
