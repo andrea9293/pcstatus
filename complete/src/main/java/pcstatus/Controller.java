@@ -87,7 +87,7 @@ public class Controller {
 
     /**
      * this function removes the current view and shows the user-selected view by clicking the respective button
-     * @param view
+     * @param view choosen view
      */
     private void changeView(Node view) {
         mainVbox.getChildren().removeAll(systemInfoBox, batteryBox, cpuBox, disksBox, systemLoadBox, settingsBox);
