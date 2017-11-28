@@ -55,7 +55,10 @@ public class BatteryStats{
      * @param battery an array of strings containing information about battery
      */
     private void setBatteryInModel(String[] battery){
-        SingletonDynamicGeneralStats.getInstance().setBatteryPerc(battery[1].replaceAll("[^0-9]", ""));
+        if(!battery[1].replaceAll("[^0-9]", "").equals(""))
+            SingletonDynamicGeneralStats.getInstance().setBatteryPerc(battery[1].replaceAll("[^0-9]", ""));
+        else
+            SingletonDynamicGeneralStats.getInstance().setBatteryPerc("-1");
         SingletonDynamicGeneralStats.getInstance().setBattery(battery);
     }
 

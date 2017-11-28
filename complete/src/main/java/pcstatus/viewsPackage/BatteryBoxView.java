@@ -52,7 +52,7 @@ public class BatteryBoxView implements Observer {
     public void update(Observable o, Object arg) {
         batteryText.setText(String.join("\n", SingletonDynamicGeneralStats.getInstance().getBattery()));
 
-        if (SingletonDynamicGeneralStats.getInstance().getBatteryPerc() != null)
+        if (SingletonDynamicGeneralStats.getInstance().getBatteryPerc() != -1)
             stackedAreaChartClass.addEntryStackedAreaChart(SingletonDynamicGeneralStats.getInstance().getBatteryPerc());
 
     }
