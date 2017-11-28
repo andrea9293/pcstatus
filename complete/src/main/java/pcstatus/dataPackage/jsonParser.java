@@ -70,7 +70,8 @@ class JsonParser {
         SingletonDynamicGeneralStats.getInstance().setCpuLoad(Float.parseFloat(string));
 
         string = jsonObj.getString("numericBatteryPerc");
-        SingletonDynamicGeneralStats.getInstance().setBatteryPerc(string);
+        if (!string.equals(""))
+            SingletonDynamicGeneralStats.getInstance().setBatteryPerc(string);
 
         string = jsonObj.getString("numericPercPerThread");
         String[] tmpStr = string.split("\n");
