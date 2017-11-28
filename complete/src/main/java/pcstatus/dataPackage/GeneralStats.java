@@ -1,3 +1,10 @@
+/*
+ * This is the source code of PC-status.
+ * It is licensed under GNU AGPL v3 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Andrea Bravaccino.
+ */
 package pcstatus.dataPackage;
 
 import oshi.SystemInfo;
@@ -66,11 +73,11 @@ public class GeneralStats {
      */
     public String[] getCpuInfo() {
         String[] cpuInfo = new String[6];
-        cpuInfo[0] = systemInfo.getHardware().getProcessor().getVendor();
+        cpuInfo[0] = "Vendor: " + systemInfo.getHardware().getProcessor().getVendor();
         cpuInfo[1] = systemInfo.getHardware().getProcessor().getName();
-        cpuInfo[2] = FormatUtil.formatHertz(systemInfo.getHardware().getProcessor().getVendorFreq());
-        cpuInfo[3] = "" + systemInfo.getHardware().getProcessor().getPhysicalProcessorCount();
-        cpuInfo[4] = "" + systemInfo.getHardware().getProcessor().getLogicalProcessorCount();
+        cpuInfo[2] = "Clock: " + FormatUtil.formatHertz(systemInfo.getHardware().getProcessor().getVendorFreq());
+        cpuInfo[3] = "Physical CPU(s): " + systemInfo.getHardware().getProcessor().getPhysicalProcessorCount();
+        cpuInfo[4] = "Logical CPU(s): " + systemInfo.getHardware().getProcessor().getLogicalProcessorCount();
         //cpuInfo[5] = round((float) (systemInfo.getHardware().getProcessor().getSystemCpuLoad() * 100), 2);
 
         setCpuInfoInModel(cpuInfo);

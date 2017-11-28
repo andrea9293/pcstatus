@@ -1,3 +1,10 @@
+/*
+ * This is the source code of PC-status.
+ * It is licensed under GNU AGPL v3 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Andrea Bravaccino.
+ */
 package pcstatus;
 
 import javafx.fxml.FXML;
@@ -8,7 +15,6 @@ import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import org.springframework.beans.factory.annotation.Autowired;
 import pcstatus.charts.LineChartClass;
 import pcstatus.charts.MultipleLineChartClass;
 import pcstatus.charts.PieChartClass;
@@ -21,6 +27,7 @@ import pcstatus.viewsPackage.*;
  */
 public class Controller {
 
+    @FXML private Label openLibs;
     @FXML private Label serverPortInformation;
     @FXML private Label bluetoothInformation;
     @FXML private Label ipAddressInformation;
@@ -73,7 +80,7 @@ public class Controller {
         new CpuBoxView(cpuText, multipleLineChartClass);
         new DisksBoxView(disksText, pieChartClass);
         new SystemInfoBoxView(systemInfoText);
-        new SettingsBoxView(ipAddressInformation, bluetoothInformation, serverPortInformation);
+        new SettingsBoxView(ipAddressInformation, bluetoothInformation, serverPortInformation, openLibs);
 
         // button listener on bottom
         buttonSystemLoad.setOnAction(event -> changeView(systemLoadBox));

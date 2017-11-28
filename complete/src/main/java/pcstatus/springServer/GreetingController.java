@@ -1,3 +1,10 @@
+/*
+ * This is the source code of PC-status.
+ * It is licensed under GNU AGPL v3 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Andrea Bravaccino.
+ */
 package pcstatus.springServer;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -88,7 +95,7 @@ public class GreetingController {
         getCpuInfo.execute(new Thread(() -> {
             Thread.currentThread().setName("getCpuInfo");
             cpuInfo[0] = sSgs.getCpuInfo();
-            cpuInfo[0][5] = CPUStats.getInstance().getCpuLoad();
+            cpuInfo[0][5] = "CPU load: " + CPUStats.getInstance().getCpuLoad() + "%";
             numericPercPerThread[0] = CPUStats.getInstance().getPercPerThreadStats();
             latch.countDown();
         },"getCpuInfo"));
@@ -137,7 +144,7 @@ public class GreetingController {
         String[][] cpuInfo = {null};
         new Thread(() -> {
             cpuInfo[0] = GeneralStats.getInstance().getCpuInfo();
-            cpuInfo[0][5] = CPUStats.getInstance().getCpuLoad();
+            cpuInfo[0][5] = "CPU load: " + CPUStats.getInstance().getCpuLoad() + "%";
             CPUStats.getInstance().getPercPerThreadStats();
             latch.countDown();
         }, "getPCinfoAllData").start();

@@ -1,3 +1,10 @@
+/*
+ * This is the source code of PC-status.
+ * It is licensed under GNU AGPL v3 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Andrea Bravaccino.
+ */
 package pcstatus;
 
 import javafx.application.Application;
@@ -37,9 +44,6 @@ public class ServerBatteryMain extends Application implements Observer {
      * default port for server
      */
     private int port = 8080;
-    /**
-     * @see ConnectionManager
-     */
     private ConnectionManager connectionManager;
     private Thread serverThread = new Thread(this::runSpringApplication,"serverThread");
 
@@ -87,7 +91,7 @@ public class ServerBatteryMain extends Application implements Observer {
         }
         System.out.println("finito di aspettare");
         try {
-            this.primaryStage.setTitle("PCstatus - " + getMyIp());
+            this.primaryStage.setTitle("PCstatus 1.0beta - " + getMyIp());
             SingletonStaticGeneralStats.getInstance().setIpAddress(getMyIp());
         } catch (UnknownHostException e) {
             e.printStackTrace();

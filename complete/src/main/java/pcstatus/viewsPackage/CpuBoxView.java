@@ -1,3 +1,10 @@
+/*
+ * This is the source code of PC-status.
+ * It is licensed under GNU AGPL v3 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Andrea Bravaccino.
+ */
 package pcstatus.viewsPackage;
 
 import javafx.scene.control.Label;
@@ -10,8 +17,9 @@ import java.util.Observer;
 
 /**
  * This class manages the view dedicated for CPU information implementing <code>Observer</code>
- * @see java.util.Observer
+ *
  * @author Andrea Bravaccino
+ * @see java.util.Observer
  */
 public class CpuBoxView implements Observer {
 
@@ -27,7 +35,8 @@ public class CpuBoxView implements Observer {
 
     /**
      * the constructor initialize the parameters and register itself like <code>Observer</code>
-     * @param cpuText label that will contain information about CPU
+     *
+     * @param cpuText                label that will contain information about CPU
      * @param multipleLineChartClass chart that will show CPU threads load
      */
     public CpuBoxView(Label cpuText, MultipleLineChartClass multipleLineChartClass) {
@@ -38,21 +47,14 @@ public class CpuBoxView implements Observer {
 
     /**
      * method updating view with new data
-     * @see Observer#update(Observable, Object)
-     * @param o not used
+     *
+     * @param o   not used
      * @param arg not used
+     * @see Observer#update(Observable, Object)
      */
     @Override
     public void update(Observable o, Object arg) {
-        StringBuilder cpuInfo = new StringBuilder();
-        cpuInfo.append("Vendor: ").append(SingletonStaticGeneralStats.getInstance().getCpuInfo()[0]).append("\n");
-        cpuInfo.append(SingletonStaticGeneralStats.getInstance().getCpuInfo()[1]).append("\n");
-        cpuInfo.append("Clock: ").append(SingletonStaticGeneralStats.getInstance().getCpuInfo()[2]).append("\n");
-        cpuInfo.append("Physical CPU(s): ").append(SingletonStaticGeneralStats.getInstance().getCpuInfo()[3]).append("\n");
-        cpuInfo.append("Logical CPU(s): ").append(SingletonStaticGeneralStats.getInstance().getCpuInfo()[4]).append("\n");
-        cpuInfo.append("CPU load: ").append(SingletonStaticGeneralStats.getInstance().getCpuInfo()[5]).append("%");
-
-        cpuText.setText(String.join("\n", cpuInfo));
+        cpuText.setText(String.join("\n", SingletonStaticGeneralStats.getInstance().getCpuInfo()));
 
         if (SingletonStaticGeneralStats.getInstance().isFirtShow()) {
             multipleLineChartClass.createSeries();

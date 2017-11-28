@@ -157,7 +157,15 @@
                     <Label fx:id="bluetoothInformation" text="IP Address"/>
                 </VBox>
 
-
+                <!-- Libs information -->
+                <VBox alignment="TOP_LEFT">
+                    <Label text="Open Source Licenses">
+                        <font>
+                            <Font name="System Bold" size="15.0"/>
+                        </font>
+                    </Label>
+                    <Label fx:id="openLibs" text="Open Sources Libraries"/>
+                </VBox>
             </VBox>
 
             </VBox>

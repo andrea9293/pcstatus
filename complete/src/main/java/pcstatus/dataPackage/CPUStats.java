@@ -1,3 +1,10 @@
+/*
+ * This is the source code of PC-status.
+ * It is licensed under GNU AGPL v3 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Andrea Bravaccino.
+ */
 package pcstatus.dataPackage;
 
 import org.gridkit.lab.sigar.SigarFactory;
@@ -52,6 +59,7 @@ public class CPUStats {
      * @return returns the percentage of cpu load in string format
      */
     public String getCpuLoad() {
+        //todo vedere le temperature: oshi ritorna sempre lo stesso valore
         setCpuLoadInModel(GeneralStats.getInstance().round((float) (processor.getSystemCpuLoad() * 100), 2));
         return GeneralStats.getInstance().round((float) (processor.getSystemCpuLoad() * 100), 2).toString();
     }

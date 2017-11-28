@@ -1,3 +1,10 @@
+/*
+ * This is the source code of PC-status.
+ * It is licensed under GNU AGPL v3 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Andrea Bravaccino.
+ */
 package pcstatus.viewsPackage;
 
 import javafx.scene.control.Label;
@@ -14,17 +21,17 @@ import java.util.Observer;
 public class SettingsBoxView implements Observer{
 
     /**
-     * show the local IP address
+     * shows the local IP address
      */
     private Label ipAddressInformation;
 
     /**
-     * show bluetooth name
+     * shows bluetooth name
      */
     private Label bluetoothInformation;
 
     /**
-     * show port for server
+     * shows port for server
      */
     private Label serverPortInformation;
 
@@ -33,11 +40,19 @@ public class SettingsBoxView implements Observer{
      * @param ipAddressInformation label that will show the local IP address
      * @param bluetoothInformation label that will show bluetooth name
      * @param serverPortInformation label that will show port for server
+     * @param openLibs label that will show information about open source libraries used
      */
-    public SettingsBoxView(Label ipAddressInformation, Label bluetoothInformation, Label serverPortInformation) {
+    public SettingsBoxView(Label ipAddressInformation, Label bluetoothInformation, Label serverPortInformation, Label openLibs) {
         this.ipAddressInformation = ipAddressInformation;
         this.bluetoothInformation = bluetoothInformation;
         this.serverPortInformation = serverPortInformation;
+        openLibs.setText("This program is licensed under the GNU AGPLv3 or later.\n" +
+                "PC-status uses the following open source libraries:\n\n" +
+                "Bluecove\n" +
+                "OSHI-core\n" +
+                "Sigar-lib\n" +
+                "SpringFramework\n" +
+                "Android-Json\n");
         SingletonStaticGeneralStats.getInstance().addingObserver(SettingsBoxView.this);
     }
 
@@ -54,7 +69,5 @@ public class SettingsBoxView implements Observer{
             ipAddressInformation.setText(SingletonStaticGeneralStats.getInstance().getIpAddress());
             bluetoothInformation.setText(SingletonStaticGeneralStats.getInstance().getBluetoothName());
         }
-        //bluetoothInformation.setText();
     }
-
 }
