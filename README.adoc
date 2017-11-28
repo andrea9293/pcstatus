@@ -7,7 +7,7 @@ image:https://image.ibb.co/eYvOSm/thumbnail_pc_status.png[]
 = Download PC-status
 NOTE: *The program may have some bugs and may be unstable. PC status is still at an early stage of development*
 
-=== link:https://github.com/andrea9293/pcstatus/releases/download/1.0beta/PC-status-1.0beta.jar[PC-status 1.0beta]
+=== link:https://github.com/andrea9293/pcstatus/releases/download/1.1beta/PC-status-1.1beta.jar[PC-status 1.1beta]
 
 
 = How to import in IntelliJ IDEA
