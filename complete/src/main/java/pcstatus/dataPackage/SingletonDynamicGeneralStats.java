@@ -102,8 +102,7 @@ public class SingletonDynamicGeneralStats {
      * @param batteryPerc is percentage of battery
      */
     void setBatteryPerc(String batteryPerc) {
-        //this.batteryPerc = Integer.parseInt(batteryPerc);
-        this.batteryPerc = -1;
+        this.batteryPerc = Integer.parseInt(batteryPerc);
     }
 
     /**

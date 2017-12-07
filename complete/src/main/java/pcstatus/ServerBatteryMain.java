@@ -30,6 +30,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.CountDownLatch;
 
+//todo vedere come mettere in icona in basso a destra
+
 /**
  * Main Class
  */
