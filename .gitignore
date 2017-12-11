@@ -15,5 +15,5 @@ dependency-reduced-pom.xml
 README.html
 *.iml
 .idea
-complete/out/
-complete/src/main/java/META-INF/MANIFEST.MF
+out/
+src/main/java/META-INF/MANIFEST.MF
