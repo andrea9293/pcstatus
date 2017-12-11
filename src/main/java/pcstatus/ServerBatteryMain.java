@@ -30,7 +30,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.CountDownLatch;
 
-//todo vedere come mettere in icona in basso a destra
 
 /**
  * Main Class
@@ -93,7 +92,7 @@ public class ServerBatteryMain extends Application implements Observer {
         }
         System.out.println("finito di aspettare");
         try {
-            this.primaryStage.setTitle("PCstatus 1.0beta - " + getMyIp());
+            this.primaryStage.setTitle("PCstatus 1.1.1beta - " + getMyIp());
             SingletonStaticGeneralStats.getInstance().setIpAddress(getMyIp());
         } catch (UnknownHostException e) {
             e.printStackTrace();
