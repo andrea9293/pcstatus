@@ -5,6 +5,9 @@ PC-status is a simple program that monitors information on your computer and sen
 image:https://image.ibb.co/eYvOSm/thumbnail_pc_status.png[]
 
 = Download PC-status
+
+NOTE: *PC-status, to work properly, needs java installed on your computer. If you don't have java installed, this is a link:java.com/download/[link to Java installer]*
+
 NOTE: *The program may have some bugs and may be unstable. PC status is still at an early stage of development*
 
 === link:https://github.com/andrea9293/pcstatus/releases/[PC-status download]
@@ -27,16 +30,27 @@ With IntelliJ IDEA up and running, click Import Project on the Welcome Screen, o
 image:https://spring.io/guides/gs/intellij-idea/images/spring_guide_welcome_import.png[]
 
 
-In the pop-up dialog make sure to select Gradle's build.gradle file under the complete folder:
+In the pop-up dialog make sure to select Gradle's build.gradle file:
 
 
-image:https://spring.io/guides/gs/intellij-idea/images/spring_guide_select_gradle_file.png[]
+image:https://image.ibb.co/ionreb/gradle_image.png[]
 
 IntelliJ IDEA will create a project with all the code from the guide already entered.
 
 == Compiling project
 
-You can build the JAR file using ./gradlew build. Then you can run the JAR file:
+You can build the JAR file using
+----
+./gradlew build
+----
+
+In IntelliJ is also possible to run gradlew build command following instruction in this image
+
+image:https://image.ibb.co/fMUezb/gradlew_intellij.png[]
+
+Your executable (.jar) file is in ROOT_OF_SOURCES/build/libs/ directory 
+
+Then you can run the JAR file by doble clicking on icon or by command line:
 ----
 java -jar build/libs/PC-status-xx.jar
 ----
