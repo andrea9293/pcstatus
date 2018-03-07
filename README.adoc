@@ -6,7 +6,7 @@ image:https://image.ibb.co/eYvOSm/thumbnail_pc_status.png[]
 
 = Download PC-status
 
-NOTE: *PC-status, to work properly, needs java installed on your computer. If you don't have java installed, this is a link:java.com/download/[link to Java installer]*
+NOTE: *PC-status, to work properly, needs java installed on your computer. If you don't have java installed, this is a link:http://www.java.com/download/[link to Java installer]*
 
 NOTE: *The program may have some bugs and may be unstable. PC status is still at an early stage of development*
 
