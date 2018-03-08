@@ -46,7 +46,6 @@ public class BatteryStats{
         Kernel32.SYSTEM_POWER_STATUS batteryStatus = new Kernel32.SYSTEM_POWER_STATUS();
         Kernel32.INSTANCE.GetSystemPowerStatus(batteryStatus);
         setBatteryInModel(batteryStatus.toString().split("\n"));
-        batteryStatus.toString().split("\n");
         return batteryStatus.toString().split("\n");
     }
 

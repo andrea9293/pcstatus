@@ -58,12 +58,9 @@ class BluetoothSPPServer {
     /**
      * Thread that runs <code>bluetoothServer()</code>
      */
-    private Thread startBluetoothServer = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            Thread.currentThread().setName("startServerBluetooth");
-            bluetoothServer();
-        }
+    private Thread startBluetoothServer = new Thread(() -> {
+        Thread.currentThread().setName("startServerBluetooth");
+        bluetoothServer();
     }, "startServerBluetooth");
 
     /**
@@ -75,12 +72,9 @@ class BluetoothSPPServer {
      * a thread that will send json string and waits until bluetooth
      * connected device does not response
      */
-    private Thread sendReciveMessageThread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            Thread.currentThread().setName("sendReciveMessageThread");
-            sendReciveMessage();
-        }
+    private Thread sendReciveMessageThread = new Thread(() -> {
+        Thread.currentThread().setName("sendReciveMessageThread");
+        sendReciveMessage();
     }, "sendReciveMessageThread");
 
     /**
@@ -119,8 +113,8 @@ class BluetoothSPPServer {
             connectionIsAvaible = true;
             SingletonStaticGeneralStats.getInstance().setBluetoothServerCreated(true);
             sendBluetoothMessage();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            //e.printStackTrace();
             //in case of problems, the connection is stopped
             closeConnection();
         }
@@ -194,7 +188,6 @@ class BluetoothSPPServer {
             //recive message from bluetooth device to check the connection
             BufferedReader bReader = new BufferedReader(new InputStreamReader(inStream));
             lineRead[0] = bReader.readLine();
-            System.out.println(lineRead[0]);
         } catch (IOException e) {
             //if recive message failed, stop the thread and restart bluetooth server
             if (!sendReciveMessageThread.isInterrupted()) {

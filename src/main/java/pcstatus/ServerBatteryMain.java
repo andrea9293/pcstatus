@@ -12,6 +12,8 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,12 +24,14 @@ import pcstatus.dataPackage.SingletonStaticGeneralStats;
 
 import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.LocalDevice;
+import java.awt.*;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketException;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
 
@@ -47,7 +51,6 @@ public class ServerBatteryMain extends Application implements Observer {
     private int port = 8080;
     private ConnectionManager connectionManager;
     private Thread serverThread = new Thread(this::runSpringApplication,"serverThread");
-
 
     /**
      * initialize the program
@@ -95,19 +98,18 @@ public class ServerBatteryMain extends Application implements Observer {
             this.primaryStage.setTitle("PCstatus 1.1.1beta - " + getMyIp());
             SingletonStaticGeneralStats.getInstance().setIpAddress(getMyIp());
         } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (SocketException e) {
             this.primaryStage.setTitle("PCstatus - problem with IP identifier");
             e.printStackTrace();
         }
         long stopAllTime = System.currentTimeMillis();
         System.out.println("\n\n                                                " +
                 " fatto tutto e ci ho messo " + (stopAllTime - startAllTime) + "\n");
-
         connectionManager.scheduleTask(SingletonStaticGeneralStats.getInstance().isServerCreated());
+
+        checkForUpdate();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         ServerBatteryMain.args = args;
         launch(args);
     }
@@ -148,7 +150,7 @@ public class ServerBatteryMain extends Application implements Observer {
         SingletonStaticGeneralStats.getInstance().setFirstShow(false);
     }
 
-    private String getMyIp() throws UnknownHostException, SocketException {
+    private String getMyIp() throws UnknownHostException {
         InetAddress addr = InetAddress.getLocalHost();
         return addr.getHostAddress();
     }
@@ -180,6 +182,33 @@ public class ServerBatteryMain extends Application implements Observer {
                 latch.countDown();
             }
         }
+    }
+
+    /**
+     * check for update
+     */
+    private void checkForUpdate() {
+        new Thread(() -> {
+            Boolean isLatestVersion = UpdateChecker.checkUpdate();
+            if (!isLatestVersion){
+                System.out.println("c'è un aggiornamento");
+
+                Platform.runLater(()->{
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Update available");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Do you want download latest version of PC-status?");
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.get() == ButtonType.OK){
+                        // open link in default browser
+                        getHostServices().showDocument(UpdateChecker.urlToLatestVersion);
+                    }
+                });
+            }else {
+                System.out.println("sistema aggiornato");
+            }
+        }).start();
+
     }
 
     /*public static class ProgressForm {
