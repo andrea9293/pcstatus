@@ -127,7 +127,6 @@ public class GeneralStats {
         return genericStringBuilder.toString();
     }
 
-    //todo funzione in sospeso finché non miglioro ulteriormente le performance (meglio usare Sigar, è più veloce)
   /*  public static String getRamPerProcess() {
         OperatingSystem operatingSystem = new SystemInfo().getOperatingSystem();
         StringBuilder stringBuilder = new StringBuilder();

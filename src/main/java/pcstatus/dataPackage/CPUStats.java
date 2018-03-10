@@ -59,7 +59,6 @@ public class CPUStats {
      * @return returns the percentage of cpu load in string format
      */
     public String getCpuLoad() {
-        //todo vedere le temperature: oshi ritorna sempre lo stesso valore
         setCpuLoadInModel(GeneralStats.getInstance().round((float) (processor.getSystemCpuLoad() * 100), 2));
         return GeneralStats.getInstance().round((float) (processor.getSystemCpuLoad() * 100), 2).toString();
     }

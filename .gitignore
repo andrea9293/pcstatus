@@ -17,3 +17,5 @@ README.html
 .idea
 out/
 src/main/java/META-INF/MANIFEST.MF
+gradlew
+gradlew.bat

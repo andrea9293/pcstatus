@@ -1,23 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-
-<?import javafx.scene.chart.PieChart?>
-<?import javafx.scene.chart.StackedAreaChart?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <VBox alignment="CENTER" spacing="8.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="pcstatus.Controller">
-    <VBox fx:id="mainVbox" alignment="TOP_LEFT" VBox.vgrow="ALWAYS">
+    <VBox fx:id="mainVbox" VBox.vgrow="ALWAYS">
         <HBox alignment="TOP_CENTER" spacing="8.0" HBox.hgrow="ALWAYS">
             <VBox alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
                 <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true"
@@ -125,19 +116,19 @@
                         <Font name="System Bold" size="20.0"/>
                     </font>
                 </Label>
-            <VBox alignment="TOP_LEFT" spacing="8.0" VBox.vgrow="ALWAYS" prefHeight="300" prefWidth="500">
+            <VBox spacing="8.0" VBox.vgrow="ALWAYS" prefHeight="300" prefWidth="500">
 
                 <!-- WiFi address information -->
-                <VBox alignment="TOP_LEFT">
-                    <Label text="IP address">
+                <VBox fx:id="settingVBox">
+                    <Label text="Scan to connect with PC-status for Android">
                         <font>
                             <Font name="System Bold" size="15.0"/>
                         </font>
                     </Label>
-                    <Label fx:id="ipAddressInformation" text="IP Address"/>
+                    <ImageView fx:id="qrImageView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true"/>
                 </VBox>
 
-                <!-- Server port information -->
+                <!-- Server port information
                 <VBox alignment="TOP_LEFT">
                     <Label text="Port">
                         <font>
@@ -146,9 +137,10 @@
                     </Label>
                     <Label fx:id="serverPortInformation" text="IP Address"/>
                 </VBox>
+                -->
 
                 <!-- Bluetooth information -->
-                <VBox alignment="TOP_LEFT">
+                <VBox>
                     <Label text="Bluetooth">
                         <font>
                             <Font name="System Bold" size="15.0"/>
@@ -158,7 +150,7 @@
                 </VBox>
 
                 <!-- Libs information -->
-                <VBox alignment="TOP_LEFT">
+                <VBox>
                     <Label text="Open Source Licenses">
                         <font>
                             <Font name="System Bold" size="15.0"/>
@@ -175,65 +167,51 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
         </padding>
     </VBox>
-    <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="HORIZONTAL" prefHeight="20.0" prefWidth="200.0"/>
+    <Separator minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="200.0"/>
     <HBox alignment="TOP_CENTER" prefWidth="-Infinity" spacing="8.0">
-        <children>
-            <Button fx:id="buttonSystemLoad" mnemonicParsing="false">
-                <graphic>
-                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                        <image>
-                            <Image url="@Images/icons/Speedometer_104px.png"/>
-                        </image>
-                    </ImageView>
-                </graphic>
-            </Button>
+        <Button fx:id="buttonSystemLoad" mnemonicParsing="false">
+            <graphic>
+                <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@Images/icons/Speedometer_104px.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
 
-            <Button fx:id="buttonBattery" mnemonicParsing="false">
-                <graphic>
-                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                        <image>
-                            <Image url="@Images/icons/Charging Battery_96px.png"/>
-                        </image>
-                    </ImageView>
-                </graphic>
-            </Button>
-            <Button fx:id="buttonProcessor" mnemonicParsing="false">
-                <graphic>
-                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                        <image>
-                            <Image url="@Images/icons/Processor_104px.png"/>
-                        </image>
-                    </ImageView>
-                </graphic>
-            </Button>
-            <Button fx:id="buttonHdd" mnemonicParsing="false">
-                <graphic>
-                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                        <image>
-                            <Image url="@Images/icons/HDD_96px.png"/>
-                        </image>
-                    </ImageView>
-                </graphic>
-            </Button>
-            <Button fx:id="buttonSystemInfo" mnemonicParsing="false">
-                <graphic>
-                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                        <image>
-                            <Image url="@Images/icons/System Task_104px.png"/>
-                        </image>
-                    </ImageView>
-                </graphic>
-            </Button>
-            <Button fx:id="buttonSettings" mnemonicParsing="false">
-                <graphic>
-                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                        <image>
-                            <Image url="@Images/icons/Settings_96px.png"/>
-                        </image>
-                    </ImageView>
-                </graphic>
-            </Button>
-        </children>
+        <Button fx:id="buttonBattery" mnemonicParsing="false">
+            <graphic>
+                <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@Images/icons/Charging Battery_96px.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button fx:id="buttonProcessor" mnemonicParsing="false">
+            <graphic>
+                <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@Images/icons/Processor_104px.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button fx:id="buttonHdd" mnemonicParsing="false">
+            <graphic>
+                <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@Images/icons/HDD_96px.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button fx:id="buttonSystemInfo" mnemonicParsing="false">
+            <graphic>
+                <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@Images/icons/System Task_104px.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button fx:id="buttonSettings" mnemonicParsing="false">
+            <graphic>
+                <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@Images/icons/Settings_96px.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
     </HBox>
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>

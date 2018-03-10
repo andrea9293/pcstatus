@@ -8,6 +8,9 @@
 package pcstatus.viewsPackage;
 
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import pcstatus.Controller;
 import pcstatus.dataPackage.SingletonStaticGeneralStats;
 
 import java.util.Observable;
@@ -15,59 +18,65 @@ import java.util.Observer;
 
 /**
  * This class manages the view dedicated for information about the program implementing <code>Observer</code>
- * @see java.util.Observer
+ *
  * @author Andrea Bravaccino
+ * @see java.util.Observer
  */
-public class SettingsBoxView implements Observer{
-
-    /**
-     * shows the local IP address
-     */
-    private Label ipAddressInformation;
-
+public class SettingsBoxView implements Observer {
     /**
      * shows bluetooth name
      */
     private Label bluetoothInformation;
-
-    /**
-     * shows port for server
-     */
-    private Label serverPortInformation;
+    private ImageView qrImageView;
+    private VBox settingVBox;
 
     /**
      * the constructor initialize the parameters and register itself like <code>Observer</code>
-     * @param ipAddressInformation label that will show the local IP address
+     *
+     * @param qrImageView          image with qr
      * @param bluetoothInformation label that will show bluetooth name
-     * @param serverPortInformation label that will show port for server
-     * @param openLibs label that will show information about open source libraries used
+     * @param openLibs             label that will show information about open source libraries used
+     * @param settingVBox          VBox with qrImageView
      */
-    public SettingsBoxView(Label ipAddressInformation, Label bluetoothInformation, Label serverPortInformation, Label openLibs) {
-        this.ipAddressInformation = ipAddressInformation;
+    public SettingsBoxView(ImageView qrImageView, Label bluetoothInformation, Label openLibs, VBox settingVBox) {
+        this.qrImageView = qrImageView;
+        this.settingVBox = settingVBox;
         this.bluetoothInformation = bluetoothInformation;
-        this.serverPortInformation = serverPortInformation;
-        openLibs.setText("This program is licensed under the GNU AGPLv3 or later.\n" +
-                "PC-status uses the following open source libraries:\n\n" +
-                "Bluecove\n" +
-                "OSHI-core\n" +
-                "Sigar-lib\n" +
-                "SpringFramework\n" +
-                "Android-Json\n");
+        openLibs.setText("This program is licensed under the GNU AGPLv3 or later.\n\n" +
+                "PC-status uses the following open source libraries:\n" +
+                "Bluecove, " +
+                "Sigar-lib, " +
+                "SpringFramework, " +
+                "Android-Json, " +
+                "Zxing");
         SingletonStaticGeneralStats.getInstance().addingObserver(SettingsBoxView.this);
     }
 
     /**
      * method updating view with new data
-     * @see Observer#update(Observable, Object)
-     * @param o not used
+     *
+     * @param o   not used
      * @param arg not used
+     * @see Observer#update(Observable, Object)
      */
     @Override
     public void update(Observable o, Object arg) {
-        if(SingletonStaticGeneralStats.getInstance().isServerCreated()){
-            serverPortInformation.setText(String.valueOf(SingletonStaticGeneralStats.getInstance().getPort()));
-            ipAddressInformation.setText(SingletonStaticGeneralStats.getInstance().getIpAddress());
+        if (SingletonStaticGeneralStats.getInstance().isServerCreated()) {
+            String url = SingletonStaticGeneralStats.getInstance().getIpAddress() + ":" + SingletonStaticGeneralStats.getInstance().getPort();
+            qrImageView.setImage(Controller.createQR(url));
+            qrImageView.setVisible(true);
+
+            if (settingVBox.getChildren().get(1) instanceof Label) {
+                settingVBox.getChildren().remove(1);
+                settingVBox.getChildren().add(qrImageView);
+            }
+
             bluetoothInformation.setText(SingletonStaticGeneralStats.getInstance().getBluetoothName());
+        } else {
+            if (settingVBox.getChildren().get(1) instanceof ImageView) {
+                settingVBox.getChildren().remove(qrImageView);
+                settingVBox.getChildren().add(new Label("Server not created"));
+            }
         }
     }
 }

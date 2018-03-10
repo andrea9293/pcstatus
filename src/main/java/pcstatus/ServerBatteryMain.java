@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,11 +25,10 @@ import pcstatus.dataPackage.SingletonStaticGeneralStats;
 
 import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.LocalDevice;
-import java.awt.*;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.URI;
 import java.net.UnknownHostException;
+import java.util.NoSuchElementException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Optional;
@@ -50,22 +50,24 @@ public class ServerBatteryMain extends Application implements Observer {
      */
     private int port = 8080;
     private ConnectionManager connectionManager;
-    private Thread serverThread = new Thread(this::runSpringApplication,"serverThread");
+    private Thread serverThread = new Thread(this::runSpringApplication, "serverThread");
 
     /**
      * initialize the program
+     *
      * @param primaryStage main frame
      */
     @Override
     public void start(Stage primaryStage) {
         long startAllTime = System.currentTimeMillis();
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
+        UpdateChecker.actualVersion = "1.2.1beta";
         SingletonStaticGeneralStats.getInstance().addingObserver(ServerBatteryMain.this);
         SingletonStaticGeneralStats.getInstance().setFirstShow(true);
         connectionManager = new ConnectionManager();
         connectionManager.firstGetter(latch);
-        serverThread.start();
-
         this.primaryStage = primaryStage;
+        serverThread.start();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample.fxml"));
         Parent root = null;
@@ -95,7 +97,7 @@ public class ServerBatteryMain extends Application implements Observer {
         }
         System.out.println("finito di aspettare");
         try {
-            this.primaryStage.setTitle("PCstatus 1.1.1beta - " + getMyIp());
+            this.primaryStage.setTitle("PCstatus - " + UpdateChecker.actualVersion);
             SingletonStaticGeneralStats.getInstance().setIpAddress(getMyIp());
         } catch (UnknownHostException e) {
             this.primaryStage.setTitle("PCstatus - problem with IP identifier");
@@ -105,7 +107,6 @@ public class ServerBatteryMain extends Application implements Observer {
         System.out.println("\n\n                                                " +
                 " fatto tutto e ci ho messo " + (stopAllTime - startAllTime) + "\n");
         connectionManager.scheduleTask(SingletonStaticGeneralStats.getInstance().isServerCreated());
-
         checkForUpdate();
     }
 
@@ -129,9 +130,10 @@ public class ServerBatteryMain extends Application implements Observer {
 
     /**
      * method updating view with new data
-     * @see Observer#update(Observable, Object)
-     * @param o not used
+     *
+     * @param o   not used
      * @param arg not used
+     * @see Observer#update(Observable, Object)
      */
     @Override
     public void update(Observable o, Object arg) {
@@ -152,7 +154,12 @@ public class ServerBatteryMain extends Application implements Observer {
 
     private String getMyIp() throws UnknownHostException {
         InetAddress addr = InetAddress.getLocalHost();
-        return addr.getHostAddress();
+        if (addr.getHostAddress().equals("127.0.0.1")) {
+            SingletonStaticGeneralStats.getInstance().setServerCreated(false);
+            return "";
+        } else {
+            return addr.getHostAddress();
+        }
     }
 
     /**
@@ -164,8 +171,7 @@ public class ServerBatteryMain extends Application implements Observer {
             connectionManager.setPort(port);
             try {
                 SingletonStaticGeneralStats.getInstance().setBluetoothName(LocalDevice.getLocalDevice().getFriendlyName());
-            }
-            catch (BluetoothStateException e) {
+            } catch (BluetoothStateException e) {
                 System.out.println("bluetooth non supportato");
             }
             SingletonStaticGeneralStats.getInstance().setServerCreated(true);
@@ -178,9 +184,9 @@ public class ServerBatteryMain extends Application implements Observer {
                 runSpringApplication();
             } else {
                 new ErrorManager().exceptionDialog(e);
-                SingletonStaticGeneralStats.getInstance().setServerCreated(false);
                 latch.countDown();
             }
+            SingletonStaticGeneralStats.getInstance().setServerCreated(false);
         }
     }
 
@@ -190,61 +196,31 @@ public class ServerBatteryMain extends Application implements Observer {
     private void checkForUpdate() {
         new Thread(() -> {
             Boolean isLatestVersion = UpdateChecker.checkUpdate();
-            if (!isLatestVersion){
+            if (!isLatestVersion) {
                 System.out.println("c'è un aggiornamento");
 
-                Platform.runLater(()->{
+                Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Update available");
                     alert.setHeaderText(null);
                     alert.setContentText("Do you want download latest version of PC-status?");
                     Optional<ButtonType> result = alert.showAndWait();
-                    if (result.get() == ButtonType.OK){
-                        // open link in default browser
-                        getHostServices().showDocument(UpdateChecker.urlToLatestVersion);
+                    try {
+                        if (result.get() == ButtonType.OK) {
+                            // open link in default browser
+                            getHostServices().showDocument(UpdateChecker.urlToLatestVersion);
+                        } else {
+                            alert.hide();
+                        }
+                    } catch (NoSuchElementException ignored) {
                     }
                 });
-            }else {
+            } else {
                 System.out.println("sistema aggiornato");
             }
         }).start();
 
     }
-
-    /*public static class ProgressForm {
-        private final Stage dialogStage;
-        private final ProgressIndicator pin = new ProgressIndicator();
-
-        public ProgressForm() {
-            dialogStage = new Stage();
-            dialogStage.initStyle(StageStyle.UTILITY);
-            dialogStage.setResizable(false);
-            dialogStage.initModality(Modality.APPLICATION_MODAL);
-
-            // PROGRESS BAR
-            final Label label = new Label();
-            label.setText("alerto");
-
-            pin.setProgress(-1F);
-
-            final HBox hb = new HBox();
-            hb.setSpacing(5);
-            hb.setAlignment(Pos.CENTER);
-            hb.getChildren().addAll(pin);
-
-            Scene scene = new Scene(hb);
-            dialogStage.setScene(scene);
-        }
-
-        public void activateProgressBar(final Task<?> task) {
-            pin.progressProperty().bind(task.progressProperty());
-            dialogStage.show();
-        }
-
-        public Stage getDialogStage() {
-            return dialogStage;
-        }
-    }*/
 }
 
 
