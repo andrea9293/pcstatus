@@ -156,7 +156,7 @@
                             <Font name="System Bold" size="15.0"/>
                         </font>
                     </Label>
-                    <Label fx:id="openLibs" text="Open Sources Libraries"/>
+                    <VBox fx:id="openLibs" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"/>
                 </VBox>
             </VBox>
 

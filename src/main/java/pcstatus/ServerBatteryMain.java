@@ -42,6 +42,7 @@ import java.util.concurrent.CountDownLatch;
 public class ServerBatteryMain extends Application implements Observer {
 
     private static ConfigurableApplicationContext applicationContext;
+    public static ServerBatteryMain serverBatteryMain;
     private Stage primaryStage;
     private static String[] args;
     private CountDownLatch latch = new CountDownLatch(2);
@@ -59,6 +60,7 @@ public class ServerBatteryMain extends Application implements Observer {
      */
     @Override
     public void start(Stage primaryStage) {
+        serverBatteryMain = this;
         long startAllTime = System.currentTimeMillis();
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         UpdateChecker.actualVersion = "1.2.1beta";

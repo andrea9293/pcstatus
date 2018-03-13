@@ -52,7 +52,7 @@ public class Controller {
     @FXML
     private ImageView qrImageView;
     @FXML
-    private Label openLibs;
+    private VBox openLibs;
     /* @FXML
      private Label serverPortInformation;*/
     @FXML
