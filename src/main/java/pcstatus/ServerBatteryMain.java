@@ -187,8 +187,8 @@ public class ServerBatteryMain extends Application implements Observer {
             } else {
                 new ErrorManager().exceptionDialog(e);
                 latch.countDown();
+                SingletonStaticGeneralStats.getInstance().setServerCreated(false);
             }
-            SingletonStaticGeneralStats.getInstance().setServerCreated(false);
         }
     }
 
