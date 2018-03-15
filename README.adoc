@@ -12,6 +12,9 @@ NOTE: *The program may have some bugs and may be unstable. PC status is still at
 
 === link:https://github.com/andrea9293/pcstatus/releases/[PC-status download]
 
+= Download PC-status - Android client
+
+=== link:https://play.google.com/store/apps/details?id=com.andrea.pcstatus[PC-status - Android client]
 
 = How to import in IntelliJ IDEA
 
